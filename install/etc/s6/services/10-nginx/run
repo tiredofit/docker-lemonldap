@@ -1,0 +1,294 @@
+#!/usr/bin/with-contenv bash
+
+
+if [ ! -f /tmp/state/10-nginx ]; then
+
+	### Modify Virtual Hosts for Nginx
+	sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+	sed -i -e "s/<MANAGER_HOSTNAME>/$MANAGER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+	sed -i -e "s/<RELOAD_HOSTNAME>/$RELOAD_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+	sed -i -e "s/<TEST_HOSTNAME>/$TEST_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+    
+    ### Modify File Configuration
+	sed -i -e "s/auth.example.com/$PORTAL_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/manager.example.com/$MANAGER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/reload.example.com/$RELOAD_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/test1.example.com/$TEST_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+  sed -i -e "s/example.com/$DOMAIN_NAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+
+    ### Sanity Check Defaults
+      CROSS_DOMAIN_HANDLER=${CROSS_DOMAIN_HANDLER:-FALSE}         
+      USE_SAFE_JAIL=${USE_SAFE_JAIL:-TRUE}                        
+      CONFIG_TYPE=${CONFIG_TYPE:-FILE}                            
+      CACHE_TYPE=${CACHE_TYPE:-FILE}
+      CACHE_TYPE_FILE_NAMESPACE=${HANDLER_CACHE_TYPE_FILE_NAMESPACE:-lemonldap-ng-config}
+      CACHE_TYPE_FILE_EXPIRY=${HANDLER_CACHE_TYPE_FILE_EXPIRY:-600}
+      CACHE_TYPE_FILE_DIR_MASK=${HANDLER_CACHE_TYPE_FILE_DIR_MASK:-007}
+      CACHE_TYPE_FILE_PATH=${HANDLER_CACHE_TYPE_FILE_PATH:-/tmp}
+      CACHE_TYPE_FILE_DEPTH=${HANDLER_CACHE_TYPE_FILE_DEPTH:-0}
+      PORTAL_LOCAL_CONF=${PORTAL_LOCAL_CONF:-FALSE}               
+      #PORTAL_SKIN=${PORTAL_SKIN:-pastel}
+      #PORTAL_USER_ATTRIBUTE=${PORTAL_USER_ATTRIBUTE:-mail}
+      #PORTAL_EXPORTED_ATTRIBUTES=${PORTAL_EXPORTED_ATTRIBUTES:-uid mail}
+      HANDLER_CACHE_TYPE=${HANDLER_CACHE_TYPE:-FILE}
+      HANDLER_CACHE_TYPE_FILE_NAMESPACE=${HANDLER_CACHE_TYPE_FILE_NAMESPACE:-lemonldap-ng-sessions}
+      HANDLER_CACHE_TYPE_FILE_EXPIRY=${HANDLER_CACHE_TYPE_FILE_EXPIRY:-600}
+      HANDLER_CACHE_TYPE_FILE_DIR_MASK=${HANDLER_CACHE_TYPE_FILE_DIR_MASK:-007}
+      HANDLER_CACHE_TYPE_FILE_PATH=${HANDLER_CACHE_TYPE_FILE_PATH:-/tmp}
+      HANDLER_CACHE_TYPE_FILE_DEPTH=${HANDLER_CACHE_TYPE_FILE_DEPTH:-3}
+      HANDLER_STATUS=${HANDLER_STATUS:-FALSE}
+      HANDLER_REDIRECT_ON_ERROR=${HANDLER_REDIRECT_ON_ERROR:-TRUE}
+      MANAGER_PROTECTION=${MANAGER_PROTECTION:-manager}
+      MANAGER_LOG_LEVEL=${MANAGER_LOG_LEVEL:-warn}
+      MANAGER_STATIC_PREFIX=${MANAGER_STATIC_PREFIX:-/static}
+      MANAGER_TEMPLATE_DIR=${MANAGER_TEMPLATE_DIR:-/usr/share/lemonldap-ng/manager/templates}
+      MANAGER_LANGUAGE=${MANAGER_LANGUAGE:-en}
+      MANAGER_ENABLED_MODULES=${MANAGER_ENABLED_MODULES:-"conf, sessions, notifications"}
+
+    ### Generate Config Template
+
+     echo '; Custom Generated LemonLDAP overrides! Do not edit, instead set ENV Vars' >/etc/lemonldap-ng/lemonldap-ng.ini
+     echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
+     echo '[all]' >> /etc/lemonldap-ng/lemonldap-ng.ini
+     echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
+      if [ "$CROSS_DOMAIN_HANDLER" = "TRUE" ];  then echo 'cda = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if [ "$USE_SAFE_JAIL" = "FALSE" ]; then echo 'useSafeJail = 0' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+     echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
+     echo '[configuration]'>>/etc/lemonldap-ng/lemonldap-ng.ini
+
+       case "$CONFIG_TYPE" in
+            "FILE")
+            echo 'type = File' >> /etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'dirName = /var/lib/lemonldap-ng/conf' >> /etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+            "MYSQL")
+            echo 'type = RDBI' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'dbiChain = DBI:mysql:database='$DB_NAME';host='$DB_HOST >> /etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'dbiUser = '$DB_USER >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'dbiPassword = '$DB_PASS >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+            "LDAP")
+            echo 'type = LDAP' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapServer = '$LDAP_HOST >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapConfBase = '$LDAP_CONF_BASE >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapBindDN = '$LDAP_BIND_DN >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapBindPassword = '$LDAP_BIND_PASS >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapObjectClass = '$LDAP_OBJECT_CLASS >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapAttributeId = '$LDAP_ATTRIBUTE_ID >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'ldapAttributeContent = '$LDAP_ATTRIBUTE_CONTENT >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+            "MONGO")
+            echo 'type = MongoDB' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'dbName = '$DB_NAME >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'collectionName = configuration' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'host = '$DB_HOST >> /etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'db_name = admin' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'user = '$DB_USER >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'password = '$DB_PASS >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+            "SOAP")
+            echo 'type = SOAP' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'proxy = '$SOAP_PROXY >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'User = '$SOAP_USER >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'Password = '$SOAP_PASS >> /etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+        esac
+
+
+
+        echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
+       
+       case "$CACHE_TYPE" in
+            "FILE")
+            echo 'localStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo "localStorageOptions={'namespace' => '"$CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+       esac
+
+      echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo '[portal]' >> /etc/lemonldap-ng/lemonldap-ng.ini
+
+      if  [ "$PORTAL_LOCAL_CONF" = "TRUE" ];  then echo 'useLocalConf = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$PORTAL_SKIN" ]; then echo 'portalSkin = '$PORTAL_SKIN >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_DISPLAY_LOGOUT" = "TRUE" ];  then echo 'portalDisplayLogout = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_DISPLAY_RESET_PASSWORD" = "TRUE" ];  then echo 'portalDisplayResetPassword = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_DISPLAY_CHANGE_PASSWORD" = "TRUE" ];  then echo 'portalDisplayChangePassword = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_DISPLAY_APPS_LIST" = "TRUE" ];  then echo 'portalDisplayAppslist = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_DISPLAY_LOGIN_HISTORY" = "TRUE" ];  then echo 'portalDisplayLoginHistory = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_REQUIRE_OLD_PASSWORD" = "TRUE" ];  then echo 'portalRequireOldPassword =1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$PORTAL_USER_ATTRIBUTE" ]; then echo 'portalUserAttr = '$PORTAL_USER_ATTRIBUTE >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$PORTAL_EXPORTED_ATTRIBUTES" ]; then echo 'exportedAttr = '$PORTAL_EXPORTED_ATTRIBUTES >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+          
+
+      if  [ "$PORTAL_LDAP_PPOLICY_CONTROL" = "TRUE" ]; then echo 'ldapPpolicyControl = 1' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_STORE_PASSWORD_IN_SESSION" = "TRUE" ]; then echo 'storePassword = 1' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ "$PORTAL_LDAP_SET_PASSWORD" = "TRUE" ]; then echo 'ldapSetPassword = 1' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_HOST" ]; then echo 'SMTPServer = '$SMTP_HOST >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_USER" ]; then echo 'SMTPAuthUser = '$SMTP_USER >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_PASS" ]; then echo 'SMTPAuthPass = '$SMTP_PASS >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_FROM" ]; then echo 'mailFrom = '$SMTP_MAIL_FROM >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_REPLY_TO" ]; then echo 'mailReplyTo = '$SMTP_MAIL_REPLY_TO >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_URL" ]; then echo 'mailURL = '$SMTP_MAIL_URL >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_CONFIRM_SUBJECT" ]; then echo 'mailConfirmSubject = 'SMTP_CONFIRM_SUBJECT >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_CONFIRM_BODY" ]; then echo 'mailConfirmBody = '$SMTP_CONFIRM_BODY >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_SUBJECT" ]; then echo 'mailSubject = '$SMTP_MAIL_SUBJECT >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_BODY" ]; then echo 'mailBody = '#SMTP_MAIL_BODY >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$SMTP_MAIL_LDAP_FILTER" ]; then echo 'mailLDAPFilter = '$SMTP_MAIL_LDAP_FILTER >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$PASSWORD_REGEXP" ]; then echo 'randomPasswordRegexp = '$PASSWORD_REGEXP >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+        
+      if  [ -v "$LDAP_GROUP_BASE" ]; then echo 'ldapGroupBase = '$LDAP_GROUP_BASE >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$LDAP_GROUP_OBJECT_CLASS" ]; then echo 'ldapGroupObjectClass = '$LDAP_GROUP_OBJECT_CLASS >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME" ]; then echo 'ldapGroupAttributeName = '$LDAP_GROUP_ATTRIBUTE_NAME >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME_USER" ]; then echo 'ldapGroupAttributeNameUser = '$LDAP_GROUP_ATTRIBUTE_NAME_USER >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+      if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME_SEARCH" ]; then echo 'ldapGroupAttributeNameSearch = '$LDAP_GROUP_ATTRIBUTE_NAME_SEARCH >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+
+
+      echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo '[handler]' >> /etc/lemonldap-ng/lemonldap-ng.ini
+         if  [ "$HANDLER_REDIRECT_ON_ERROR" = "TRUE" ];  then echo 'useRedirectOnError = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+         if  [ "$HANDLER_STATUS" = "TRUE" ];  then echo 'status = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+
+       case "$HANDLER_CACHE_TYPE" in
+            "FILE")
+            echo 'localSessionStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo "localSessionStorageOptions={'namespace' => '"$HANDLER_CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$HANDLER_CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$HANDLER_CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$HANDLER_CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$HANDLER_CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
+       esac
+
+      echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo '[manager]' >> /etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'protection = '$MANAGER_PROTECTION >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'logLevel = '$MANAGER_LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'staticPrefix = '$MANAGER_STATIC_PREFIX >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'templateDir = '$MANAGER_TEMPLATE_DIR >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'languages = '$MANAGER_LANGUAGE >>/etc/lemonldap-ng/lemonldap-ng.ini
+      echo 'enabledModules = '$MANAGER_ENABLED_MODULES >>/etc/lemonldap-ng/lemonldap-ng.ini
+    
+### Setup Config Storage Type
+        case "$CONFIG_TYPE" in
+                "MYSQL")
+	        
+                    ### Make sure that DB is accessible
+                    while true; do
+                    mysqlcmd='mysql -u'$DB_USER' -h'$DB_HOST' -p'$DB_PASS 
+                    out="`$mysqlcmd -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1`"
+                    echo "$out" | grep -E "COUNT|Enter" 2>&1 > /dev/null
+                    if [ $? -eq 0 ]; then
+                        echo "MYSQL Server is up !"
+                        break
+                    fi
+                    echo "DB server still isn't up, sleeping a little bit ..."
+                    sleep 2
+                    done
+
+                ### Check to see if Table Exists
+                    if [ $(mysql -N -s -u $DB_USER -p$DB_PASS -h $DB_HOST -e "select count(*) from information_schema.tables where table_schema='${DB_NAME}' and table_name='lmConfig';") -eq 1 ]; then
+                    echo "Config Database Tables exist.. "
+                        else
+                    echo "No Config Database Tables exist! Creating.."
+                    cat <<EOF > /tmp/sql-config-backend.sql
+                    CREATE TABLE lmConfig (
+                    cfgNum INT(11) NOT NULL,
+                    FIELD VARCHAR(255) NOT NULL DEFAULT '',
+                    VALUE longblob,
+                    PRIMARY KEY (cfgNum,FIELD)
+                    );
+                    CREATE TABLE notifications (
+                    DATE datetime NOT NULL,
+                    uid VARCHAR(255) NOT NULL,
+                    REF VARCHAR(255) NOT NULL,
+                    cond VARCHAR(255) DEFAULT NULL,
+                    xml longblob NOT NULL,
+                    done datetime DEFAULT NULL,
+                    PRIMARY KEY (DATE, uid,REF)
+                    );
+EOF
+                    mysql -u$DB_USER -h$DB_HOST -p$DB_PASS $DB_NAME < /tmp/sql-config-backend.sql
+                    rm -rf /tmp/sql-config-backend.sql
+
+                    /usr/share/lemonldap-ng/bin/ConvertConfig --old=/etc/lemonldap-ng/lemonldap-ng.ini --new=/tmp/lemonldap-ng.ini 
+                    now=$(date +"%Y%m%d-%H%M%S")
+                    mv /etc/lemonldap-ng/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini.$now 
+                    cp /tmp/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
+                    chown -R www-data /etc/lemonldap-ng/lemonldap-ng.ini
+                    rm -rf /tmp/lemonldap-ng.ini
+                    fi
+            ;;
+            "MONGO")
+                    ## Install MongoDB Client
+                    apt-get update
+                    apt-get install -y mongodb-clients
+                    ## Check to See if Database Exists
+                    cat <<EOF > /tmp/mongo-check-exists.js
+                            function db_exists(db_name) {
+                            db = db.getSiblingDB('admin');
+                            db.runCommand('listDatabases').databases.forEach(function(db_entry){
+                            if (db_entry.name == db_name) {
+                            // quit with exit code zero if we found our db
+                            quit(0);
+                            }
+                            });
+
+                            // quit with exit code 1 if db was not found
+                            quit(1);
+                            }
+                            db_exists('$DB_NAME');
+EOF
+                    mongo --host $DB_HOST /tmp/mongo-check-exists.js
+
+                    if [ $? -eq 0 ]
+                    then
+                    echo "Mongo Configuration Exists.."
+                        else
+                        echo "Mongo Configuration doesn't exist! Creating.."
+                    cat <<EOF > /tmp/mongo-config-backend.js
+                            // Mongo .js script = mongo --host $DB_HOST /tmp/mongo-config-backend.js
+                            db = db.getSiblingDB('configuration')
+                            db.createCollection("configuration")
+                            db.addUser({user:"$DB_USER",pwd:"DB_PASS",roles:["readWrite"]})
+EOF
+                    mongo --host $DB_HOST /tmp/mongo-config-backend.js
+                    fi
+            ;;
+            esac
+      
+
+
+
+## Session Type Configuration
+        case "$SESSION_TYPE" in
+            "MYSQL")
+                ### Check to see if Table Exists
+                if [ $(mysql -N -s -u $DB_USER -p$DB_PASS -h $DB_HOST -e "select count(*) from information_schema.tables where table_schema='${DB_NAME}' and table_name='sessions';") -eq 1 ]; then
+                    echo "Session Database Tables exist.. "
+                else
+                    echo "No Session Tables exist! Creating.."
+                cat <<EOF > /tmp/sql-session-backend.sql
+                CREATE TABLE sessions (
+                id CHAR(32) NOT NULL PRIMARY KEY,
+                a_session text
+                );
+EOF
+                mysql -u$DB_USER -h$DB_HOST -p$DB_PASS $DB_NAME< /tmp/sql-session-backend.sql
+                rm -rf /tmp/sql-session-backend.sql
+                fi
+        ;;
+        esac 
+
+        
+### Set Permissions
+  chown -R www-data /etc/lemonldap-ng
+  mkdir -p /www/logs/nginx
+	mkdir -p /tmp/nginx
+  chown -R www-data /www/logs/nginx
+  chown www-data /tmp/nginx
+  mkdir -p /tmp/state/
+	echo 'Initialization Complete' >/tmp/state/10-nginx
+fi
+
+
+echo ''
+echo '** Starting nginx'
+exec nginx
+
+
