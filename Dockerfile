@@ -32,8 +32,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
                
        rm -rf /var/lib/apt/lists/* && \
        cp -R /etc/lemonldap-ng/nginx-lmlog.conf /etc/nginx/conf.d/ && \
-       rm -rf /etc/lemonldap-ng/for_etc_hosts /etc/lemonldap-ng/*.conf
-
+       rm -rf /etc/lemonldap-ng/for_etc_hosts /etc/lemonldap-ng/*.conf && \
+cat /var/lib/lemonldap-ng/lmConf.js
 ### Add Files
    ADD install /
 
