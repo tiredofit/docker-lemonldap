@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+
+rm -rf /etc/fail2ban/jail.d/*
+mkdir -p /www/logs/nginx/
+touch /www/logs/nginx/error-handler.log
+cat <<EOF > /etc/fail2ban/jail.conf
+
+[lemonldap-ng]
+enabled = true
+port    = http,https
+filter  = lemonldap
+action   = iptables-multiport[name=lemonldap, port="http,https"]
+logpath = /www/logs/nginx/error*.log
+maxretry = 3
+EOF
+
+echo ''
+echo '** [lemonldap] Starting Fail2ban'
+service fail2ban start
+
+  mkdir -p /tmp/state
+  touch /tmp/state/04-fail2ban-init
+

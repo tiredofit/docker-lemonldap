@@ -1,0 +1,18 @@
+#!/usr/bin/with-contenv bash
+
+
+if [ ! -f /tmp/state/20-llng-fastcgi-server ]; then
+sleep 2
+        mkdir /var/run/llng-fastcgi-server
+        chown -R nginx /var/run/llng-fastcgi-server
+        mkdir -p /tmp/state/
+	echo 'Initialization Complete' >/tmp/state/20-llng-fastcgi-server
+fi
+
+echo ''
+echo '** [lemonldap] Starting LemonLDAP FastCGI Server'
+exec /usr/local/lemonldap-ng/sbin/llng-fastcgi-server -u nginx -g www-data -foreground
+
+
+
+

@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -f /tmp/state/20-llng-fastcgi-server ]; then
+        mkdir /var/run/llng-fastcgi-server
+        chown -R www-data /var/run/llng-fastcgi-server
+        mkdir -p /tmp/state/
+	echo 'Initialization Complete' >/tmp/state/20-llng-fastcgi-server
+fi
+
+echo ''
+echo '** Starting LemonLDAP FastCGI Server..'
+exec /usr/sbin/llng-fastcgi-server -u www-data -g www-data -foreground
+
+
+
+

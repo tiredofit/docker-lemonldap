@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+  ### Add Entry to hosts
+echo '127.0.0.1 '$RELOAD_HOSTNAME >>/etc/hosts
+  
+

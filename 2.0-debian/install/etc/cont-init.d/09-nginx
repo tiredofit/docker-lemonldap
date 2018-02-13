@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bash
+
+  ### Adjust NGINX Runtime Variables
+  UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE:="2G"}
+  sed -i -e "s/<UPLOAD_MAX_SIZE>/$UPLOAD_MAX_SIZE/g" /etc/nginx/nginx.conf
+   
+	mkdir -p /www/logs/nginx
+	mkdir -p /tmp/nginx
+	chown -R nginx /www/logs/nginx
+	chown www-data /tmp/nginx
+
+mkdir -p /tmp/state
+touch /tmp/state/init-09-nginx
