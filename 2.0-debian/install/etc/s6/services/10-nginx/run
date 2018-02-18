@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
-set -x
 
 while [ ! -f /tmp/state/99-container-init ]
 do
@@ -7,6 +6,7 @@ do
 done
 
 if [ ! -f /tmp/state/10-lemonldap ]; then
+
     ### Set Permissions
     chown -R www-data /etc/lemonldap-ng
     mkdir -p /tmp/state/

@@ -5,8 +5,9 @@
   sed -i -e "s/<UPLOAD_MAX_SIZE>/$UPLOAD_MAX_SIZE/g" /etc/nginx/nginx.conf
    
 	mkdir -p /www/logs/nginx
+	mkdir -p /var/log/nginx
 	mkdir -p /tmp/nginx
-	chown -R nginx /www/logs/nginx
+	chown -R www-data /www/logs/nginx /var/log/nginx 
 	chown www-data /tmp/nginx
 
 mkdir -p /tmp/state

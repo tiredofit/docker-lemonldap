@@ -2,7 +2,7 @@ version: '2'
 
 services:
   lemonldap-app:
-    image: tiredofit/lemonldap:1.9-latest
+    image: tiredofit/lemonldap:2.0-latest
     container_name: lemonldap-app
     volumes:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng

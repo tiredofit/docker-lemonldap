@@ -1,10 +1,10 @@
 FROM tiredofit/debian:stretch
-LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
+LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
 
 ### Environment Variables
    ENV PORTAL_HOSTNAME=sso.example.com \
        MANAGER_HOSTNAME=manager.sso.example.com \
-       RELOAD_HOSTNAME=reload.sso.example.com \
+       HANDLER_HOSTNAME=reload.sso.example.com \
        TEST_HOSTNAME=test.sso.example.com \
        DOMAIN_NAME=example.com \
        PATH=/usr/share/lemonldap-ng/bin:${PATH}
@@ -23,7 +23,6 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 # Install LemonLDAP::NG packages
     apt-get -y update && \
     apt-get install -y \
-            #apache2 \
             fail2ban \
             git \
             iptables \
@@ -129,12 +128,9 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
     apt-get clean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /var/log/*
-            
-### Files Setup
-   ADD install /
 
 ### Networking Setup
    EXPOSE 80
 
-### Entrypoint Setup
-   ENTRYPOINT ["/init"]
+### Files Setup
+   ADD install /

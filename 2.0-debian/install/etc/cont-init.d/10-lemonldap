@@ -1,44 +1,23 @@
 #!/usr/bin/with-contenv bash
 
-	### Modify Virtual Hosts for Nginx
-	sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
-	sed -i -e "s/<MANAGER_HOSTNAME>/$MANAGER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
-	sed -i -e "s/<RELOAD_HOSTNAME>/$RELOAD_HOSTNAME/g" /etc/nginx/conf.d/*.conf
-	sed -i -e "s/<TEST_HOSTNAME>/$TEST_HOSTNAME/g" /etc/nginx/conf.d/*.conf
-
-            if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
-               cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
-               chown -R www-data /var/lib/lemonldap-ng/conf/
-            fi
-    
-    ### Modify File Configuration
-	sed -i -e "s/auth.example.com/$PORTAL_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
-	sed -i -e "s/manager.example.com/$MANAGER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
-	sed -i -e "s/reload.example.com/$RELOAD_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
-	sed -i -e "s/test1.example.com/$TEST_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
-        sed -i -e "s/example.com/$DOMAIN_NAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
-
-    ### Sanity Check Defaults
-      CROSS_DOMAIN_HANDLER=${CROSS_DOMAIN_HANDLER:-FALSE}         
-      USE_SAFE_JAIL=${USE_SAFE_JAIL:-TRUE}                        
-      CONFIG_TYPE=${CONFIG_TYPE:-FILE}                            
+  ### Sanity Check Defaults
+      CROSS_DOMAIN_HANDLER=${CROSS_DOMAIN_HANDLER:-FALSE}
+      USE_SAFE_JAIL=${USE_SAFE_JAIL:-TRUE}
+      CONFIG_TYPE=${CONFIG_TYPE:-FILE}
       CACHE_TYPE=${CACHE_TYPE:-FILE}
       CACHE_TYPE_FILE_NAMESPACE=${CACHE_TYPE_FILE_NAMESPACE:-lemonldap-ng-config}
       CACHE_TYPE_FILE_EXPIRY=${CACHE_TYPE_FILE_EXPIRY:-600}
       CACHE_TYPE_FILE_DIR_MASK=${CACHE_TYPE_FILE_DIR_MASK:-007}
       CACHE_TYPE_FILE_PATH=${CACHE_TYPE_FILE_PATH:-/tmp}
       CACHE_TYPE_FILE_DEPTH=${CACHE_TYPE_FILE_DEPTH:-0}
-      PORTAL_LOCAL_CONF=${PORTAL_LOCAL_CONF:-FALSE}               
-      #PORTAL_SKIN=${PORTAL_SKIN:-pastel}
-      #PORTAL_USER_ATTRIBUTE=${PORTAL_USER_ATTRIBUTE:-mail}
-      #PORTAL_EXPORTED_ATTRIBUTES=${PORTAL_EXPORTED_ATTRIBUTES:-uid mail}
+      PORTAL_LOCAL_CONF=${PORTAL_LOCAL_CONF:-FALSE}
       HANDLER_CACHE_TYPE=${HANDLER_CACHE_TYPE:-FILE}
       HANDLER_CACHE_TYPE_FILE_NAMESPACE=${HANDLER_CACHE_TYPE_FILE_NAMESPACE:-lemonldap-ng-sessions}
       HANDLER_CACHE_TYPE_FILE_EXPIRY=${HANDLER_CACHE_TYPE_FILE_EXPIRY:-600}
       HANDLER_CACHE_TYPE_FILE_DIR_MASK=${HANDLER_CACHE_TYPE_FILE_DIR_MASK:-007}
       HANDLER_CACHE_TYPE_FILE_PATH=${HANDLER_CACHE_TYPE_FILE_PATH:-/tmp}
       HANDLER_CACHE_TYPE_FILE_DEPTH=${HANDLER_CACHE_TYPE_FILE_DEPTH:-3}
-      HANDLER_STATUS=${HANDLER_STATUS:-FALSE}
+      HANDLER_STATUS=${HANDLER_STATUS:-TRUE}
       HANDLER_REDIRECT_ON_ERROR=${HANDLER_REDIRECT_ON_ERROR:-TRUE}
       MANAGER_PROTECTION=${MANAGER_PROTECTION:-manager}
       MANAGER_LOG_LEVEL=${MANAGER_LOG_LEVEL:-warn}
@@ -46,17 +25,58 @@
       MANAGER_TEMPLATE_DIR=${MANAGER_TEMPLATE_DIR:-/usr/share/lemonldap-ng/manager/htdocs/templates}
       MANAGER_LANGUAGE=${MANAGER_LANGUAGE:-en}
       MANAGER_ENABLED_MODULES=${MANAGER_ENABLED_MODULES:-"conf, sessions, notifications"}
+      MODE=${MODE:-"MASTER"}
       PORTAL_STATIC_PREFIX=${PORTAL_STATIC_PREFIX:-/static}
       PORTAL_TEMPLATE_DIR=${PORTAL_TEMPLATE_DIR:-/usr/share/lemonldap-ng/portal/templates}
       PORTAL_LANGUAGE=${PORTAL_LANGUAGE:-en}
+      REDIS_PORT=${REDIS_PORT:-6379}
+      SESSION_TYPE=${SESSION_TYPE:-FILE}
+      SETUP_TYPE=${SETUP_TYPE:-AUTO}
 
-    ### Generate Config Template
+  ### Modify Virtual Hosts for Nginx
+  sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+  sed -i -e "s/<MANAGER_HOSTNAME>/$MANAGER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+  sed -i -e "s/<HANDLER_HOSTNAME>/$HANDLER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+  sed -i -e "s/<TEST_HOSTNAME>/$TEST_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+  
+    if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
+        cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
+        chown -R www-data /var/lib/lemonldap-ng/conf/
+    fi
+
+    ### Modify File Configuration
+	sed -i -e "s/auth.example.com/$PORTAL_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/manager.example.com/$MANAGER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/reload.example.com/$HANDLER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+	sed -i -e "s/test1.example.com/$TEST_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+    sed -i -e "s/example.com/$DOMAIN_NAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
+
+    
+   ### Generate Config Template
 
      echo '; Custom Generated LemonLDAP overrides! Do not edit, instead set ENV Vars' >/etc/lemonldap-ng/lemonldap-ng.ini
-     echo '; Last Generated on' `date` >/etc/lemonldap-ng/lemonldap-ng.ini
+     echo '; Last Generated on' `date` >>/etc/lemonldap-ng/lemonldap-ng.ini
      echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
      echo '[all]' >> /etc/lemonldap-ng/lemonldap-ng.ini
      echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
+
+if [ "$MODE" = "MASTER" ]; then
+     case "$SESSION_TYPE" in
+          "FILE")
+          echo 'globalSessionStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
+          echo "globalSessionStorageOptions={'namespace' => '"$HANDLER_CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$HANDLER_CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$HANDLER_CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$HANDLER_CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$HANDLER_CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+          ;;
+          "MYSQL")
+          echo 'globalStorage = Apache::Session::MySQL' >>/etc/lemonldap-ng/lemonldap-ng.ini
+          echo "globalStorageOptions ={ 'DataSource' => 'dbi:mysql:"$DB_NAME";host="$DB_HOST"', 'UserName' => '"$DB_USER"', 'Password' => '"$DB_PASS"', 'TableName' => 'sessions', 'LockDataSource' => 'dbi:mysql:"$DB_NAME";host="$DB_HOST"', 'LockUserName' => '"$DB_USER"', 'LockPassword' => '"$DB_PASS"', 'generateModule' => 'Lemonldap::NG::Common::Apache::Session::Generate::SHA256', }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+          ;;
+          "REDIS")
+          echo 'globalStorage = Apache::Session::Browseable::Redis' >>/etc/lemonldap-ng/lemonldap-ng.ini
+          echo "globalStorageOptions ={ 'server' => '"$REDIS_HOST":"$REDIS_PORT"', 'generateModule' => 'Lemonldap::NG::Common::Apache::Session::Generate::SHA256', }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+          ;;
+     esac
+fi
+
       if [ "$CROSS_DOMAIN_HANDLER" = "TRUE" ];  then echo 'cda = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
       if [ "$USE_SAFE_JAIL" = "FALSE" ]; then echo 'useSafeJail = 0' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
      echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
@@ -94,14 +114,15 @@
             ;;
             "SOAP")
             echo 'type = SOAP' >>/etc/lemonldap-ng/lemonldap-ng.ini
-            echo 'proxy = '$SOAP_PROXY >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo 'proxy = '$SOAP_HOST >>/etc/lemonldap-ng/lemonldap-ng.ini
             echo 'User = '$SOAP_USER >>/etc/lemonldap-ng/lemonldap-ng.ini
             echo 'Password = '$SOAP_PASS >> /etc/lemonldap-ng/lemonldap-ng.ini
             ;;
         esac
 
         echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
-       
+
+if [ "$MODE" = "MASTER" ]; then
        case "$CACHE_TYPE" in
             "FILE")
             echo 'localStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
@@ -147,21 +168,29 @@
       if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME" ]; then echo 'ldapGroupAttributeName = '$LDAP_GROUP_ATTRIBUTE_NAME >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
       if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME_USER" ]; then echo 'ldapGroupAttributeNameUser = '$LDAP_GROUP_ATTRIBUTE_NAME_USER >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
       if  [ -v "$LDAP_GROUP_ATTRIBUTE_NAME_SEARCH" ]; then echo 'ldapGroupAttributeNameSearch = '$LDAP_GROUP_ATTRIBUTE_NAME_SEARCH >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
-
+fi
 
       echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
       echo '[handler]' >> /etc/lemonldap-ng/lemonldap-ng.ini
          if  [ "$HANDLER_REDIRECT_ON_ERROR" = "TRUE" ];  then echo 'useRedirectOnError = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
          if  [ "$HANDLER_STATUS" = "TRUE" ];  then echo 'status = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
 
+if [ "$MODE" = "MASTER" ]; then
        case "$HANDLER_CACHE_TYPE" in
             "FILE")
             echo 'localSessionStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
             echo "localSessionStorageOptions={'namespace' => '"$HANDLER_CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$HANDLER_CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$HANDLER_CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$HANDLER_CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$HANDLER_CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
             ;;
+            "REDIS")
+            echo 'localSessionStorage=Apache::Session::Browseable::Redis' >>/etc/lemonldap-ng/lemonldap-ng.ini
+            echo "localSessionStorageOptions={'server' => '"$REDIS_HOST":"$REDIS_PORT"', }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+            ;;
        esac
+fi
 
       echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
+
+if [ "$MODE" = "MASTER" ]; then
       echo '[manager]' >> /etc/lemonldap-ng/lemonldap-ng.ini
       echo 'protection = '$MANAGER_PROTECTION >>/etc/lemonldap-ng/lemonldap-ng.ini
       echo 'logLevel = '$MANAGER_LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
@@ -169,11 +198,12 @@
       echo 'templateDir = '$MANAGER_TEMPLATE_DIR >>/etc/lemonldap-ng/lemonldap-ng.ini
       echo 'languages = '$MANAGER_LANGUAGE >>/etc/lemonldap-ng/lemonldap-ng.ini
       echo 'enabledModules = '$MANAGER_ENABLED_MODULES >>/etc/lemonldap-ng/lemonldap-ng.ini
-    
-### Setup Config Storage Type
+fi
+
+  ### Setup Config Storage Type
         case "$CONFIG_TYPE" in
                 "MYSQL")
-	        
+          
                     ### Make sure that DB is accessible
                     while true; do
                     mysqlcmd='mysql -u'$DB_USER' -h'$DB_HOST' -p'$DB_PASS 
@@ -256,17 +286,17 @@ EOF
             esac
       
 
-## Session Type Configuration
+  ## Session Type Configuration
         case "$SESSION_TYPE" in
             "MYSQL")
                 ### Check to see if Table Exists
                 if [ $(mysql -N -s -u $DB_USER -p$DB_PASS -h $DB_HOST -e "select count(*) from information_schema.tables where table_schema='${DB_NAME}' and table_name='sessions';") -eq 1 ]; then
-                    echo "Session Database Tables exist.. "
+                    echo "** [lemonldap] MySQL Session Database Tables exist.. "
                 else
-                    echo "No Session Tables exist! Creating.."
+                    echo "** [lemonldap] No Session Tables exist! Creating.."
                 cat <<EOF > /tmp/sql-session-backend.sql
                 CREATE TABLE sessions (
-                id CHAR(32) NOT NULL PRIMARY KEY,
+                id CHAR(64) NOT NULL PRIMARY KEY,
                 a_session text
                 );
 EOF
@@ -275,7 +305,20 @@ EOF
                 fi
         ;;
         esac 
+else
+  echo '** [lemonldap] Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!'
+fi
 
-               chown -R www-data /var/lib/lemonldap-ng/conf/
+
+chown -R www-data /var/lib/lemonldap-ng/conf/
+
+if [ "$MODE" = "MASTER" ]; then
+### Theme Support
+  if [ -d /assets/custom ] ; then
+     echo "** [lemonldap] Custom Files Found, inserting into image overtop of sourcecode.."
+     cp -R /assets/custom/* /var/lib/lemonldap-ng
+     chown -R www-data:www-data /var/lib/lemonldap-ng
+  fi
+fi
 
 touch /tmp/state/10-lemonldap-init

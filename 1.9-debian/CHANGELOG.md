@@ -1,3 +1,19 @@
+## 1.6 2018-02-17 <dave at tiredofit dot ca>
+
+* Create `MODE` for Master (Portal, Manager, Handler) and `HANDLER`
+* Add `HANDLER_ALLOWED_IPS` to allow for Manager to communicate with remote handlers.
+* Cleanup SOAP functionality
+* More Sanity Tests
+
+## 1.5 2018-02-17 <dave at tiredofit dot ca>
+
+* Add functionality to expose llng-fastcgi.sock as TCP Port
+
+## 1.4 2018-02-17 <dave at tiredofit dot ca>
+
+* Add Sanity Test Checks if deviating from Default Configuration
+* Add SETUP_TYPE environment variable to stop autogenerating lemonldap-ng.ini
+
 ## 1.3 2018-02-12 <dave at tiredofit dot ca>
 
 * Add Redis Session Support
