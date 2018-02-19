@@ -1,7 +1,6 @@
-## 0.1 2018-02-13 Dave Conroy <dave at tiredofit dot ca>
+## 0.1 2017-06-14 Dave Conroy <daveconroy@selfdesign.org>
 
-* Not working
 * Initial Release
-* Alpine edge
+* Alpine 3.6
 * Nginx Backend
-* Git Trunk
+* SVN Trunk

@@ -88,7 +88,6 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
             perl-modules \
             && \
 
-    cp -R /etc/lemonldap-ng /etc/lemonldap-ng2 && \
     rm -rf /etc/lemonldap-ng/for_etc_hosts /etc/lemonldap-ng/*.conf && \
     
     cd /usr/src/ && \
@@ -130,7 +129,7 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
     rm -rf /var/lib/apt/lists/* /var/log/*
 
 ### Networking Setup
-   EXPOSE 80
+   EXPOSE 80 2884
 
 ### Files Setup
    ADD install /

@@ -1,4 +1,4 @@
-FROM tiredofit/alpine:edge
+FROM registry.selfdesign.org/docker/alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ARG AUTHCAS_VERSION=1.7 
@@ -158,4 +158,4 @@ RUN cp -R /usr/local/lemonldap-ng/etc /usr/local/lemonldap-ng/etc2
 ADD install /
 
 ### Networking Setup
-EXPOSE 80 443
+EXPOSE 80 2884

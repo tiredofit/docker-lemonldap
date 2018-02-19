@@ -8,6 +8,9 @@ This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) a web
 
 * Fail2ban Included for blocking brute force attacks.
 
+**UNDER ACTIVE DEVELOPMENT - ALPINE VARIANT NOT WORKING**
+
+
 [Changelog](CHANGELOG.md)
 
 # Authors
@@ -82,7 +85,7 @@ The following directories should be mapped for persistent storage in order to ut
 
 Along with the Environment Variables from the [Base image](https://hub.docker.com/r/tiredofit/debian),  below is the complete list of available options that can be used to customize your installation.
 
-There are a huge amount of configuration variables and it is recommended that you get comfortable for a few hours with the [LemonLDAP::NG Documentation](https://lemonldap-ng.org/documentation/1.9/start)
+There are a huge amount of configuration variables and it is recommended that you get comfortable for a few hours with the [LemonLDAP::NG Documentation](https://lemonldap-ng.org/documentation/2.0/start)
 
 By Default this image is ready to run out of the box, without having to alter any of the settings with the exception of the `_HOSTNAME` vars. You can also change the majority of these settings from within the Manager. There are instances where these variables would want to be set if you are running multiple handlers or need to enforce a Global Setting for one specific installation.
 

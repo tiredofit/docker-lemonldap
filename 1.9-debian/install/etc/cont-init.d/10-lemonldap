@@ -376,6 +376,12 @@ EOF
         esac 
 else
   echo '** [lemonldap] Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!'
+  if [ ! -f //etc/lemonldap-ng/lemonldap-ng.ini ]; then
+     cp -R /assets/lemonldap/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
+     chown www-data /etc/lemonldap-ng/lemonldap-ng.ini
+  fi
+  
+
 fi
 
 
