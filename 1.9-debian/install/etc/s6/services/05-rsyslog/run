@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+
+while [ ! -f /tmp/state/05-rsyslog-init ]
+do
+  sleep 1
+done
+
+if [ ! -f /tmp/state/05-rsyslog ]; then
+   echo 'Initialization Complete' >/tmp/state/05-rsyslog
+fi
+
+echo ''
+echo '** [rsyslog] Starting Syslog'
+exec rsyslogd -n

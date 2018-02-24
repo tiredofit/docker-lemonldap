@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+while [ ! -f /tmp/state/99-container-init ]
+do
+  sleep 1
+done
+
+if [ ! -f /tmp/state/04-failban ]; then
+   echo 'Initialization Complete' >/tmp/state/10-fail2ban
+fi
+
+
+echo ''
+echo '** [fail2ban] Starting fail2ban'
+exec /usr/bin/fail2ban-client -f start

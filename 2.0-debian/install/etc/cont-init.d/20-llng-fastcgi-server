@@ -1,19 +1,20 @@
 #!/usr/bin/with-contenv bash
 
 ### Sanity Check Defaults
-      HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-TRUE}         
+      HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-FALSE}
       HANDLER_SOCKET_TCP_PORT=${HANDLER_SOCKET_TCP_PORT:-2884}         
 
 ### Check to see if Enabled/Disabled
   if [ "$HANDLER_SOCKET_TCP_ENABLE" = "TRUE" ] || [ "$HANDLER_SOCKET_TCP_ENABLE" = "true" ];  then
       sed -i -e "s~<HANDLER_SOCKET>~127.0.0.1:$HANDLER_SOCKET_TCP_PORT~g" /etc/nginx/conf.d/*.conf
+      sed -i -e "/fastcgi_param LLTYPE/ a \ \ \ \ fastcgi_param REMOTE_PORT $HANDLER_SOCKET_TCP_PORT;" /etc/nginx/conf.d/*.conf
       echo "** [lemonldap-hander-socket] Enabling Handler TCP expose functionality. Socket listens at port "$HANDLER_SOCKET_TCP_PORT
   else
       sed -i -e "s~<HANDLER_SOCKET>~unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock~g" /etc/nginx/conf.d/*.conf
       echo "** [lemonldap-hander-socket] Disabling Handler TCP expose functionality. Socket is at /var/run/llng-fastcgi-server/llng-fastcgi.sock"
   fi
 
-mkdir /var/run/llng-fastcgi-server
+mkdir -p /var/run/llng-fastcgi-server
 chown -R www-data /var/run/llng-fastcgi-server
 
 mkdir -p /tmp/state

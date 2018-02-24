@@ -2,7 +2,7 @@ version: '2'
 
 services:
   lemonldap-handler-app:
-    image: tiredofit/lemonldap:2.0-latest
+    image: tiredofit/lemonldap:2.0-debian-latest
     container_name: lemonldap-handler-app
     volumes:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng

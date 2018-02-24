@@ -7,6 +7,7 @@ cat <<EOF > /etc/fail2ban/jail.conf
 
 [lemonldap-ng]
 enabled = true
+backend = auto
 port    = http,https
 filter  = lemonldap
 action   = iptables-multiport[name=lemonldap, port="http,https"]
@@ -14,9 +15,13 @@ logpath = /www/logs/nginx/error*.log
 maxretry = 3
 EOF
 
-echo ''
-echo '** [lemonldap] Starting Fail2ban'
-service fail2ban start
+if [ "$ENABLE_FAIL2BAN" = "FALSE" ] || [ "$MODE" = "HANDLER" ];  then
+	echo "** [fail2ban] Disabling Fail2ban"
+    s6-svc -d /var/run/s6/services/04-fail2ban
+else
+	echo '** [fail2ban] Starting Fail2ban'
+	service fail2ban start
+fi
 
 mkdir -p /tmp/state
 touch /tmp/state/04-fail2ban-init

@@ -20,7 +20,7 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
     echo "deb https://lemonldap-ng.org/deb stable main" > /etc/apt/sources.list.d/lemonldap-ng.list && \
     echo "deb-src https://lemonldap-ng.org/deb stable main" >> /etc/apt/sources.list.d/lemonldap-ng.list && \
 
-# Install LemonLDAP::NG packages
+# Install LemonLDAP::NG packages and dependencies
     apt-get -y update && \
     apt-get install -y \
             fail2ban \
@@ -31,11 +31,8 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
             libapache-session-ldap-perl \
             libapache-session-perl \
             libauthcas-perl \
-            libauthcas-perl \
-            libauthen-captcha-perl \
             libauthen-captcha-perl \
             libauthen-sasl-perl \
-            libcache-cache-perl \
             libcache-cache-perl \
             libclone-perl \
             libconfig-inifiles-perl \
@@ -46,7 +43,6 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
             libdbd-sqlite3-perl \
             libdbi-perl \
             libdigest-hmac-perl \
-            libdigest-sha-perl \
             libdigest-sha-perl \
             libemail-date-format-perl \
             libemail-sender-perl \
@@ -59,8 +55,8 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
             libjson-perl \
             liblasso-perl \
             liblasso-perl \
+            liblog-log4perl-perl \
             libmime-lite-perl \
-            libmodule-build-perl \
             libmodule-build-perl \
             libmongodb-perl \
             libmouse-perl \
@@ -86,10 +82,10 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
             mongodb-clients \
             mongodb-server \
             perl-modules \
+            rsyslog \
             && \
 
-    rm -rf /etc/lemonldap-ng/for_etc_hosts /etc/lemonldap-ng/*.conf && \
-    
+### Install various Apache::Session modules 
     cd /usr/src/ && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
@@ -122,7 +118,13 @@ LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
     make install && \
     cd .. && \
 
-    rm -rf /usr/src/* && \
+### Shuffle some Files around
+    mkdir -p /assets/lemonldap /assets/conf && \
+    cp -R /var/lib/lemonldap-ng/conf/* /assets/conf/ && \
+    cp -R /etc/lemonldap-ng/lemonldap-ng.ini /assets/lemonldap && \
+
+### Cleanup
+    rm -rf /usr/src/* /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/* && \
     apt-get purge -y libmodule-build-perl mongodb-server && \
     apt-get clean && \
     apt-get autoremove -y && \

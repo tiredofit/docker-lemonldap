@@ -9,6 +9,9 @@
 	mkdir -p /tmp/nginx
 	chown -R www-data /www/logs/nginx /var/log/nginx 
 	chown www-data /tmp/nginx
+	mkdir -p /www/logs/lemonldap
+	chown -R www-data /www/logs/lemonldap
+
 
 mkdir -p /tmp/state
 touch /tmp/state/init-09-nginx

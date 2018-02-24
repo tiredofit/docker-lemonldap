@@ -19,6 +19,8 @@
       HANDLER_CACHE_TYPE_FILE_DEPTH=${HANDLER_CACHE_TYPE_FILE_DEPTH:-3}
       HANDLER_STATUS=${HANDLER_STATUS:-TRUE}
       HANDLER_REDIRECT_ON_ERROR=${HANDLER_REDIRECT_ON_ERROR:-TRUE}
+      LOG_TYPE=${LOG_TYPE:-CONSOLE}
+      LOG_LEVEL=${LOG_LEVEL:-notice}
       MANAGER_PROTECTION=${MANAGER_PROTECTION:-manager}
       MANAGER_LOG_LEVEL=${MANAGER_LOG_LEVEL:-warn}
       MANAGER_STATIC_PREFIX=${MANAGER_STATIC_PREFIX:-/static}
@@ -32,6 +34,8 @@
       REDIS_PORT=${REDIS_PORT:-6379}
       SESSION_TYPE=${SESSION_TYPE:-FILE}
       SETUP_TYPE=${SETUP_TYPE:-AUTO}
+      USER_LOG_TYPE=${LOG_TYPE:-CONSOLE}
+      
 
   ### Modify Virtual Hosts for Nginx
   sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
@@ -39,11 +43,55 @@
   sed -i -e "s/<HANDLER_HOSTNAME>/$HANDLER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
   sed -i -e "s/<TEST_HOSTNAME>/$TEST_HOSTNAME/g" /etc/nginx/conf.d/*.conf
 
+  ### Logging Translation
+  function function_logtype(){
+      case "$1" in
+              "CONSOLE")
+              echo 'Lemonldap::NG::Common::Logger::Std'
+              ;;
+              "FILE")
+              echo 'Lemonldap::NG::Common::Logger::Log4perl'
+              ;;
+              "SYSLOG")
+              echo 'Lemonldap::NG::Common::Logger::Syslog'
+              ;;
+             *)
+              echo 'Lemonldap::NG::Common::Logger::Std'
+          esac
+  }
+
+  function function_translate_logLevel(){
+      case "$1" in
+              "debug")
+              echo 'DEBUG'
+              ;;
+              "error")
+              echo 'ERROR'
+              ;;
+              "info")
+              echo 'INFO'
+              ;;
+              "notice")
+              echo 'ERROR'
+              ;;
+              "warn")
+              echo 'WARN'
+              ;;
+             *)
+              echo 'INFO'
+          esac
+  }
+  
+
   if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.js ]; then
      cp -R /assets/conf/lmConf-1.js /var/lib/lemonldap-ng/conf/
      chown -R www-data /var/lib/lemonldap-ng/conf/
   fi
-    
+
+  if [ ! -f //etc/lemonldap-ng/lemonldap-ng.ini ]; then
+     cp -R /assets/lemonldap/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
+     chown www-data /etc/lemonldap-ng/lemonldap-ng.ini
+  fi    
   ### Modify File Configuration
   sed -i -e "s/auth.example.com/$PORTAL_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
   sed -i -e "s/manager.example.com/$MANAGER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js /etc/lemonldap-ng/* /var/lib/lemonldap-ng/test/index.pl
@@ -55,6 +103,7 @@ if [ "$MODE" = "HANDLER" ]; then
   rm -rf /etc/nginx/conf.d/manager.conf
   rm -rf /etc/nginx/conf.d/test.conf
   rm -rf /etc/nginx/conf.d/portal.conf
+  sed -i -e "s/lmremote_user/remote_user/g" /etc/nginx/nginx.conf
 
   allowed=$(echo $HANDLER_ALLOWED_IPS | tr "," "\n")
   for allow in $allowed
@@ -124,16 +173,36 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
     ### Generate Config Template
 
      echo '; Custom Generated LemonLDAP overrides! Do not edit, instead set ENV Vars' >/etc/lemonldap-ng/lemonldap-ng.ini
+     echo '; If you want to use your own lemonldap-ng.ini file set SETUP_TYPE=MANUAL when starting container.' >/etc/lemonldap-ng/lemonldap-ng.ini
      echo '; Last Generated on' `date` >>/etc/lemonldap-ng/lemonldap-ng.ini
      echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
      echo '[all]' >> /etc/lemonldap-ng/lemonldap-ng.ini
      echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
-
+     if [ $LOG_TYPE = "FILE" ]; then
+        echo 'log4perlLogger = LLNG' >>/etc/lemonldap-ng/lemonldap-ng.ini
+     fi
+        echo 'userLogger = '`function_logtype $USER_LOG_TYPE` >>/etc/lemonldap-ng/lemonldap-ng.ini
+     if [ $USER_LOG_TYPE = "FILE" ]; then
+        echo 'log4perlUserLogger = LLNG.user' >>/etc/lemonldap-ng/lemonldap-ng.ini
+     fi
+        echo 'logLevel = '$LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
+     if [ $LOG_TYPE = "FILE" ]; then
+        sed -i -e "s/<LOG_LEVEL>/`function_translate_logLevel $LOG_LEVEL`/g" /etc/log4perl.conf
+        if [ $LOG_LEVEL = "debug" ]; then
+          sed -i -e "s/<LOG_USER_LEVEL>/INFO/g" /etc/log4perl.conf
+        else
+          sed -i -e "s/<LOG_USER_LEVEL>/`function_translate_logLevel $LOG_LEVEL`/g" /etc/log4perl.conf
+        fi
+     fi
+     
 if [ "$MODE" = "MASTER" ]; then
      case "$SESSION_TYPE" in
           "FILE")
           echo 'globalSessionStorage=Cache::FileCache' >>/etc/lemonldap-ng/lemonldap-ng.ini
           echo "globalSessionStorageOptions={'namespace' => '"$HANDLER_CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$HANDLER_CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$HANDLER_CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$HANDLER_CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$HANDLER_CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+          if [ ! -d /var/lib/lemonldap-ng/sessions/lock ]; then mkdir -p /var/lib/lemonldap-ng/sessions/lock; fi;
+          if [ ! -d /var/lib/lemonldap-ng/psessions/lock ]; then mkdir -p /var/lib/lemonldap-ng/psessions/lock; fi;
+          chown -R www-data /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
           ;;
           "MYSQL")
           echo 'globalStorage = Apache::Session::MySQL' >>/etc/lemonldap-ng/lemonldap-ng.ini
@@ -201,6 +270,15 @@ if [ "$MODE" = "MASTER" ]; then
 
       echo '' >>/etc/lemonldap-ng/lemonldap-ng.ini
       echo '[portal]' >> /etc/lemonldap-ng/lemonldap-ng.ini
+      if [ ! -z "$PORTAL_LOG_TYPE" ]; then
+        echo 'logger = '`function_logtype $PORTAL_LOG_TYPE` >>/etc/lemonldap-ng/lemonldap-ng.ini
+      fi
+      if [ ! -z "$PORTAL_USER_LOG_TYPE" ]; then
+        echo 'userLogger = '`function_logtype $PORTAL_USER_LOG_TYPE` >>/etc/lemonldap-ng/lemonldap-ng.ini
+      fi
+      if [ ! -z "$PORTAL_LOG_LEVEL" ]; then
+        echo 'logLevel = '$PORTAL_LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
+      fi
       echo 'staticPrefix = '$PORTAL_STATIC_PREFIX >>/etc/lemonldap-ng/lemonldap-ng.ini;
       echo 'templateDir = '$PORTAL_TEMPLATE_DIR >>/etc/lemonldap-ng/lemonldap-ng.ini;
       echo 'languages = '$PORTAL_LANGUAGE >>/etc/lemonldap-ng/lemonldap-ng.ini;
@@ -376,14 +454,7 @@ EOF
         esac 
 else
   echo '** [lemonldap] Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!'
-  if [ ! -f //etc/lemonldap-ng/lemonldap-ng.ini ]; then
-     cp -R /assets/lemonldap/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
-     chown www-data /etc/lemonldap-ng/lemonldap-ng.ini
-  fi
-  
-
 fi
-
 
 chown -R www-data /var/lib/lemonldap-ng/conf/
 
