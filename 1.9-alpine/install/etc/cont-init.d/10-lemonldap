@@ -37,7 +37,8 @@
 
 
   ### Copy Configuration Depending on LemonLDAP version and setup Logging
-  if [[ ${LEMONLDAP_VERSION//./} -ge "200" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
+  LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
+  if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
     if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
         cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
         chown -R nginx /var/lib/lemonldap-ng/conf/
