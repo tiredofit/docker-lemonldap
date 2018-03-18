@@ -37,7 +37,7 @@
 
 
   ### Copy Configuration Depending on LemonLDAP version and setup Logging
-  LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
+  LEMONLDAP_VERSION_TMP={LEMONLDAP_VERSION:0:3}
   if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
     if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
         cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
@@ -112,6 +112,24 @@
   sed -i -e "s/reload.example.com/$HANDLER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js* /etc/lemonldap-ng/* /usr/share/lemonldap-ng/test/index.pl
   sed -i -e "s/test1.example.com/$TEST_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js* /etc/lemonldap-ng/* /usr/share/lemonldap-ng/test/index.pl
   sed -i -e "s/example.com/$DOMAIN_NAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js* /etc/lemonldap-ng/* /usr/share/lemonldap-ng/test/index.pl
+
+if [ "$MODE" = "HANDLER" ]; then
+  rm -rf /etc/nginx/conf.d/manager.conf
+  rm -rf /etc/nginx/conf.d/test.conf
+  rm -rf /etc/nginx/conf.d/portal.conf
+  sed -i -e "s/lmremote_user/remote_user/g" /etc/nginx/nginx.conf
+
+  allowed=$(echo $HANDLER_ALLOWED_IPS | tr "," "\n")
+  for allow in $allowed
+    do
+      sed -i "/allow 127.0.0.1/a\ \ \  allow $allow;" /etc/nginx/conf.d/handler.conf
+    done
+
+  if [ "$CONFIG_TYPE" = "FILE" ]; then
+    echo "** [lemonldap] ERROR: This container has been configured as a handler with the FILE Config Type. While it's technically possible with using NFS you are better off using SOAP. Exiting.."
+    exit 1
+  fi
+fi
 
  if [ "$SETUP_TYPE" = "AUTO" ]; then    
      ### Generate Config Template
