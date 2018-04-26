@@ -1,3 +1,9 @@
+## 0.7 2018-04-27 <dave at tiredofit dot ca>
+
+* Rollback to Alpine 3.7
+* Pull master for Lasso
+* Grab a few modules from CPAN instead of package manager
+
 ## 0.6 2018-02-22 <dave at tiredofit dot ca>
 
 * Add Global and Per Service Logging

@@ -1,4 +1,4 @@
-FROM tiredofit/alpine:edge
+FROM registry.selfdesign.org/docker/alpine:3.7
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Environment Variables
@@ -13,9 +13,11 @@ ENV LEMONLDAP_VERSION=1.9.16 \
     PATH=/usr/share/lemonldap-ng/bin:${PATH}
 
 # Build Dependencies
-RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
+RUN set -x && \
     apk update && \
-    apk add --no-cache --virtual build-deps \
+    apk add --no-cache --virtual .lemonldap-build-deps \
+            autoconf \
+            automake \
             build-base \
             coreutils \
             expat-dev \
@@ -26,6 +28,7 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
             gd-dev \
             glib-dev \
             gmp-dev \
+	    gtk-doc \
             imagemagick6-dev \
             libtool \
             make \
@@ -38,10 +41,11 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
             py2-pip \
             py-yuicompressor \
             redis \
+            wget \
             xmlsec-dev \
             && \
-	
-    apk add --no-cache --virtual run-deps \
+	    \
+    apk add --no-cache --virtual .lemonldap-run-deps \
             fail2ban \
             imagemagick6 \
             mariadb-client \
@@ -79,8 +83,6 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
             perl-net-ssleay \
             perl-plack \
             perl-regexp-common \
-            perl-soap-lite \
-            perl-string-random \
             perl-test-mockobject \
             perl-test-pod \
             perl-unicode-string \
@@ -92,12 +94,12 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
             rsyslog \
             xmlsec \
             && \
-
+            \
 ### Install Perl Modules Manually not available in Repository
       ln -s /usr/bin/perl /usr/local/bin/perl && \
       curl -L http://cpanmin.us -o /usr/bin/cpanm && \
-      chmod +x /usr/bin/cpanm 
-      RUN cpanm -n \
+      chmod +x /usr/bin/cpanm && \
+      cpanm -n \
           CGI::Compile \
           Convert::PEM \
           Crypt::OpenSSL::X509 \
@@ -122,13 +124,12 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
           Net::OpenID::Server \
           Regexp::Assemble \
           Redis \
+          SOAP::Lite \
+          String::Random \
           URI::Escape \
+	  XML::SAX \
           && \
-
-### Nginx Setup
-     sed -i "s/nginx:x:100:101:nginx:\/var\/lib\/nginx:\/sbin\/nologin/nginx:x:100:101:nginx:\/www:\/bin\/bash/g" /etc/passwd && \
-     sed -i "s/nginx:x:100:101:nginx:\/var\/lib\/nginx:\/sbin\/nologin/nginx:x:100:101:nginx:\/www:\/bin\/bash/g" /etc/passwd- && \
-
+          \
 ### Install various GO, NodeJS Packages for Optimization and adjust temporary symlinks
     cd /usr/src && \
     npm install coffeescript && \
@@ -138,13 +139,9 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
     ln -s /root/go/minify /usr/bin/ && \
 
 ### Install Lasso
-    mkdir -p /usr/src/lasso && \
-    curl https://dev.entrouvert.org/releases/lasso/lasso-${LASSO_VERSION}.tar.gz | tar xvfz - --strip 1 -C /usr/src/lasso && \
-    pip install six && \
+    git clone -b master https://git.entrouvert.org/lasso.git /usr/src/lasso && \
     cd /usr/src/lasso && \
-    ## xmlsec/soap.h replacement - https://dev.entrouvert.org/issues/18771
-    curl -o soap.patch https://dev.entrouvert.org/attachments/download/19731/0001-replace-use-of-xmlsec-soap.h-which-is-deprecated-fix.patch && \
-    patch -p1 < soap.patch && \
+    ./autogen.sh && \
     ./configure && \
     make && \
     make check && \
@@ -156,7 +153,6 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
     cd /usr/src/authcas && \
     perl Makefile.PL && \
     make && \
-    make test && \
     make install && \
 
 ### Checkout and Install LemonLDAP
@@ -226,7 +222,7 @@ RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
     rm -rf /root/.cpanm /root/.cache /root/.npm /root/.config /root/.bash_history /root/go && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
-    apk del build-deps && \
+    apk del .lemonldap-build-deps && \
     rm -rf /tmp/* /var/cache/apk/* 
 
 ### Networking Setup
