@@ -3,8 +3,8 @@
 ### Check to see if Enabled/Disabled
   if [ "$LOG_TYPE" != "SYSLOG" ] ;  then
     echo "** [rsyslog] Disabling Syslog"
-    s6-svc -d /var/run/s6/services/05-rsyslog
+    s6-svc -d /var/run/s6/services/06-rsyslog
   fi
 
 mkdir -p /tmp/state
-touch /tmp/state/05-rsyslog-init
+touch /tmp/state/06-rsyslog-init

@@ -18,8 +18,8 @@ EOF
 ### Check to see if Enabled/Disabled
   if [ "$ENABLE_FAIL2BAN" = "FALSE" ] || [ "$MODE" = "HANDLER" ];  then
     echo "**** [fail2ban] Disabling Fail2ban"
-    s6-svc -d /var/run/s6/services/04-fail2ban
+    s6-svc -d /var/run/s6/services/05-fail2ban
   fi
 
 mkdir -p /tmp/state
-touch /tmp/state/04-fail2ban-init
+touch /tmp/state/05-fail2ban-init
