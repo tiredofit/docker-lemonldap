@@ -1,5 +1,12 @@
 # tiredofit/lemonldap
 
+[![Build Status](https://img.shields.io/docker/build/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker 
+Layers](https://images.microbadger.com/badges/image/tiredofit/lemonldap.svg)](https://microbadger.com/images/tiredofit/lemonldap)
+
+
 # Introduction
 
 This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) a web based manager for Authentication (SAML, OPENID Connect, CAS) using Nginx
@@ -90,7 +97,7 @@ By Default this image is ready to run out of the box, without having to alter an
 
 | Parameter | Description |
 |-----------|-------------|
-| `CONFIG_TYPE` | Configuration type (`FILE`, `MYSQL`, `MONGO`, `LDAP`, `REDIS`, SOAP`) - Default `FILE` |
+| `CONFIG_TYPE` | Configuration type (`FILE`, `MYSQL`, `MONGO`, `LDAP`, `REDIS`, `SOAP`) - Default `FILE` |
 | `DOMAIN_NAME` | Your domain name e.g. `example.org` |
 | `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org` |
 | `PORTAL_HOSTNAME` | FQDN for public portal/main URL e.g. `sso.example.org` |
@@ -182,7 +189,6 @@ Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `CACHE_TYPE_FILE_PATH` | Default: `/tmp` |
 | `CACHE_TYPE_FILE_DEPTH` | Default: `0` |
 | `HANDLER_ALLOWED_IPS` | If you need to access access to `/reload` other than localhost add a comma seperated list or hosts or networks here e.g. `172.16.0.0/12,192.168.0.253` |
-
 | `HANDLER_CACHE_TYPE` | Default: `FILE` |
 | `HANDLER_CACHE_TYPE_FILE_NAMESPACE` | Default: `lemonldap-ng-sessions` |
 | `HANDLER_CACHE_TYPE_FILE_EXPIRY` | Default: `600` |
@@ -204,9 +210,6 @@ Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `MANAGER_TEMPLATE_DIR` | Default: `/usr/share/lemonldap-ng/manager/templates` |
 | `MANAGER_LANGUAGE` | Default: `en` |
 | `MANAGER_ENABLED_MODULES` | Default: `"conf, sessions, notifications"` |
-
-      
-
 
 
 ### Networking
@@ -230,4 +233,3 @@ docker exec -it (whatever your container name is e.g. lemonldap) bash
 # References
 
 * https://lemonldap-ng.org
-

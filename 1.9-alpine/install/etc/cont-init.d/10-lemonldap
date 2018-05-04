@@ -11,6 +11,7 @@
       CACHE_TYPE_FILE_PATH=${CACHE_TYPE_FILE_PATH:-/tmp}
       CACHE_TYPE_FILE_DEPTH=${CACHE_TYPE_FILE_DEPTH:-0}
       PORTAL_LOCAL_CONF=${PORTAL_LOCAL_CONF:-FALSE}
+      PORTAL_CACHE_TYPE=${PORTAL_CACHE_TYPE:-FILE}
       HANDLER_CACHE_TYPE=${HANDLER_CACHE_TYPE:-FILE}
       HANDLER_CACHE_TYPE_FILE_NAMESPACE=${HANDLER_CACHE_TYPE_FILE_NAMESPACE:-lemonldap-ng-sessions}
       HANDLER_CACHE_TYPE_FILE_EXPIRY=${HANDLER_CACHE_TYPE_FILE_EXPIRY:-600}
@@ -37,7 +38,7 @@
 
 
   ### Copy Configuration Depending on LemonLDAP version and setup Logging
-  LEMONLDAP_VERSION_TMP={LEMONLDAP_VERSION:0:3}
+  LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
   if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
     if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
         cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
@@ -242,6 +243,11 @@ fi
           echo 'logLevel = '$PORTAL_LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
         fi
 
+        if  [ "$PORTAL_CACHE_TYPE" = "FILE" ]; then
+          echo "globalStorage = Apache::Session::File" >>/etc/lemonldap-ng/lemonldap-ng.ini
+          echo "globalStorageOptions = { 'Directory' => '/var/lib/lemonldap-ng/sessions/', 'LockDirectory' => '/var/lib/lemonldap-ng/sessions/lock/', }" >>/etc/lemonldap-ng/lemonldap-ng.ini
+        fi
+        
         echo 'staticPrefix = '$PORTAL_STATIC_PREFIX >>/etc/lemonldap-ng/lemonldap-ng.ini;
         echo 'templateDir = '$PORTAL_TEMPLATE_DIR >>/etc/lemonldap-ng/lemonldap-ng.ini;
         echo 'languages = '$PORTAL_LANGUAGE >>/etc/lemonldap-ng/lemonldap-ng.ini;
