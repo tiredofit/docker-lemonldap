@@ -24,17 +24,17 @@ This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) a web
 # Table of Contents
 
 - [Introduction](#introduction)
-  | [Changelog](CHANGELOG.md)
+    | [Changelog](CHANGELOG.md)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
-  | [Database](#database)
-  | [Data Volumes](#data-volumes)
-  | [Environment Variables](#environmentvariables)   
-  | [Networking](#networking)
+    | [Database](#database)
+    | [Data Volumes](#data-volumes)
+    | [Environment Variables](#environmentvariables)   
+    | [Networking](#networking)
 - [Maintenance](#maintenance)
-  | [Shell Access](#shell-access)
+    | [Shell Access](#shell-access)
    - [References](#references)
 
 # Prerequisites
