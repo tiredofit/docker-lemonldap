@@ -1,9 +1,0 @@
-/www/logs/lemonldap/*.log {
-    daily
-    ifempty
-    rotate 7
-    copytruncate
-    missingok
-    compress
-    dateext
-}
