@@ -1,3 +1,7 @@
+## 0.8 2018-10-07 <dave at tiredofit dot ca>
+
+* Update to LemonLdap 1.9.18
+
 ## 0.7 2018-04-27 <dave at tiredofit dot ca>
 
 * Rollback to Alpine 3.7

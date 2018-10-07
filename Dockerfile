@@ -2,7 +2,7 @@ FROM tiredofit/alpine:3.7
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Environment Variables
-ENV LEMONLDAP_VERSION=1.9.16 \
+ENV LEMONLDAP_VERSION=1.9.18 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=2.5.1 \
     DOMAIN_NAME=example.com \
