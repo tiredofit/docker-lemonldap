@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 ### Sanity Check Defaults
-      HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-TRUE}         
+      HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-FALSE}
       HANDLER_SOCKET_TCP_PORT=${HANDLER_SOCKET_TCP_PORT:-2884}         
 
 ### Check to see if Enabled/Disabled

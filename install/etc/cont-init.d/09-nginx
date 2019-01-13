@@ -4,13 +4,14 @@
   UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE:="2G"}
   sed -i -e "s/<UPLOAD_MAX_SIZE>/$UPLOAD_MAX_SIZE/g" /etc/nginx/nginx.conf
    
-	mkdir -p /www/logs/nginx
-    mkdir -p /var/log/nginx
+	mkdir -p /www/logs/http
+	mkdir -p /var/log/nginx
 	mkdir -p /tmp/nginx
-	chown -R www-data /www/logs/nginx /var/log/nginx 
+	chown -R www-data /www/logs/http /var/log/nginx
 	chown www-data /tmp/nginx
 	mkdir -p /www/logs/lemonldap
 	chown -R www-data /www/logs/lemonldap
+
 
 mkdir -p /tmp/state
 touch /tmp/state/init-09-nginx

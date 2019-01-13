@@ -6,11 +6,7 @@ services:
     container_name: lemonldap-handler-app
     volumes:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng
-    - ./data/var/lib/lemonldap-ng/conf:/var/lib/lemonldap-ng/conf
-    - ./data/var/lib/lemonldap-ng/sessions:/var/lib/lemonldap-ng/sessions
-    - ./data/var/lib/lemonldap-ng/psessions:/var/lib/lemonldap-ng/psessions
     - ./logs:/www/logs
-    #- ./assets/custom:/assets/custom
     environment:
     - VIRTUAL_HOST=handler.sso.example.com
     - VIRTUAL_NETWORK=nginx-proxy
