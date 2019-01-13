@@ -22,10 +22,10 @@ services:
     - HANDLER_HOSTNAME=handler.sso.example.com
     - HANDLER_ALLOWED_IPS=172.16.1.0/24,192.168.0.1,10.0.0.0/12
      
-    - CONFIG_TYPE=SOAP
-    - SOAP_HOST=https://sso.example.com/index.pl/config 
-    - SOAP_USER=dwho
-    - SOAP_PASS=dwho
+    - CONFIG_TYPE=REST
+    - REST_HOST=https://sso.example.com/index.psgi/config 
+    - REST_USER=dwho
+    - REST_PASS=dwho
 
     networks:
       - proxy-tier

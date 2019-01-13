@@ -23,4 +23,4 @@ fi
 
 echo ''
 echo '** [lemonldap] Starting LemonLDAP FastCGI Server'
-exec s6-setuidgid nginx:www-data /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground;
+exec s6-setuidgid www-data /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground;

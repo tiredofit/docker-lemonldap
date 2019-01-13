@@ -27,10 +27,6 @@ services:
     - TEST_HOSTNAME=test.sso.example.com
 
     - MODE=MASTER
- 
-    - CONFIG_TYPE=FILE
-    - SESSION_TYPE=FILE
-    - HANDLER_CACHE_TYPE=FILE
     networks:
       - proxy-tier
     cap_add:
