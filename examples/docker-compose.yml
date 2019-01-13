@@ -2,7 +2,7 @@ version: '2'
 
 services:
   lemonldap-app:
-    image: tiredofit/lemonldap:2.0-alpine-latest
+    image: tiredofit/lemonldap:1.9-alpine-latest
     container_name: lemonldap-app
     volumes:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng
@@ -23,12 +23,6 @@ services:
     - MANAGER_HOSTNAME=manager.sso.example.com
     - PORTAL_HOSTNAME=sso.example.com
     - HANDLER_HOSTNAME=handler.sso.example.com
-    
-    - CONFIG_TYPE=FILE
- 
-    - SESSION_TYPE=FILE
-    - HANDLER_CACHE_TYPE=FILE
-
     networks:
       - proxy-tier
     cap_add:

@@ -15,7 +15,7 @@
   fi
 
   mkdir -p /var/run/llng-fastcgi-server
-  chown -R nginx /var/run/llng-fastcgi-server
+  chown -R llng /var/run/llng-fastcgi-server
 
   mkdir -p /tmp/state
   touch /tmp/state/init-20-llng-fastcgi-server

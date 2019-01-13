@@ -8,7 +8,7 @@ done
 if [ ! -f /tmp/state/10-lemonldap ]; then
 
     ### Set Permissions
-    chown -R nginx /etc/lemonldap-ng
+    chown -R llng /etc/lemonldap-ng
     mkdir -p /tmp/state/
 	echo 'Initialization Complete' >/tmp/state/10-lemonldap
 fi

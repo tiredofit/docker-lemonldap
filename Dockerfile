@@ -1,10 +1,12 @@
-FROM tiredofit/alpine:3.7
+FROM tiredofit/alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Environment Variables
 ENV LEMONLDAP_VERSION=1.9.18 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=2.5.1 \
+    LASSO_VERSION=2.6.0 \
+    LIBU2F_VERSION=1.1.0 \
+    MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
     HANDLER_HOSTNAME=handler.sso.example.com \
     PORTAL_HOSTNAME=sso.example.com \
@@ -12,13 +14,18 @@ ENV LEMONLDAP_VERSION=1.9.18 \
     TEST_HOSTNAME=test.sso.example.com \
     PATH=/usr/share/lemonldap-ng/bin:${PATH}
 
-# Build Dependencies
 RUN set -x && \
+# Create User
+    addgroup -g 2884 llng && \
+    adduser -S -D -G llng -u 2884 -h /var/lib/lemonldap-ng/ llng && \
+    \
+# Build Dependencies
     apk update && \
     apk add --no-cache --virtual .lemonldap-build-deps \
             autoconf \
             automake \
             build-base \
+            check-dev \
             coreutils \
             expat-dev \
             g++ \
@@ -26,17 +33,21 @@ RUN set -x && \
             go \
             git \
             gd-dev \
+            gengetopt-dev \
             glib-dev \
             gmp-dev \
-	    gtk-doc \
+            gtk-doc \
+            help2man \
             imagemagick6-dev \
+            json-c-dev \
+            openssl-dev \
             libtool \
+            krb5-dev \
             make \
             mongodb \
             nodejs \
             nodejs-npm \
             musl-dev \
-            openssl-dev \
             perl-dev \
             py2-pip \
             py-yuicompressor \
@@ -47,7 +58,10 @@ RUN set -x && \
 	    \
     apk add --no-cache --virtual .lemonldap-run-deps \
             fail2ban \
+            gd \
             imagemagick6 \
+            imagemagick6-libs \
+            krb5-libs \
             mariadb-client \
             mongodb-tools \
             nginx \
@@ -61,11 +75,9 @@ RUN set -x && \
             perl-crypt-openssl-bignum \
             perl-crypt-openssl-rsa \
             perl-crypt-rijndael \
-            #perl-crypt-x509 \
             perl-dbd-mysql \
             perl-dbd-sqlite \
             perl-dbi \
-            #perl-digest-hmac \
             perl-cgi-emulate-psgi \
             perl-fcgi \
             perl-fcgi-procmanager \
@@ -76,6 +88,7 @@ RUN set -x && \
             perl-json \
             perl-ldap \
             perl-log-log4perl \
+            perl-lwp-protocol-https \
             perl-mime-lite \
             perl-mime-tools \
             perl-net-cidr \
@@ -91,62 +104,83 @@ RUN set -x && \
             perl-xml-libxml \
             perl-xml-libxml-simple \
             perl-xml-libxslt \
+            perl-xml-sax \
             rsyslog \
             xmlsec \
             && \
             \
+### Compile libu2f-server for 2FA Support
+       mkdir -p /usr/src/libu2f && \
+       curl -ssL https://developers.yubico.com/libu2f-server/Releases/libu2f-server-$LIBU2F_VERSION.tar.xz | tar xvfJ - --strip 1 -C /usr/src/libu2f && \
+       cd /usr/src/libu2f && \
+       ./configure \
+            --build=$CBUILD \
+            --host=$CHOST \
+            --prefix=/usr \
+            --sysconfdir=/etc \
+            --mandir=/usr/share/man \
+            --localstatedir=/var \
+            --enable-tests && \
+       make && \
+       make install && \
+      \
 ### Install Perl Modules Manually not available in Repository
       ln -s /usr/bin/perl /usr/local/bin/perl && \
       curl -L http://cpanmin.us -o /usr/bin/cpanm && \
       chmod +x /usr/bin/cpanm && \
       cpanm -n \
+          Authen::Radius \
+          Authen::Captcha \
           CGI::Compile \
           Convert::PEM \
+          Convert::Base32 \
           Crypt::OpenSSL::X509 \
+          Crypt::U2F::Server::Simple \
           Digest::HMAC_SHA1 \
           Digest::MD5 \
           Digest::SHA \
           Email::Sender \
           GD::SecurityImage \
+          GSSAPI \
           HTTP::Headers \
           HTTP::Request \
           IO::String \
           Image::Magick \
           LWP::UserAgent \
-          LWP::Protocol::https \
           Mouse \
           MongoDB \
-          Net::CIDR \
+          Net::Facebook::Oauth2 \
           Net::LDAP \
           Net::OAuth \
           Net::OpenID::Common \
-          Net::OpenID::Consumer \
-          Net::OpenID::Server \
+          Net::SMTP \
           Regexp::Assemble \
           Redis \
           SOAP::Lite \
           String::Random \
           URI::Escape \
-	  XML::SAX \
-          && \
-          \
+          Web::ID \
+    && \
 ### Install various GO, NodeJS Packages for Optimization and adjust temporary symlinks
     cd /usr/src && \
     npm install coffeescript && \
-    go get github.com/tdewolff/minify/cmd/minify && \
+    mkdir -p /usr/src/minify && \
+    curl -sSL https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_${MINIFY_VERSION}_linux_amd64.tar.gz | tar xvfz - --strip 1 -C /usr/src/minify && \
+    mv /usr/src/minify /usr/bin/ && \
+    chmod +x /usr/bin/minify && \
     ln -s /usr/src/.node_modules/coffeescript/bin/coffee /usr/bin/ && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
-    ln -s /root/go/minify /usr/bin/ && \
-
+  \
 ### Install Lasso
-    git clone -b master https://git.entrouvert.org/lasso.git /usr/src/lasso && \
+    mkdir -p /usr/src/lasso && \
+    curl https://dev.entrouvert.org/releases/lasso/lasso-${LASSO_VERSION}.tar.gz | tar xvfz - --strip 1 -C /usr/src/lasso && \
+    pip install six && \
     cd /usr/src/lasso && \
-    ./autogen.sh && \
-    ./configure && \
+    ./configure --prefix=/usr && \
     make && \
     make check && \
     make install && \
-
+    \
 ### Install AuthCAS
     mkdir -p /usr/src/authcas && \
     curl https://sourcesup.renater.fr/frs/download.php/file/5125/AuthCAS-${AUTHCAS_VERSION}tar.gz | tar xvfz - --strip 1 -C /usr/src/authcas && \
@@ -154,7 +188,7 @@ RUN set -x && \
     perl Makefile.PL && \
     make && \
     make install && \
-
+    \
 ### Checkout and Install LemonLDAP
     mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
@@ -172,19 +206,19 @@ RUN set -x && \
          MANAGERSITEDIR=/usr/share/lemonldap-ng/manager \
          CONFDIR=/etc/lemonldap-ng \
          CRONDIR=/etc/cron.d \
-         APACHEUSER=nginx \
-         APACHEGROUP=nginx \
+         APACHEUSER=llng \
+         APACHEGROUP=llng \
          FASTCGISOCKDIR=/var/run/llng-fastcgi-server \
          PROD=yes \
          install && \
-
+    \
 ### Compile Various Apache::Session Modules
     cd /usr/src/ && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
     git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
-
+    \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
     make && \
@@ -208,7 +242,7 @@ RUN set -x && \
     make && \
     make test && \
     make install && \
-
+    \
 # Shuffle some Files around
     mkdir -p /assets/lemonldap /assets/conf && \
     cp -R /var/lib/lemonldap-ng/conf/* /assets/conf/ && \
@@ -216,13 +250,16 @@ RUN set -x && \
     ln -s /usr/share/lemonldap-ng/portal/static/bwr/jquery-ui/jquery-ui.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/ && \
     ln -s /usr/share/lemonldap-ng/manager/static/bwr/jquery/dist/jquery.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/jquery/ && \
     rm -rf /etc/nginx/conf.d && \
-
+    \
 # Cleanup
     rm -rf /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/* && \
     rm -rf /root/.cpanm /root/.cache /root/.npm /root/.config /root/.bash_history /root/go && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     apk del .lemonldap-build-deps && \
+    deluser mongodb && \
+    deluser nginx && \
+    deluser redis && \
     rm -rf /tmp/* /var/cache/apk/* 
 
 ### Networking Setup
