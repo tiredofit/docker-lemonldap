@@ -1,8 +1,13 @@
-# tiredofit/lemonldap
+# hub.docker.com/r/tiredofit/lemonldap
+
+[![Build Status](https://img.shields.io/docker/build/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/lemonldap.svg)](https://hub.docker.com/r/tiredofit/lemonldap)
+[![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/lemonldap.svg)](https://microbadger.com/images/tiredofit/lemonldap)
 
 # Introduction
 
-This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) an elegant web based manager for Authentication (SAML, OPENID Connect, CAS) using Nginx
+This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) an elegant web based manager for Authentication (SAML, OpenID Connect, CAS) using Nginx
 
 * This Container uses a [customized Debian Linux base](https://hub.docker.com/r/tiredofit/debian) which includes [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities, [zabbix-agent](https://zabbix.org) for individual container monitoring, Cron also installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management. It also supports sending to external SMTP servers..
 
@@ -11,11 +16,12 @@ This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) an el
 * Option to just use image as a Handler for external servers
 * Handler Option to use file base socket or listen on TCP
 * Fail2ban Included for blocking brute force attacks.
-* MongoDB, MySQL, LDAP, Redis support for sessions and configuration
+* Ready to work out the box for SAML, OpenID, 2FA/2OTP
+* Additional modules compiled for Redis, Mysql, Postgres, LDAP Session/Config Storage
 * Choice of Logging (Console, File, Syslog)
 * Used in Production for an educational institution serving over 10000 users.
 
-** The 2.0 Release is in ALPHA by the developers, therefore this image will change as their development progresses**
+*This is an incredibly complex piece of software that will tries to get you up and running with sane defaults, you will need to switch eventually over to manually configuring the configuration file when depending on your usage case*
 
 [Changelog](CHANGELOG.md)
 
@@ -51,16 +57,18 @@ recommended method of installation.
 
 
 ```bash
-docker pull tiredofit/lemonldap
+docker pull tiredofit/lemonldap:<tag>
 ```
 
 The following image tags are available:
 
-* `latest` - LemonLDAP 1.9.x Branch w/ Debian Stretch
-* `1.9-alpine-latest` - LemonLDAP 1.9.x Branch w/Alpine Linux 
-* `1.9-latest` - LemonLDAP 1.9.x Branch w/ Debian Stretch
-* `2.0-latest` - LemonLDAP 2.0 Development Branch w/ Debian Stretch
-* `2.0-alpine-latest` - LemonLDAP 2.0 Development Branch w/Alpine Linux 
+* `latest` - LemonLDAP 2.0.x Branch w/ Alpine Linux
+* `2.0-latest` - LemonLDAP 2.0.x (stable) Branch w/ Alpine Linux
+* `2.0-alpine-latest` - LemonLDAP 2.0.x (stable) Branch w/Alpine Linux 
+* `2.0-debian-latest` - LemonLDAP 2.0.x (stable) Branch w/Debian Stretch
+* `1.9-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/ Alpine Linux
+* `1.9-alpine-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/Alpine Linux 
+* `1.9-debian-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/Alpine Linux 
 
 # Quick Start
 
@@ -97,14 +105,15 @@ Along with the Environment Variables from the [Base image](https://hub.docker.co
 
 There are a huge amount of configuration variables and it is recommended that you get comfortable for a few hours with the [LemonLDAP::NG Documentation](https://lemonldap-ng.org/documentation/2.0/start)
 
+You will eventually based on your usage case switch over to `SETUP_TYPE=manual` and edit your own `lemonldap-ng.ini`. While I've tried to make this as easy to use as possible, once in production you'll find much better success with large implementations with this approach.
+
 By Default this image is ready to run out of the box, without having to alter any of the settings with the exception of the `_HOSTNAME` vars. You can also change the majority of these settings from within the Manager. There are instances where these variables would want to be set if you are running multiple handlers or need to enforce a Global Setting for one specific installation.
 
 | Parameter | Description |
 |-----------|-------------|
 | `SETUP_TYPE` | Default: `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. |
 | `MODE` | Type of Install - `HANDLER` for handler duties only, Default `MASTER` for Portal, Manager, Handler |
-| `CONFIG_TYPE` | Configuration type (`FILE`, `MYSQL`, `MONGO`, `LDAP`, `REDIS`, `sSOAP`) - Default `FILE` |
-| `DOMAIN_NAME` | Your domain name e.g. `example.org` |
+| `CONFIG_TYPE` | Configuration type (`FILE`, `SOAP`, `REST`) - Default `FILE` | `DOMAIN_NAME` | Your domain name e.g. `example.org` |
 | `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org` |
 | `PORTAL_HOSTNAME` | FQDN for public portal/main URL e.g. `sso.example.org` |
 | `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org` |
@@ -112,38 +121,6 @@ By Default this image is ready to run out of the box, without having to alter an
 | `LOG_TYPE` | How to Log - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 | `LOG_LEVEL` | LogLevel - Options `warn, notice, info, error, debug` Default `info` |
 | `USER_LOG_TYPE` | How to Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
-
-#### Database Settings
-
-Depending on what was chosen for the `CONFIG_TYPE` and `CACHE_TYPE`, these Database related variables would be used.
-
-| Parameter | Description |
-|-----------|-------------|
-| `DB_HOST` | Hostname of Database Server e.g. `db`|
-| `DB_PORT` | Port of DB server e.g. `3306` - Defaults to chosen DB type's port |
-| `DB_NAME` | Name of Database e.g. `lemonldap` |
-| `DB_USER` | Username to access database server e.g. `lemonldap` |
-| `DB_PASS` | Password for above user e.g. `password` |
-| `REDIS_HOST` | Hostname of Redis Server if used `e.g. lemonldap-redis |
-| `REDIS_PORT` | Port of Redis Server default: `6379` |
-
-#### LDAP Settings
-Depending on what was chosen for the `CONFIG_TYPE` and `CACHE_TYPE`, these LDAP related variables would be used.
-
-| Parameter | Description |
-|-----------|-------------|
-| `LDAP_HOST` | Hostname of LDAP Server|
-| `LDAP_CONF_BASE` | See LemonLDAP Documentation |
-| `LDAP_BIND_DN` | Bind Username for LDAP|
-| `LDAP_BIND_PASS` | Password for above username |
-| `LDAP_OBJECT_CLASS` | See LemonLDAP Documentation |
-| `LDAP_ATTRIBUTE_ID` | See LemonLDAP Documentation |
-| `LDAP_ATTRIBUTE_CONTENT` | See LemonLDAP Documentation |
-| `LDAP_GROUP_BASE` | See LemonLDAP Documentation |
-| `LDAP_GROUP_OBJECT_CLASS` | See LemonLDAP Documentation |
-| `LDAP_GROUP_ATTRIBUTE_NAME` | See LemonLDAP Documentation |
-| `LDAP_GROUP_ATTRIBUTE_NAME_USER` | See LemonLDAP Documentation |
-| `LDAP_GROUP_ATTRIBUTE_NAME_SEARCH` | See LemonLDAP Documentation |
 
 #### SOAP Settings
 
@@ -155,39 +132,29 @@ Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `SOAP_USER` | Username to fetch Configuration Information |
 | `SOAP_PASS` | Password to fetch Configuration Information |
 
-#### SMTP Settings
+#### REST Settings
+
+Depending if `REST` was chosedn for `CONFIG_TYPE`, these variables would be used.
 
 | Parameter | Description |
 |-----------|-------------|
-| `SMTP_HOST` | Hostname of SMTP Server |
-| `SMTP_USER` | Username to access SMTP Server|
-| `SMTP_PASS` | Password to access SMTP Server|
-| `SMTP_MAIL_FROM` | From Address for Mail |
-| `SMTP_MAIL_REPLY_TO` | Reply To for Mail |
-| `SMTP_MAIL_URL` | Mail URL. See LemonLDAP Documentation |
-| `SMTP_CONFIRM_SUBJECT` | Subject line for Messages of Confirmated Password Change|
-| `SMTP_CONFIRM_BODY` | See LemonLDAP Documentation |
-| `SMTP_MAIL_SUBJECT` | Subject Line for Change Password |
-| `SMTP_MAIL_BODY` | See LemonLDAP Documentation |
-| `SMTP_MAIL_LDAP_FILTER` | See LemonLDAP Documentation |
-
-
+| `REST_HOST` | Hostname of Master REST Server e.g. `https://sso.example.com/index.psgi/config/` |
+| `REST_USER` | Username to fetch Configuration Information |
+| `REST_PASS` | Password to fetch Configuration Information |
 
 ### Portal Settings
 | Parameter | Description |
 |-----------|-------------|
+| `PORTAL_CACHE_TYPE` | Only Cache Type available for now - Default `FILE` |
 | `PORTAL_LOCAL_CONF` | See LemonLDAP Documentation Default: `FALSE` |
 | `PORTAL_SKIN` | Default: `bootstrap` - See LemonLDAP Documentation |
-| `PORTAL_USER_ATTRIBUTE` | Default: `mail` See LemonLDAP Documentation |
-| `PORTAL_EXPORTED_ATTRIBUTES` | Default: `uid mail` See LemonLDAP Documentation |
-| `PORTAL_LDAP_PPOLICY_CONTROL` | See LemonLDAP Documentation | 
-| `PORTAL_STORE_PASSWORD_IN_SESSION` | See LemonLDAP Documentation |
-| `PORTAL_LDAP_SET_PASSWORD` | See LemonLDAP Documentation |
 | `PORTAL_TEMPLATE_DIR` | Default: `/usr/share/lemonldap-ng/portal/templates` |
 | `PORTAL_LOG_TYPE` | Override Portal Log - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 | `PORTAL_LOG_LEVEL` | Override Portal LogLevel - Options `warn, notice, info, error, debug` Default `info` |
 | `PORTAL_USER_LOG_TYPE` | Override Portal Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
-
+| `PORTAL_ENABLE_REST` | Allow REST access to the Portal - Default `FALSE` |
+| `PORTAL_ENABLE_SOAP` | Allow SOAP access to the Portal - Default `FALSE` |
+| `PORTAL_RESTSOAP_ALLOWED_IPs` | If above options enabled, provide comma seperated list of IP/Network to allow access Default `0.0.0.0/0` |
 
 ### Handler Settings
 | Parameter | Description |
@@ -211,6 +178,7 @@ Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `HANDLER_REDIRECT_ON_ERROR` | Default: `TRUE` |
 | `HANDLER_LOG_TYPE` | Override Handler Log - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 | `HANDLER_LOG_LEVEL` | Override Handler LogLevel - Options `warn, notice, info, error, debug` Default `info` |
+| `HANDLER_PROCESSES` | Amount of LLNG Handler processes to spawn - Default: `7` |
 | `HANDLER_USER_LOG_TYPE` | Override Handler Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 
 ### Manager Options
@@ -227,8 +195,6 @@ Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `MANAGER_LOG_LEVEL` | Override Manager LogLevel - Options `warn, notice, info, error, debug` Default `info` |
 | `MANAGER_USER_LOG_TYPE` | Override Manager Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
       
-
-
 
 ### Networking
 
@@ -251,4 +217,3 @@ docker exec -it (whatever your container name is e.g. lemonldap) bash
 # References
 
 * https://lemonldap-ng.org
-

@@ -1,4 +1,4 @@
-/www/logs/nginx/*.log {
+/www/logs/http/*.log {
     daily
     ifempty
     rotate 7

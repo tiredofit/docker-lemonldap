@@ -1,0 +1,20 @@
+#!/usr/bin/with-contenv bash
+
+function configure_nginx() {
+  UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE:="2G"}
+  sed -i -e "s/<UPLOAD_MAX_SIZE>/$UPLOAD_MAX_SIZE/g" /etc/nginx/nginx.conf
+  mkdir -p /tmp/nginx
+  chown llng /tmp/nginx
+  chown -R llng /var/tmp/nginx
+  s6-svc -u /var/run/s6/services/10-nginx
+}
+
+configure_nginx
+
+mkdir -p /www/logs/http
+mkdir -p /www/logs/lemonldap
+chown -R llng:llng /www/logs/http
+chown -R llng:llng /www/logs/lemonldap
+  
+mkdir -p /tmp/state
+touch /tmp/state/init-09-http

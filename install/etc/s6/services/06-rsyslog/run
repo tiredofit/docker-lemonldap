@@ -11,4 +11,4 @@ fi
 
 echo ''
 echo '** [rsyslog] Starting Syslog'
-exec rsyslogd -n
+exec rsyslogd -n > /dev/null
