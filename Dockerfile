@@ -2,7 +2,7 @@ FROM tiredofit/debian:stretch
 LABEL maintainer="Dave Conroy <dave at tiredofit dot ca>"
 
 ### Environment Variables
-ENV LEMONLDAP_VERSION=2.0.1 \
+ENV LEMONLDAP_VERSION=2.0.2 \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
     HANDLER_HOSTNAME=handler.sso.example.com \
