@@ -23,6 +23,8 @@ services:
     - MANAGER_HOSTNAME=manager.sso.example.com
     - PORTAL_HOSTNAME=sso.example.com
     - HANDLER_HOSTNAME=handler.sso.example.com
+ 
+    - ENABLE_FAIL2BAN=TRUE
     networks:
       - proxy-tier
     cap_add:

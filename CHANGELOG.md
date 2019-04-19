@@ -1,3 +1,7 @@
+## 1.2.8 2019-04-19 <dave at tiredofit dot ca>
+
+* Force deleting fail2ban /var/run .sock and .pid
+
 ## 1.2.7 2019-04-19 <dave at tiredofit dot ca>
 
 * Temporarily Remove MongoDB
