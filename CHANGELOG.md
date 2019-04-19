@@ -1,3 +1,27 @@
+## 1.2.7 2019-04-19 <dave at tiredofit dot ca>
+
+* Temporarily Remove MongoDB
+
+## 1.2.6 2019-04-11 <dave at tiredofit dot ca>
+
+* LemonLDAP:NG 2.0.3
+
+## 1.2.5 2019-04-01 <dave at tiredofit dot ca>
+
+* Update Lasso to pull from Git repository due to failed compilation
+
+## 1.2.4 2019-03-14 <dave at tiredofit dot ca>
+
+* Add Sentry Logging Support
+
+## 1.2.3 2019-03-12 <dave at tiredofit dot ca>
+
+* Add Portal Status Capability
+
+## 1.2.2 2019-02-14 <dave at tiredofit dot ca>
+
+* Add OpenID Connect Key rotation
+
 ## 1.2.1 2019-02-13 <dave at tiredofit dot ca>
 
 * LemonLDAP 2.0.2

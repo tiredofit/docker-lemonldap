@@ -1,8 +1,8 @@
-FROM tiredofit/alpine:edge
+FROM tiredofit/alpine:3.9
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Environment Variables
-ENV LEMONLDAP_VERSION=2.0.2 \
+ENV LEMONLDAP_VERSION=2.0.3 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=2.6.0 \
     LIBU2F_VERSION=1.1.0 \
@@ -44,12 +44,13 @@ RUN set -x && \
             libtool \
             krb5-dev \
             make \
-            mongodb \
+#            mongodb \
             nodejs \
             nodejs-npm \
             musl-dev \
             perl-dev \
             py2-pip \
+            py-six \
             py-yuicompressor \
             redis \
             wget \
@@ -63,7 +64,7 @@ RUN set -x && \
             imagemagick6-libs \
             krb5-libs \
             mariadb-client \
-            mongodb-tools \
+#            mongodb-tools \
             nginx \
             openssl \
             perl \
@@ -136,6 +137,7 @@ RUN set -x && \
           Convert::Base32 \
           Crypt::OpenSSL::X509 \
           Crypt::U2F::Server::Simple \
+          Crypt::URandom \
           Digest::HMAC_SHA1 \
           Digest::MD5 \
           Digest::SHA \
@@ -148,7 +150,7 @@ RUN set -x && \
           Image::Magick \
           LWP::UserAgent \
           Mouse \
-          MongoDB \
+#          MongoDB \
           Net::Facebook::Oauth2 \
           Net::LDAP \
           Net::OAuth \
@@ -156,6 +158,7 @@ RUN set -x && \
           Net::SMTP \
           Regexp::Assemble \
           Redis \
+          Sentry::Raven \
           SOAP::Lite \
           String::Random \
           URI::Escape \
@@ -173,10 +176,9 @@ RUN set -x && \
   \
 ### Install Lasso
     mkdir -p /usr/src/lasso && \
-    curl https://dev.entrouvert.org/releases/lasso/lasso-${LASSO_VERSION}.tar.gz | tar xvfz - --strip 1 -C /usr/src/lasso && \
-    pip install six && \
+    git clone git://git.entrouvert.org/lasso.git && \
     cd /usr/src/lasso && \
-    ./configure --prefix=/usr && \
+    ./autogen.sh --prefix=/usr --disable-java --disable-python --disable-php5 --disable-tests && \
     make && \
     make check && \
     make install && \
@@ -193,7 +195,7 @@ RUN set -x && \
     mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
-    if [ "$LEMONLDAP_VERSION" != "master" ]; then git checkout tags/v$LEMONLDAP_VERSION; fi && \
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
     make dist && \
     make PREFIX=/usr \
          LMPREFIX=/usr/share/lemonldap-ng \
@@ -217,7 +219,7 @@ RUN set -x && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
-    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
+#    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
     \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
@@ -236,12 +238,12 @@ RUN set -x && \
     ./Build && \
     ./Build test && \
     ./Build install && \
-    cd .. && \
-    cd /usr/src/apache-session-mongodb && \
-    perl Makefile.PL && \
-    make && \
-    make test && \
-    make install && \
+#    cd .. && \
+#    cd /usr/src/apache-session-mongodb && \
+#    perl Makefile.PL && \
+#    make && \
+#    make test && \
+#    make install && \
     \
 # Shuffle some Files around
     mkdir -p /assets/lemonldap /assets/conf && \
@@ -257,7 +259,7 @@ RUN set -x && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     apk del .lemonldap-build-deps && \
-    deluser mongodb && \
+    #deluser mongodb && \
     deluser nginx && \
     deluser redis && \
     rm -rf /tmp/* /var/cache/apk/* 
