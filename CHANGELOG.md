@@ -1,3 +1,11 @@
+## 1.2.3 2019-05-13 <dave at tiredofit dot ca>
+
+* LemonLDAP 2.0.4
+
+## 1.2.2 2019-02-14 <dave at tiredofit dot ca>
+
+* Add OpenID Rotation Cron Script
+
 ## 1.2.1 2019-02-13 <dave at tiredofit dot ca>
 
 * LemonLDAP 2.0.2
