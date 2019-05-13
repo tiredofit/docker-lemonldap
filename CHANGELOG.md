@@ -1,10 +1,6 @@
-## 1.2.8 2019-04-19 <dave at tiredofit dot ca>
+## 1.2.7 2019-05-13 <dave at tiredofit dot ca>
 
-* Force deleting fail2ban /var/run .sock and .pid
-
-## 1.2.7 2019-04-19 <dave at tiredofit dot ca>
-
-* Temporarily Remove MongoDB
+* LemonLDAP:NG 2.0.4
 
 ## 1.2.6 2019-04-11 <dave at tiredofit dot ca>
 
