@@ -1,6 +1,14 @@
+## 1.2.2 2019-05-13 <dave at tiredofit dot ca>
+
+* LemonLDAP 1.9.19
+
+## 1.2.1 2019-02-14 <dave at tiredofit dot ca>
+
+* Add OpenID Rotation Cron Script
+
 ## 1.2 2019-01-13 <dave at tiredofit dot ca>
 
-* LemonLDAP 2.0.1 / 1.9.18
+* LemonLDAP / 1.9.18
 * Remove Apache
 * Enable Configuration for REST
 * Add IP Allow list for REST/SOAP
