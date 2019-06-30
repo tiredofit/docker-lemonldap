@@ -1,3 +1,7 @@
+## 1.2.4 2019-06-29 <dave at tiredofit dot ca>
+
+* LemonLDAP 2.0.5
+
 ## 1.2.3 2019-05-13 <dave at tiredofit dot ca>
 
 * LemonLDAP 2.0.4
