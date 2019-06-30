@@ -1,3 +1,12 @@
+## 1.4 2019-06-29 <dave at tiredofit dot ca>
+
+* LemonLDAP:NG 2.0.5
+* Alpine 3.10
+
+## 1.3 2019-05-21 <dave at tiredofit dot ca>
+
+* Add Impersonation functionality to load create custom Vhost, and load a seperate theme with the new fields required to support.
+
 ## 1.2.7 2019-05-13 <dave at tiredofit dot ca>
 
 * LemonLDAP:NG 2.0.4
