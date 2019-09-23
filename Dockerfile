@@ -2,7 +2,7 @@ FROM tiredofit/alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Environment Variables
-ENV LEMONLDAP_VERSION=1.9.19 \
+ENV LEMONLDAP_VERSION=1.9.21 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=2.6.0 \
     LIBU2F_VERSION=1.1.0 \
@@ -44,7 +44,6 @@ RUN set -x && \
             libtool \
             krb5-dev \
             make \
-            mongodb \
             nodejs \
             nodejs-npm \
             musl-dev \
@@ -63,7 +62,6 @@ RUN set -x && \
             imagemagick6-libs \
             krb5-libs \
             mariadb-client \
-            mongodb-tools \
             nginx \
             openssl \
             perl \
@@ -148,7 +146,6 @@ RUN set -x && \
           Image::Magick \
           LWP::UserAgent \
           Mouse \
-          MongoDB \
           Net::Facebook::Oauth2 \
           Net::LDAP \
           Net::OAuth \
@@ -217,7 +214,6 @@ RUN set -x && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
-    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
     \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
@@ -236,12 +232,6 @@ RUN set -x && \
     ./Build && \
     ./Build test && \
     ./Build install && \
-    cd .. && \
-    cd /usr/src/apache-session-mongodb && \
-    perl Makefile.PL && \
-    make && \
-    make test && \
-    make install && \
     \
 # Shuffle some Files around
     mkdir -p /assets/lemonldap /assets/conf && \
@@ -257,7 +247,6 @@ RUN set -x && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     apk del .lemonldap-build-deps && \
-    deluser mongodb && \
     deluser nginx && \
     deluser redis && \
     rm -rf /tmp/* /var/cache/apk/* 
