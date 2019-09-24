@@ -6,8 +6,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ### Copy Mongo Packages
 COPY --from=mongo-packages / /usr/src/apk
 
-### Environment Variables
-ENV LEMONLDAP_VERSION=2.0.5 \
+ENV LEMONLDAP_VERSION=2.0.6 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=2.6.0 \
     LIBU2F_VERSION=1.1.0 \
@@ -26,6 +25,7 @@ RUN set -x && \
     \
 # Build Dependencies
     apk update && \
+    apk upgrade && \
     apk add --no-cache --virtual .lemonldap-build-deps \
             autoconf \
             automake \
@@ -115,7 +115,7 @@ RUN set -x && \
             \
     \
     cd /usr/src/apk && \
-    apk add --allow-untrusted --no-cache -t .mongo-run-deps \
+    apk add --allow-untrusted --no-cache \
  		mongodb*.apk \
                 mongodb-tools*.apk \
                 && \
@@ -140,6 +140,7 @@ RUN set -x && \
       curl -L http://cpanmin.us -o /usr/bin/cpanm && \
       chmod +x /usr/bin/cpanm && \
       cpanm -n \
+          Auth::Yubikey_WebClient \
           Authen::Radius \
           Authen::Captcha \
           CGI::Compile \
@@ -171,6 +172,7 @@ RUN set -x && \
           Sentry::Raven \
           SOAP::Lite \
           String::Random \
+          Text::Unidecode \
           URI::Escape \
           Web::ID \
     && \
@@ -181,6 +183,7 @@ RUN set -x && \
     curl -sSL https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_${MINIFY_VERSION}_linux_amd64.tar.gz | tar xvfz - --strip 1 -C /usr/src/minify && \
     mv /usr/src/minify /usr/bin/ && \
     chmod +x /usr/bin/minify && \
+    npm install -g uglify-js && \  
     ln -s /usr/src/.node_modules/coffeescript/bin/coffee /usr/bin/ && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
   \
@@ -206,6 +209,7 @@ RUN set -x && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
     if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
+    #if [ "$LEMONLDAP_VERSION" != "master" ]; then git checkout tags/v$LEMONLDAP_VERSION; fi && \
     make dist && \
     make PREFIX=/usr \
          LMPREFIX=/usr/share/lemonldap-ng \

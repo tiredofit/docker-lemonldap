@@ -155,6 +155,12 @@ Depending if `REST` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `PORTAL_ENABLE_REST` | Allow REST access to the Portal - Default `FALSE` |
 | `PORTAL_ENABLE_SOAP` | Allow SOAP access to the Portal - Default `FALSE` |
 | `PORTAL_RESTSOAP_ALLOWED_IPs` | If above options enabled, provide comma seperated list of IP/Network to allow access Default `0.0.0.0/0` |
+| `ENABLE_IMPERSONATION` | If you wish to allow impersonation using a seperate theme set to `TRUE` - Default: `FALSE` |
+| `IMPERSONATE_HOSTNAME` | Hostname to use to load the custom impersonation theme |
+| `IMPERSONATE_THEME` | Theme to use to load the impersonation theme |
+
+* With impersonation, if you enable it, it will add a new field to your login screen, which may not be what you want if this is a production system. You will need to create two custom themes (one as a replica of bootstrap, and one for impersonation). In the custom theme, make modifications to `login.tpl` to stop it from loading impersonation.tpl, yet in your impersonation theme, leave it in there. Then, when one of your admin/support team visits the custom `IMPERSONATE_HOSTNAME` you have defined it will load the full theme with allows to impersonate, where as the default theme will not show this.*
+
 
 ### Handler Settings
 | Parameter | Description |

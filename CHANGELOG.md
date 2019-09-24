@@ -1,3 +1,17 @@
+## 1.4.3 2019-09-18 <dave at tiredofit dot ca>
+
+* LemonLDAP:NG 2.0.6
+
+## 1.4.2 2019-09-18 <dave at tiredofit dot ca>
+
+* Add uglify-js node module for building
+
+## 1.4.1 2019-07-09 <dave at tiredofit dot ca>
+
+* Add Auth::Yubikey_WebClient 
+* Add Text::Unidecode
+* Properly remove MongoDB and leave MongoDB Tools
+
 ## 1.4 2019-06-29 <dave at tiredofit dot ca>
 
 * LemonLDAP:NG 2.0.5

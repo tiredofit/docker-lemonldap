@@ -21,7 +21,5 @@ EOF
     s6-svc -d /var/run/s6/services/05-fail2ban
   fi
 
-rm -rf /run/fail2ban/*
-
 mkdir -p /tmp/state
 touch /tmp/state/05-fail2ban-init

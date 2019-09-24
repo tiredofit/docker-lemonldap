@@ -57,6 +57,27 @@ else
   fi
 fi
 
+### Impersonation Theme Setup
+if [ "$ENABLE_IMPERSONATION" = "TRUE" ] || [ "$ENABLE_IMPERSONATION" = "true" ] ; then
+    if [ ! -n "$IMPERSONATE_HOSTNAME" ]; then
+        echo '** [lemonldap] ERROR: No Impersonation Hostname Entered! '
+        exit 1
+    fi
+
+    if [ ! -n "$IMPERSONATE_THEME" ]; then
+        echo '** [lemonldap] ERROR: No Impersonation Theme Entered! '
+        exit 1
+    fi
+
+    cat <<EOF > /etc/nginx/conf.d/impersonate.conf
+server {
+    listen 80;
+    server_name ${IMPERSONATE_HOSTNAME};
+    return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
+}
+EOF
+fi
+
 ### Logging Translation
 function function_logtype(){
     case "$1" in
