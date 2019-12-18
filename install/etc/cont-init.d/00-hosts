@@ -1,6 +1,4 @@
 #!/usr/bin/with-contenv bash
 
   ### Add Entry to hosts
-echo '127.0.0.1 '$HANDLER_HOSTNAME >>/etc/hosts
-  
-
+echo "127.0.0.1 ${HANDLER_HOSTNAME}" >>/etc/hosts

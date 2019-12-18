@@ -1,10 +1,5 @@
-FROM tiredofit/mongo-builder:latest as mongo-packages
-
-FROM tiredofit/alpine:3.10
+FROM tiredofit/nginx:alpine-3.10
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
-
-### Copy Mongo Packages
-COPY --from=mongo-packages / /usr/src/apk
 
 ENV LEMONLDAP_VERSION=2.0.6 \
     AUTHCAS_VERSION=1.7 \
@@ -16,6 +11,15 @@ ENV LEMONLDAP_VERSION=2.0.6 \
     PORTAL_HOSTNAME=sso.example.com \
     MANAGER_HOSTNAME=manager.sso.example.com \
     TEST_HOSTNAME=test.sso.example.com \
+    NGINX_APPLICATION_CONFIGURATION=FALSE \
+    NGINX_AUTHENTICATION_TYPE=NONE \
+    NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
+    NGINX_USER=llng \
+    NGINX_GROUP=llng \
+    NGINX_LOG_ACCESS_LOCATION=/www/logs/http \
+    NGINX_LOG_ACCESS_FILE=access.log \
+    NGINX_LOG_ERROR_FILE=error.log \
+    NGINX_LOG_ERROR_LOCATION=/www/logs/http \
     PATH=/usr/share/lemonldap-ng/bin:${PATH}
 
 RUN set -x && \
@@ -68,7 +72,6 @@ RUN set -x && \
             imagemagick6-libs \
             krb5-libs \
             mariadb-client \
-            nginx \
             openssl \
             perl \
             perl-apache-session \
@@ -113,13 +116,6 @@ RUN set -x && \
             xmlsec \
             && \
             \
-    \
-    cd /usr/src/apk && \
-    apk add --allow-untrusted --no-cache \
- 		mongodb*.apk \
-                mongodb-tools*.apk \
-                && \
-    \
 ### Compile libu2f-server for 2FA Support
        mkdir -p /usr/src/libu2f && \
        curl -ssL https://developers.yubico.com/libu2f-server/Releases/libu2f-server-$LIBU2F_VERSION.tar.xz | tar xvfJ - --strip 1 -C /usr/src/libu2f && \
@@ -183,7 +179,7 @@ RUN set -x && \
     curl -sSL https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_${MINIFY_VERSION}_linux_amd64.tar.gz | tar xvfz - --strip 1 -C /usr/src/minify && \
     mv /usr/src/minify /usr/bin/ && \
     chmod +x /usr/bin/minify && \
-    npm install -g uglify-js && \  
+    npm install -g uglify-js && \
     ln -s /usr/src/.node_modules/coffeescript/bin/coffee /usr/bin/ && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
   \
@@ -208,8 +204,18 @@ RUN set -x && \
     mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi
     #if [ "$LEMONLDAP_VERSION" != "master" ]; then git checkout tags/v$LEMONLDAP_VERSION; fi && \
+RUN cd /usr/src/lemonldap-ng && \
+    ## Better Logs
+    #wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/uploads/c4596906de87a52458e07fe0759c3cb1/better-ldaperror-logs.diff && \
+    #patch -p1 <better-ldaperror-logs.diff && \
+    ## Check Connectin State
+#    wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/commit/474bb48aa1f1f9a04066053b8b78ccec73773126.diff && \
+#    patch -p1 < 474bb48aa1f1f9a04066053b8b78ccec73773126.diff && \
+    ## Even Better Logs
+#    wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/commit/fa49e77495fadf9b00686a90477de16ab4c75f39.diff && \
+#    patch -p1 < fa49e77495fadf9b00686a90477de16ab4c75f39.diff && \
     make dist && \
     make PREFIX=/usr \
          LMPREFIX=/usr/share/lemonldap-ng \
@@ -233,7 +239,7 @@ RUN set -x && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
-    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
+#    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
     \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
@@ -253,11 +259,11 @@ RUN set -x && \
     ./Build test && \
     ./Build install && \
     cd .. && \
-    cd /usr/src/apache-session-mongodb && \
-    perl Makefile.PL && \
-    make && \
-    make test && \
-    make install && \
+#    cd /usr/src/apache-session-mongodb && \
+#    perl Makefile.PL && \
+#    make && \
+#    make test && \
+#    make install && \
     \
 # Shuffle some Files around
     mkdir -p /assets/lemonldap /assets/conf && \
@@ -273,8 +279,8 @@ RUN set -x && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     apk del .lemonldap-build-deps && \
-    apk del mongodb && \
-    deluser mongodb && \
+#    apk del mongodb && \
+#    deluser mongodb && \
     deluser nginx && \
     deluser redis && \
     rm -rf /tmp/* /var/cache/apk/* 

@@ -1,3 +1,28 @@
+## 1.5.2 2019-12-18 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change more hardcoded usernames to dynamic user/group names
+
+
+## 1.5.1 2019-12-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix nginx configuration to stop barking for site optimization
+
+
+## 1.5.0 2019-12-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Switch to using tiredofit/nginx as base image to take advantage of functionality
+
+   ### Reverted
+      - Removal of MongoDB Driver
+
+
+## 1.4.4-dev 2019-09-18 <dave at tiredofit dot ca>
+
+* Update for LLNG LDAP Error Logging as per issue #1909 https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/issues/1909#note_48620
+
 ## 1.4.3 2019-09-18 <dave at tiredofit dot ca>
 
 * LemonLDAP:NG 2.0.6

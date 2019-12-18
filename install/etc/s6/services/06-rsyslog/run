@@ -9,6 +9,5 @@ if [ ! -f /tmp/state/06-rsyslog ]; then
    echo 'Initialization Complete' >/tmp/state/06-rsyslog
 fi
 
-echo ''
 echo '** [rsyslog] Starting Syslog'
 exec rsyslogd -n > /dev/null

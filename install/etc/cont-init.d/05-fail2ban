@@ -6,12 +6,12 @@ touch /www/logs/http/error-handler.log
 cat <<EOF > /etc/fail2ban/jail.conf
 
 [lemonldap-ng]
-enabled = true
-backend = auto
-port    = http,https
-filter  = lemonldap
+enabled  = true
+backend  = auto
+port     = http,https
+filter   = lemonldap
 action   = iptables-multiport[name=lemonldap, port="http,https"]
-logpath = /www/logs/http/error*.log
+logpath  = ${NGINX_LOG_ERROR_LOCATION}/error*.log
 maxretry = 3
 EOF
 

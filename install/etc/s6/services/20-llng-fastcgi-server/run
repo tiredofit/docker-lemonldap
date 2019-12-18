@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/10-lemonldap ]
+while [ ! -f /tmp/state/10-lemonldap-init ]
 do
   sleep 1
 done
@@ -21,6 +21,5 @@ if [ ! -f /tmp/state/20-llng-fastcgi-server ]; then
 	echo 'Initialization Complete' >/tmp/state/20-llng-fastcgi-server
 fi
 
-echo ''
-echo '** [lemonldap] Starting LemonLDAP FastCGI Server'
+echo "** [lemonldap] Starting LemonLDAP FastCGI Server ${LEMONLDAP_VERSION}"
 exec s6-setuidgid llng /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground

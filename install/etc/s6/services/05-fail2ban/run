@@ -9,7 +9,5 @@ if [ ! -f /tmp/state/05-failban ]; then
    echo 'Initialization Complete' >/tmp/state/05-fail2ban
 fi
 
-
-echo ''
 echo '** [fail2ban] Starting fail2ban'
 exec /usr/bin/fail2ban-client -f start

@@ -42,7 +42,7 @@ LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
 if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
   if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
       cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
-      chown -R llng /var/lib/lemonldap-ng/conf/
+      chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng/conf/
   fi
   if [ ! -d /etc/nginx/conf.d ]; then
       ln -s /assets/httpd/nginx/2.x /etc/nginx/conf.d
@@ -50,7 +50,7 @@ if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "mast
 else
   if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.js ]; then
       cp -R /assets/conf/lmConf-1.js /var/lib/lemonldap-ng/conf/
-      chown -R llng /var/lib/lemonldap-ng/conf/
+      chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng/conf/
   fi
   if [ ! -d /etc/nginx/conf.d ]; then
       ln -s /assets/httpd/nginx/1.x /etc/nginx/conf.d
@@ -119,7 +119,7 @@ function function_translate_logLevel(){
 
 if [ ! -f /etc/lemonldap-ng/lemonldap-ng.ini ]; then
     cp -R /assets/lemonldap/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
-    chown -R llng /etc/lemonldap-ng/
+    chown -R ${NGINX_USER}:${NGINX_GROUP} /etc/lemonldap-ng/
 fi
   
 ### Modify Virtual Hosts for Nginx
@@ -194,7 +194,7 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
             echo "globalSessionStorageOptions={'namespace' => '"$HANDLER_CACHE_TYPE_FILE_NAMESPACE"','default_expires_in' => "$HANDLER_CACHE_TYPE_FILE_EXPIRY", 'directory_umask' => '"$HANDLER_CACHE_TYPE_FILE_DIR_MASK"', 'cache_root' => '"$HANDLER_CACHE_TYPE_FILE_PATH"', 'cache_depth' => "$HANDLER_CACHE_TYPE_FILE_DEPTH", }" >>/etc/lemonldap-ng/lemonldap-ng.ini
             if [ ! -d /var/lib/lemonldap-ng/sessions/lock ]; then mkdir -p /var/lib/lemonldap-ng/sessions/lock; fi;
             if [ ! -d /var/lib/lemonldap-ng/psessions/lock ]; then mkdir -p /var/lib/lemonldap-ng/psessions/lock; fi;
-            chown -R llng /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
+            chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
   fi
 
   if [ "$CROSS_DOMAIN_HANDLER" = "TRUE" ];  then echo 'cda = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
@@ -301,14 +301,14 @@ else
 fi
 
 
-chown -R llng /var/lib/lemonldap-ng
+chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng
 
 if [ "$MODE" = "MASTER" ]; then
 ### Theme Support
   if [ -d /assets/custom ] ; then
      echo "** [lemonldap] Custom Files Found, inserting into image overtop of sourcecode.."
      cp -R /assets/custom/* /usr/share/lemonldap-ng
-     chown -R llng:llng /usr/share/lemonldap-ng
+     chown -R ${NGINX_USER}:${NGINX_GROUP}:llng /usr/share/lemonldap-ng
   fi
 fi
 
