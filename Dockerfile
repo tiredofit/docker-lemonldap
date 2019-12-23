@@ -1,7 +1,7 @@
-FROM tiredofit/nginx:alpine-3.10
+FROM tiredofit/nginx:alpine-3.11
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV LEMONLDAP_VERSION=2.0.6 \
+ENV LEMONLDAP_VERSION=2.0.7 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=2.6.0 \
     LIBU2F_VERSION=1.1.0 \
@@ -82,9 +82,12 @@ RUN set -x && \
             perl-crypt-openssl-bignum \
             perl-crypt-openssl-rsa \
             perl-crypt-rijndael \
+            perl-crypt-x509 \
             perl-dbd-mysql \
             perl-dbd-sqlite \
             perl-dbi \
+            perl-digest-md5 \
+            perl-digest-sha1 \
             perl-cgi-emulate-psgi \
             perl-fcgi \
             perl-fcgi-procmanager \
@@ -92,6 +95,7 @@ RUN set -x && \
             perl-html-template \
             perl-io \
             perl-io-socket-ssl \
+            perl-io-string \
             perl-json \
             perl-ldap \
             perl-log-log4perl \
@@ -142,22 +146,19 @@ RUN set -x && \
           CGI::Compile \
           Convert::PEM \
           Convert::Base32 \
-          Crypt::OpenSSL::X509 \
           Crypt::U2F::Server::Simple \
           Crypt::URandom \
           Digest::HMAC_SHA1 \
-          Digest::MD5 \
           Digest::SHA \
           Email::Sender \
           GD::SecurityImage \
           GSSAPI \
           HTTP::Headers \
           HTTP::Request \
-          IO::String \
           Image::Magick \
           LWP::UserAgent \
           Mouse \
-          MongoDB \
+#          MongoDB \
           Net::Facebook::Oauth2 \
           Net::LDAP \
           Net::OAuth \
@@ -204,18 +205,7 @@ RUN set -x && \
     mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi
-    #if [ "$LEMONLDAP_VERSION" != "master" ]; then git checkout tags/v$LEMONLDAP_VERSION; fi && \
-RUN cd /usr/src/lemonldap-ng && \
-    ## Better Logs
-    #wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/uploads/c4596906de87a52458e07fe0759c3cb1/better-ldaperror-logs.diff && \
-    #patch -p1 <better-ldaperror-logs.diff && \
-    ## Check Connectin State
-#    wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/commit/474bb48aa1f1f9a04066053b8b78ccec73773126.diff && \
-#    patch -p1 < 474bb48aa1f1f9a04066053b8b78ccec73773126.diff && \
-    ## Even Better Logs
-#    wget https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/commit/fa49e77495fadf9b00686a90477de16ab4c75f39.diff && \
-#    patch -p1 < fa49e77495fadf9b00686a90477de16ab4c75f39.diff && \
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
     make dist && \
     make PREFIX=/usr \
          LMPREFIX=/usr/share/lemonldap-ng \
