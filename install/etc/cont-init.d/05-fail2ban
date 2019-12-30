@@ -1,5 +1,8 @@
 #!/usr/bin/with-contenv bash
 
+source /assets/functions/*
+PROCESS_NAME="fail2ban"
+
 rm -rf /etc/fail2ban/jail.d/*
 mkdir -p /www/logs/http/
 touch /www/logs/http/error-handler.log
@@ -17,9 +20,8 @@ EOF
 
 ### Check to see if Enabled/Disabled
   if [ "$ENABLE_FAIL2BAN" = "FALSE" ] || [ "$MODE" = "HANDLER" ];  then
-    echo "**** [fail2ban] Disabling Fail2ban"
-    s6-svc -d /var/run/s6/services/05-fail2ban
+    print_warn "Disabling Fail2ban"
+    s6-svc -d /var/run/s6/services/`basename $0`
   fi
 
-mkdir -p /tmp/state
-touch /tmp/state/05-fail2ban-init
+liftoff

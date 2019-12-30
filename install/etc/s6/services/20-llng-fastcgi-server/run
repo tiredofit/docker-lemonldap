@@ -1,25 +1,22 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/10-lemonldap-init ]
-do
-  sleep 1
-done
-
-if [ ! -f /tmp/state/20-llng-fastcgi-server ]; then
+source /assets/functions/*
+PROCESS_NAME="fail2ban"
+check_initialized
 
 ### Sanity Check Defaults
-  HANDLER_PROCESSES=${HANDLER_PROCESSES:-7}
-  HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-TRUE}         
-  HANDLER_SOCKET_TCP_PORT=${HANDLER_SOCKET_TCP_PORT:-2884}
-  
+HANDLER_PROCESSES=${HANDLER_PROCESSES:-7}
+HANDLER_SOCKET_TCP_ENABLE=${HANDLER_SOCKET_TCP_ENABLE:-TRUE}         
+HANDLER_SOCKET_TCP_PORT=${HANDLER_SOCKET_TCP_PORT:-2884}
+
 ### Check to see if Enabled/Disabled
-  if [ "$HANDLER_SOCKET_TCP_ENABLE" = "TRUE" ] || [ "$HANDLER_SOCKET_TCP_ENABLE" = "true" ];  then
-      SOCKET="-l 0.0.0.0:"$HANDLER_SOCKET_TCP_PORT
-  else
-      SOCKET="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
-  fi
-	echo 'Initialization Complete' >/tmp/state/20-llng-fastcgi-server
+if [ "$HANDLER_SOCKET_TCP_ENABLE" = "TRUE" ] || [ "$HANDLER_SOCKET_TCP_ENABLE" = "true" ];  then
+    SOCKET="-l 0.0.0.0:"$HANDLER_SOCKET_TCP_PORT
+else
+    SOCKET="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
 fi
 
-echo "** [lemonldap] Starting LemonLDAP FastCGI Server ${LEMONLDAP_VERSION}"
+liftoff
+
+print_info "Starting LemonLDAP FastCGI Server ${LEMONLDAP_VERSION}"
 exec s6-setuidgid llng /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground

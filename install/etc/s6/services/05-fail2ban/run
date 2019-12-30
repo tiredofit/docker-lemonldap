@@ -1,13 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/99-container-init ]
-do
-  sleep 1
-done
+source /assets/functions/*
+PROCESS_NAME="fail2ban"
+check_initialized
+liftoff
 
-if [ ! -f /tmp/state/05-failban ]; then
-   echo 'Initialization Complete' >/tmp/state/05-fail2ban
-fi
-
-echo '** [fail2ban] Starting fail2ban'
-exec /usr/bin/fail2ban-client -f start
+print_info "Starting fail2ban"
+silent exec /usr/bin/fail2ban-client -f start

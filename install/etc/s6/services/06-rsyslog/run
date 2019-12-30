@@ -1,13 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/06-rsyslog-init ]
-do
-  sleep 1
-done
+source /assets/functions/*
+PROCESS_NAME="rsyslog"
+check_initialized
+liftoff
 
-if [ ! -f /tmp/state/06-rsyslog ]; then
-   echo 'Initialization Complete' >/tmp/state/06-rsyslog
-fi
-
-echo '** [rsyslog] Starting Syslog'
-exec rsyslogd -n > /dev/null
+print_info "Starting Syslog"
+silent exec rsyslogd -n

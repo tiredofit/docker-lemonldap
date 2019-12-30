@@ -1,10 +1,11 @@
 #!/usr/bin/with-contenv bash
+source /assets/functions/*
+PROCESS_NAME="rsyslog"
 
 ### Check to see if Enabled/Disabled
   if [ "$LOG_TYPE" != "SYSLOG" ] ;  then
-    echo "** [rsyslog] Disabling Syslog"
-    s6-svc -d /var/run/s6/services/06-rsyslog
+    print_warn "Disabling Syslog"
+    s6-svc -d /var/run/s6/services/`basename $0`
   fi
 
-mkdir -p /tmp/state
-touch /tmp/state/06-rsyslog-init
+liftoff

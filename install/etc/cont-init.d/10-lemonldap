@@ -1,5 +1,8 @@
 #!/usr/bin/with-contenv bash
 
+source /assets/functions/*
+PROCESS_NAME="lemonldap-ng"
+
 ### Sanity Check Defaults
 CROSS_DOMAIN_HANDLER=${CROSS_DOMAIN_HANDLER:-FALSE}
 USE_SAFE_JAIL=${USE_SAFE_JAIL:-TRUE}
@@ -36,7 +39,6 @@ SESSION_TYPE=${SESSION_TYPE:-FILE}
 SETUP_TYPE=${SETUP_TYPE:-AUTO}
 USER_LOG_TYPE=${LOG_TYPE:-CONSOLE}
 
-
 ### Copy Configuration Depending on LemonLDAP version and setup Logging
 LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
 if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
@@ -59,15 +61,8 @@ fi
 
 ### Impersonation Theme Setup
 if [ "$ENABLE_IMPERSONATION" = "TRUE" ] || [ "$ENABLE_IMPERSONATION" = "true" ] ; then
-    if [ ! -n "$IMPERSONATE_HOSTNAME" ]; then
-        echo '** [lemonldap] ERROR: No Impersonation Hostname Entered! '
-        exit 1
-    fi
-
-    if [ ! -n "$IMPERSONATE_THEME" ]; then
-        echo '** [lemonldap] ERROR: No Impersonation Theme Entered! '
-        exit 1
-    fi
+    sanity_var IMPERSONATE_HOSTNAME "Impersonation Hostname"
+    sanity_var IMPERSONATE_THEME "Impersonation Theme"
 
     cat <<EOF > /etc/nginx/conf.d/impersonate.conf
 server {
@@ -148,7 +143,7 @@ if [ "$MODE" = "HANDLER" ]; then
     done
 
   if [ "$CONFIG_TYPE" = "FILE" ]; then
-    echo "** [lemonldap] ERROR: This container has been configured as a handler with the FILE Config Type. While it's technically possible with using NFS you are better off using SOAP. Exiting.."
+    print_error "This container has been configured as a handler with the FILE Config Type. While it's technically possible with using NFS you are better off using SOAP. Exiting.."
     exit 1
   fi
 fi
@@ -297,7 +292,7 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
   fi
 
 else
-  echo '** [lemonldap] Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!'
+  print_warn "Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!"
 fi
 
 
@@ -306,10 +301,10 @@ chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng
 if [ "$MODE" = "MASTER" ]; then
 ### Theme Support
   if [ -d /assets/custom ] ; then
-     echo "** [lemonldap] Custom Files Found, inserting into image overtop of sourcecode.."
+     print_warn "Custom Files Found, inserting into image overtop of sourcecode.."
      cp -R /assets/custom/* /usr/share/lemonldap-ng
      chown -R ${NGINX_USER}:${NGINX_GROUP}:llng /usr/share/lemonldap-ng
   fi
 fi
 
-touch /tmp/state/10-lemonldap-init
+liftoff
