@@ -1,8 +1,11 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/*
-PROCESS_NAME="fail2ban"
-check_initialized
+for s in /assets/functions/*; do source $s; done
+PROCESS_NAME="lemonldap-ng handler"
+
+check_container_initialized
+check_service_initialized init
+liftoff
 
 ### Sanity Check Defaults
 HANDLER_PROCESSES=${HANDLER_PROCESSES:-7}
