@@ -59,6 +59,9 @@ else
   fi
 fi
 
+### Add Entry to hosts
+echo "127.0.0.1 ${HANDLER_HOSTNAME}" >>/etc/hosts
+
 ### Impersonation Theme Setup
 if [ "$ENABLE_IMPERSONATION" = "TRUE" ] || [ "$ENABLE_IMPERSONATION" = "true" ] ; then
     sanity_var IMPERSONATE_HOSTNAME "Impersonation Hostname"

@@ -1,3 +1,9 @@
+## 1.6.1 2020-01-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Move Adding hosts for localhost handler to main lemonldap init script
+
+
 ## 1.6.0 2019-12-29 <dave at tiredofit dot ca>
 
    ### Added
