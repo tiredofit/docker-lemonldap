@@ -113,7 +113,8 @@ By Default this image is ready to run out of the box, without having to alter an
 |-----------|-------------|
 | `SETUP_TYPE` | Default: `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. |
 | `MODE` | Type of Install - `HANDLER` for handler duties only, Default `MASTER` for Portal, Manager, Handler |
-| `CONFIG_TYPE` | Configuration type (`FILE`, `SOAP`, `REST`) - Default `FILE` | `DOMAIN_NAME` | Your domain name e.g. `example.org` |
+| `CONFIG_TYPE` | Configuration type (`FILE`, `SOAP`, `REST`) - Default `FILE` |
+| `DOMAIN_NAME` | Your domain name e.g. `example.org` |
 | `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org` |
 | `PORTAL_HOSTNAME` | FQDN for public portal/main URL e.g. `sso.example.org` |
 | `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org` |
