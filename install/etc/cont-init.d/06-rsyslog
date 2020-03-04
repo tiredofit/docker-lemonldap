@@ -6,7 +6,7 @@ PROCESS_NAME="rsyslog"
 ### Check to see if Enabled/Disabled
   if [ "$LOG_TYPE" != "SYSLOG" ] ;  then
     print_warn "Disabling Syslog"
-    s6-svc -d /var/run/s6/services/`basename $0`
+    service_stop `basename $0`
   fi
 
 liftoff
