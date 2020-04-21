@@ -146,8 +146,10 @@ RUN set -x && \
           CGI::Compile \
           Convert::PEM \
           Convert::Base32 \
+          Crypt::OpenSSL::X509 \
           Crypt::U2F::Server::Simple \
           Crypt::URandom \
+          DateTime::Format::RFC3339 \
           Digest::HMAC_SHA1 \
           Digest::SHA \
           Email::Sender \

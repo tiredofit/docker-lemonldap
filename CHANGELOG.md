@@ -1,3 +1,10 @@
+## 1.6.4 2020-04-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Perl Module Crypt::OpenSSL:X509
+      - Prepare for LLNG 2.0.8 Release
+
+
 ## 1.6.3 2020-03-04 <dave at tiredofit dot ca>
 
    ### Added
