@@ -1,3 +1,10 @@
+## 1.6.5 2020-05-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.0.8
+      - Lasso 2.6.1
+
+
 ## 1.6.4 2020-04-21 <dave at tiredofit dot ca>
 
    ### Added
