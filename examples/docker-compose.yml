@@ -20,6 +20,7 @@ services:
 
     - ZABBIX_HOSTNAME=lemonldap-app
 
+    - API_HOSTNAME=api.manager.sso.example.com
     - MANAGER_HOSTNAME=manager.sso.example.com
     - PORTAL_HOSTNAME=sso.example.com
     - HANDLER_HOSTNAME=handler.sso.example.com

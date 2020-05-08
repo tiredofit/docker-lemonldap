@@ -1,9 +1,23 @@
+## 1.7.0 2020-05-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Implemented Manager API Support
+
+   ### Changed
+      - Altered image to support changes to tiredofit/alpine and tiredofit/nginx base images
+
+   ### Reverted
+      - Removed SOAP support
+
+
 ## 1.6.5 2020-05-06 <dave at tiredofit dot ca>
 
    ### Added
       - LemonLDAP:NG 2.0.8
       - Lasso 2.6.1
 
+   ### Reverted
+      - Removed SOAP::Lite
 
 ## 1.6.4 2020-04-21 <dave at tiredofit dot ca>
 

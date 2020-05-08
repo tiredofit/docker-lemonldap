@@ -9,6 +9,7 @@ ENV LEMONLDAP_VERSION=2.0.8 \
     DOMAIN_NAME=example.com \
     HANDLER_HOSTNAME=handler.sso.example.com \
     PORTAL_HOSTNAME=sso.example.com \
+    API_HOSTNAME=api.manager.sso.example.com \
     MANAGER_HOSTNAME=manager.sso.example.com \
     TEST_HOSTNAME=test.sso.example.com \
     NGINX_APPLICATION_CONFIGURATION=FALSE \
@@ -169,7 +170,6 @@ RUN set -x && \
           Regexp::Assemble \
           Redis \
           Sentry::Raven \
-          SOAP::Lite \
           String::Random \
           Text::Unidecode \
           URI::Escape \
@@ -185,7 +185,7 @@ RUN set -x && \
     npm install -g uglify-js && \
     ln -s /usr/src/.node_modules/coffeescript/bin/coffee /usr/bin/ && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
-  \
+    \
 ### Install Lasso
     mkdir -p /usr/src/lasso && \
     git clone git://git.entrouvert.org/lasso.git && \
@@ -275,7 +275,7 @@ RUN set -x && \
 #    deluser mongodb && \
     deluser nginx && \
     deluser redis && \
-    rm -rf /tmp/* /var/cache/apk/* 
+    rm -rf /tmp/* /var/cache/apk/*
 
 ### Networking Setup
 EXPOSE 80 2884

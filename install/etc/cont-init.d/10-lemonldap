@@ -27,7 +27,7 @@ fi
 echo "127.0.0.1 ${HANDLER_HOSTNAME}" >>/etc/hosts
 
 ### Impersonation Theme Setup
-if [ "$ENABLE_IMPERSONATION" = "TRUE" ] || [ "$ENABLE_IMPERSONATION" = "true" ] ; then
+if var_true $ENABLE_IMPERSONATION ; then
     sanity_var IMPERSONATE_HOSTNAME "Impersonation Hostname"
     sanity_var IMPERSONATE_THEME "Impersonation Theme"
 
@@ -86,6 +86,7 @@ fi
   
 ### Modify Virtual Hosts for Nginx
 sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
+sed -i -e "s/<API_HOSTNAME>/$API_HOSTNAME/g" /etc/nginx/conf.d/*.conf
 sed -i -e "s/<MANAGER_HOSTNAME>/$MANAGER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
 sed -i -e "s/<HANDLER_HOSTNAME>/$HANDLER_HOSTNAME/g" /etc/nginx/conf.d/*.conf
 sed -i -e "s/<TEST_HOSTNAME>/$TEST_HOSTNAME/g" /etc/nginx/conf.d/*.conf
@@ -97,8 +98,10 @@ sed -i -e "s/reload.example.com/$HANDLER_HOSTNAME/g" /var/lib/lemonldap-ng/conf/
 sed -i -e "s/test1.example.com/$TEST_HOSTNAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js* /etc/lemonldap-ng/* /usr/share/lemonldap-ng/test/index.pl
 sed -i -e "s/example.com/$DOMAIN_NAME/g" /var/lib/lemonldap-ng/conf/lmConf-1.js* /etc/lemonldap-ng/* /usr/share/lemonldap-ng/test/index.pl
 
+
 if [ "$MODE" = "HANDLER" ]; then
   rm -rf /etc/nginx/conf.d/manager.conf
+  rm -rf /etc/nginx/conf.d/api.conf
   rm -rf /etc/nginx/conf.d/test.conf
   rm -rf /etc/nginx/conf.d/portal.conf
   sed -i -e "s/lmremote_user/remote_user/g" /etc/nginx/nginx.conf
@@ -115,14 +118,24 @@ if [ "$MODE" = "HANDLER" ]; then
   fi
 fi
 
-### Rest/SOAP Remote Access
-if [ "$PORTAL_ENABLE_SOAP" = "TRUE" ] || [ "$PORTAL_ENABLE_SOAP" = "true" ] || [ "$PORTAL_ENABLE_REST" = "TRUE" ] || [ "$PORTAL_ENABLE_REST" = "true" ]; then
+### Rest Remote Access
+if var_true $PORTAL_ENABLE_REST ; then
      sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/conf.d/portal.conf
      allowed=$(echo $PORTAL_RESTSOAP_ALLOWED_IPS | tr "," "\n")
       for allow in $allowed
         do
           sed -i "/allow 127.0.0.1/a\ \ \  allow $allow;" /etc/nginx/conf.d/portal.conf
         done
+fi
+
+if var_false $MANAGER_ENABLE_API ; then
+  rm -rf /etc/nginx/conf.d/api.conf
+else
+  allowed=$(echo $MANAGER_API_ALLOWED_IPS | tr "," "\n")
+  for allow in $allowed
+    do
+      sed -i "/allow 127.0.0.1/a\ \ \  allow $allow;" /etc/nginx/conf.d/api.conf
+    done
 fi
 
 if [ "$SETUP_TYPE" = "AUTO" ]; then    
@@ -159,8 +172,8 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
             chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
   fi
 
-  if [ "$CROSS_DOMAIN_HANDLER" = "TRUE" ];  then echo 'cda = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
-  if [ "$USE_SAFE_JAIL" = "FALSE" ]; then echo 'useSafeJail = 0' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
+  if var_true $CROSS_DOMAIN_HANDLER ; then echo 'cda = 1' >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+  if var_false $$USE_SAFE_JAIL ; then echo 'useSafeJail = 0' >>/etc/lemonldap-ng/lemonldap-ng.ini; fi;
    echo '' >> /etc/lemonldap-ng/lemonldap-ng.ini
    echo '[configuration]'>>/etc/lemonldap-ng/lemonldap-ng.ini
 
@@ -227,8 +240,8 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
           echo 'logLevel = '$HANDLER_LOG_LEVEL >>/etc/lemonldap-ng/lemonldap-ng.ini
         fi
 
-        if  [ "$HANDLER_REDIRECT_ON_ERROR" = "TRUE" ];  then echo 'useRedirectOnError = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
-        if  [ "$HANDLER_STATUS" = "TRUE" ];  then echo 'status = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+        if var_true $HANDLER_REDIRECT_ON_ERROR ;  then echo 'useRedirectOnError = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
+        if var_true $HANDLER_STATUS ; then echo 'status = 1'  >> /etc/lemonldap-ng/lemonldap-ng.ini; fi;
 
   if [ "$MODE" = "MASTER" ]; then
          case "$HANDLER_CACHE_TYPE" in

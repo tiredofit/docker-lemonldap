@@ -76,7 +76,7 @@ The following image tags are available:
 
 * If you'd like to just use it in Handler mode, you will find another sample docker-compose.yml file that should get you started.
 
-* Add records for your main, and manager names into DNS (ie `handler.sso.example.com`. `manager.sso.example.com`, `sso.example.com`, `test.sso.example.com`)
+* Add records for your main, and manager names into DNS (ie `handler.sso.example.com`. `api.manager.sso.example.com`, `manager.sso.example.com`, `sso.example.com`, `test.sso.example.com`)
 
 * Set various [environment variables](#environment-variables) to understand the capabilities of this image. A Sample `docker-compose.yml` is provided that will work right out of the box for most people without any fancy optimizations.
 
@@ -113,8 +113,9 @@ By Default this image is ready to run out of the box, without having to alter an
 |-----------|-------------|
 | `SETUP_TYPE` | Default: `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. |
 | `MODE` | Type of Install - `HANDLER` for handler duties only, Default `MASTER` for Portal, Manager, Handler |
-| `CONFIG_TYPE` | Configuration type (`FILE`, `SOAP`, `REST`) - Default `FILE` |
+| `CONFIG_TYPE` | Configuration type (`FILE`, `REST`) - Default `FILE` |
 | `DOMAIN_NAME` | Your domain name e.g. `example.org` |
+| `API_HOSTNAME` | FQDN for Manager API e.g. `api.manager.sso.example.org` |
 | `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org` |
 | `PORTAL_HOSTNAME` | FQDN for public portal/main URL e.g. `sso.example.org` |
 | `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org` |
@@ -123,19 +124,9 @@ By Default this image is ready to run out of the box, without having to alter an
 | `LOG_LEVEL` | LogLevel - Options `warn, notice, info, error, debug` Default `info` |
 | `USER_LOG_TYPE` | How to Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 
-#### SOAP Settings
-
-Depending if `SOAP` was chosedn for `CONFIG_TYPE`, these variables would be used.
-
-| Parameter | Description |
-|-----------|-------------|
-| `SOAP_HOST` | Hostname of Master SOAP Server e.g. `https://sso.example.com/index.pl/config` |
-| `SOAP_USER` | Username to fetch Configuration Information |
-| `SOAP_PASS` | Password to fetch Configuration Information |
-
 #### REST Settings
 
-Depending if `REST` was chosedn for `CONFIG_TYPE`, these variables would be used.
+Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 
 | Parameter | Description |
 |-----------|-------------|
@@ -154,8 +145,7 @@ Depending if `REST` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `PORTAL_LOG_LEVEL` | Override Portal LogLevel - Options `warn, notice, info, error, debug` Default `info` |
 | `PORTAL_USER_LOG_TYPE` | Override Portal Log User actions - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 | `PORTAL_ENABLE_REST` | Allow REST access to the Portal - Default `FALSE` |
-| `PORTAL_ENABLE_SOAP` | Allow SOAP access to the Portal - Default `FALSE` |
-| `PORTAL_RESTSOAP_ALLOWED_IPs` | If above options enabled, provide comma seperated list of IP/Network to allow access Default `0.0.0.0/0` |
+| `PORTAL_REST_ALLOWED_IPs` | If above options enabled, provide comma seperated list of IP/Network to allow access Default `0.0.0.0/0` |
 | `ENABLE_IMPERSONATION` | If you wish to allow impersonation using a seperate theme set to `TRUE` - Default: `FALSE` |
 | `IMPERSONATE_HOSTNAME` | Hostname to use to load the custom impersonation theme |
 | `IMPERSONATE_THEME` | Theme to use to load the impersonation theme |
@@ -195,8 +185,10 @@ Depending if `REST` was chosedn for `CONFIG_TYPE`, these variables would be used
 | `MANAGER_PROTECTION` | Default: `manager` |
 | `MANAGER_LOG_LEVEL` | Default: `warn` |
 | `MANAGER_STATIC_PREFIX` | Default: `/static` |
-| `MANAGER_TEMPLATE_DIR` | Default: `/usr/share/lemonldap-ng/manager/templates` |
+| `MANAGER_TEMPLATE_DIR` | Default: `/usr/share/lemonldap-ng/manager/templates`
 | `MANAGER_LANGUAGE` | Default: `en` |
+| `MANAGER_ENABLE_API` | Enable Manager API - Default `FALSE` |
+| `MANAGER_ALLOWED_IPS` | If you need to access access to API other than localhost add a comma seperated list or hosts or networks here e.g. `172.16.0.0/12,192.168.0.253` |
 | `MANAGER_ENABLED_MODULES` | Default: `"conf, sessions, notifications"` |
 | `MANAGER_LOG_TYPE` | Override Manager Log - Options `CONSOLE, FILE, SYSLOG` - Default: `CONSOLE`  |
 | `MANAGER_LOG_LEVEL` | Override Manager LogLevel - Options `warn, notice, info, error, debug` Default `info` |
@@ -209,8 +201,8 @@ The following ports are exposed.
 
 | Port      | Description |
 |-----------|-------------|
-| `80` | HTTP |
-| `2884` | LemonLDAP Handler |
+| `80`      | HTTP        |
+| `2884`    | LemonLDAP Handler |
 
 # Maintenance
 #### Shell Access
