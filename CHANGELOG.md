@@ -1,3 +1,8 @@
+## 1.7.1 2020-05-08 <ldgabet@github>
+
+   ###
+      - Added symlink for Manager images to display properly 
+
 ## 1.7.0 2020-05-08 <dave at tiredofit dot ca>
 
    ### Added
