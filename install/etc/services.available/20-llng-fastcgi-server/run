@@ -1,7 +1,8 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
-PROCESS_NAME="lemonldap-ng handler"
+source /assets/functions/00-container
+prepare_service
+PROCESS_NAME="lemonldap-ng-handler"
 
 check_container_initialized
 check_service_initialized init

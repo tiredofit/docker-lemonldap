@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
+prepare_service
 PROCESS_NAME="fail2ban"
 
 rm -rf /etc/fail2ban/jail.d/*
@@ -19,9 +20,9 @@ maxretry = 3
 EOF
 
 ### Check to see if Enabled/Disabled
-  if [ "$ENABLE_FAIL2BAN" = "FALSE" ] || [ "$MODE" = "HANDLER" ];  then
+  if var_false $ENABLE_FAIL2BAN || [ "$MODE" = "HANDLER" ];  then
     print_warn "Disabling Fail2ban"
-    service_stop /var/run/s6/services/`basename $0`
+    service_stop $(basename $0)
   fi
 
 liftoff
