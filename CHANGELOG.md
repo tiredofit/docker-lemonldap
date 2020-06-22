@@ -1,3 +1,9 @@
+## 1.8.1 2020-06-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add `ghostscript-fonts` package to solve missing CAPTCHA images
+
+
 ## 1.8.0 2020-06-09 <dave at tiredofit dot ca>
 
    ### Added

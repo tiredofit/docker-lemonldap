@@ -69,6 +69,7 @@ RUN set -x && \
     apk add --no-cache --virtual .lemonldap-run-deps \
             fail2ban \
             gd \
+            ghostscript-fonts \
             imagemagick6 \
             imagemagick6-libs \
             krb5-libs \
