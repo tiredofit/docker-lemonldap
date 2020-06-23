@@ -1,3 +1,9 @@
+## 1.8.2 2020-06-23 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add symbolic link to fix mail logo not showing
+
+
 ## 1.8.1 2020-06-22 <dave at tiredofit dot ca>
 
    ### Added

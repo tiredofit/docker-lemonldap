@@ -265,6 +265,7 @@ RUN set -x && \
     ln -s /usr/share/lemonldap-ng/portal/static/bwr/jquery-ui/jquery-ui.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/ && \
     ln -s /usr/share/lemonldap-ng/manager/static/bwr/jquery/dist/jquery.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/jquery/ && \
     ln -s /usr/share/lemonldap-ng/doc /usr/share/lemonldap-ng/manager/doc && \
+    ln -s /usr/share/lemonldap-ng/portal /usr/share/lemonldap-ng/portal/htdocs && \
     rm -rf /etc/nginx/conf.d && \
     \
 # Cleanup
