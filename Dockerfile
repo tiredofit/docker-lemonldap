@@ -1,10 +1,10 @@
-FROM tiredofit/nginx:alpine-3.11
+FROM tiredofit/nginx:alpine-3.12
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV LEMONLDAP_VERSION=2.0.8 \
+ENV LEMONLDAP_VERSION=2.0.9 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=2.6.1 \
-    LIBU2F_VERSION=1.1.0 \
+    LASSO_VERSION=v2.6.1.2 \
+    LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
     HANDLER_HOSTNAME=handler.sso.example.com \
@@ -58,7 +58,7 @@ RUN set -x && \
             nodejs-npm \
             musl-dev \
             perl-dev \
-            py2-pip \
+            py-pip \
             py-six \
             py-yuicompressor \
             redis \
@@ -124,8 +124,10 @@ RUN set -x && \
             \
 ### Compile libu2f-server for 2FA Support
        mkdir -p /usr/src/libu2f && \
-       curl -ssL https://developers.yubico.com/libu2f-server/Releases/libu2f-server-$LIBU2F_VERSION.tar.xz | tar xvfJ - --strip 1 -C /usr/src/libu2f && \
+       git clone https://github.com/Yubico/libu2f-server /usr/src/libu2f && \
        cd /usr/src/libu2f && \
+       git checkout ${LIBU2F_VERSION} && \
+       ./autogen.sh && \
        ./configure \
             --build=$CBUILD \
             --host=$CHOST \
@@ -134,7 +136,7 @@ RUN set -x && \
             --mandir=/usr/share/man \
             --localstatedir=/var \
             --enable-tests && \
-       make && \
+       make -j$(nproc) && \
        make install && \
       \
 ### Install Perl Modules Manually not available in Repository
@@ -191,8 +193,9 @@ RUN set -x && \
     mkdir -p /usr/src/lasso && \
     git clone git://git.entrouvert.org/lasso.git && \
     cd /usr/src/lasso && \
+    git checkout ${LASSO_VERSION} && \
     ./autogen.sh --prefix=/usr --disable-java --disable-python --disable-php5 --disable-tests && \
-    make && \
+    make -j$(nproc) && \
     make check && \
     make install && \
     \
@@ -201,7 +204,7 @@ RUN set -x && \
     curl https://sourcesup.renater.fr/frs/download.php/file/5125/AuthCAS-${AUTHCAS_VERSION}tar.gz | tar xvfz - --strip 1 -C /usr/src/authcas && \
     cd /usr/src/authcas && \
     perl Makefile.PL && \
-    make && \
+    make -j$(nproc) && \
     make install && \
     \
 ### Checkout and Install LemonLDAP
@@ -236,13 +239,13 @@ RUN set -x && \
     \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
-    make && \
+    make -j$(nproc) && \
     make test && \
     make install && \
     cd .. && \
     cd /usr/src/Apache-Session-LDAP && \
     perl Makefile.PL && \
-    make && \
+    make -j$(nproc) && \
     make test && \
     make install && \
     cd .. && \
@@ -262,8 +265,6 @@ RUN set -x && \
     mkdir -p /assets/lemonldap /assets/conf && \
     cp -R /var/lib/lemonldap-ng/conf/* /assets/conf/ && \
     cp -R /etc/lemonldap-ng/lemonldap-ng.ini /assets/lemonldap && \
-    ln -s /usr/share/lemonldap-ng/portal/static/bwr/jquery-ui/jquery-ui.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/ && \
-    ln -s /usr/share/lemonldap-ng/manager/static/bwr/jquery/dist/jquery.* /usr/share/lemonldap-ng/doc/pages/documentation/current/lib/scripts/jquery/ && \
     ln -s /usr/share/lemonldap-ng/doc /usr/share/lemonldap-ng/manager/doc && \
     ln -s /usr/share/lemonldap-ng/portal /usr/share/lemonldap-ng/portal/htdocs && \
     rm -rf /etc/nginx/conf.d && \

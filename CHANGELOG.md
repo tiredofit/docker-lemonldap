@@ -1,3 +1,16 @@
+## 1.9.0 2020-09-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.0.9
+      - Alpine 3.12
+      - Python 3 for building
+
+   ### Changed
+      - Nginx configuration files for portal and test to address security issue
+      - Patch to libu2f-server to use libjson >0.14
+      - Removed some symlinks / hacks for documentation display in manager
+
+
 ## 1.8.2 2020-06-23 <dave at tiredofit dot ca>
 
    ### Added
@@ -19,7 +32,7 @@
 ## 1.7.1 2020-05-08 <ldgabet@github>
 
    ###
-      - Added symlink for Manager images to display properly 
+      - Added symlink for Manager images to display properly
 
 ## 1.7.0 2020-05-08 <dave at tiredofit dot ca>
 
@@ -108,7 +121,7 @@
 
 ## 1.4.1 2019-07-09 <dave at tiredofit dot ca>
 
-* Add Auth::Yubikey_WebClient 
+* Add Auth::Yubikey_WebClient
 * Add Text::Unidecode
 * Properly remove MongoDB and leave MongoDB Tools
 
