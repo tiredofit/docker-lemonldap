@@ -4,6 +4,7 @@
       - LemonLDAP:NG 2.0.9
       - Alpine 3.12
       - Python 3 for building
+      - Lasso 2.6.1.2
 
    ### Changed
       - Nginx configuration files for portal and test to address security issue
