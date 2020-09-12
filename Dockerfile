@@ -94,6 +94,7 @@ RUN set -x && \
             perl-fcgi \
             perl-fcgi-procmanager \
             perl-glib \
+            perl-http-headers-fast \
             perl-html-template \
             perl-io \
             perl-io-socket-ssl \
@@ -150,6 +151,7 @@ RUN set -x && \
           CGI::Compile \
           Convert::PEM \
           Convert::Base32 \
+          Cookie::Baker::XS \
           Crypt::OpenSSL::X509 \
           Crypt::U2F::Server::Simple \
           Crypt::URandom \

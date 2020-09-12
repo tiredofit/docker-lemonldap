@@ -1,3 +1,11 @@
+## 1.9.1 2020-09-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add Cookie::Baker:XS Package
+      - Repair faulty nginx configuration for Portal
+      - Add HTTP::Headers::Fast due to broken build
+
+
 ## 1.9.0 2020-09-06 <dave at tiredofit dot ca>
 
    ### Added
