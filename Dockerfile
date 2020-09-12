@@ -151,6 +151,7 @@ RUN set -x && \
           CGI::Compile \
           Convert::PEM \
           Convert::Base32 \
+          Cookie::Baker \
           Cookie::Baker::XS \
           Crypt::OpenSSL::X509 \
           Crypt::U2F::Server::Simple \
