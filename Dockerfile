@@ -95,6 +95,7 @@ RUN set -x && \
             perl-fcgi-procmanager \
             perl-glib \
             perl-http-headers-fast \
+            perl-http-entity-parser \
             perl-html-template \
             perl-io \
             perl-io-socket-ssl \
