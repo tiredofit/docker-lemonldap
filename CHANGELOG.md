@@ -1,3 +1,9 @@
+## 1.9.2 2020-09-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Patchup to 1.9.0
+
+
 ## 1.9.1 2020-09-12 <dave at tiredofit dot ca>
 
    ### Changed
