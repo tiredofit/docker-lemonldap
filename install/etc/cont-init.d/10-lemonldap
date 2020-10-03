@@ -6,7 +6,7 @@ PROCESS_NAME="lemonldap-ng"
 
 ### Copy Configuration Depending on LemonLDAP version and setup Logging
 LEMONLDAP_VERSION_TMP=${LEMONLDAP_VERSION:0:3}
-if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then 
+if [[ ${LEMONLDAP_VERSION_TMP//./} -ge "20" ]] || [ "$LEMONLDAP_VERSION" = "master" ] ; then
   if [ ! -f /var/lib/lemonldap-ng/conf/lmConf-1.json ]; then
       cp -R /assets/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
       chown -R ${NGINX_USER}:${NGINX_GROUP} /var/lib/lemonldap-ng/conf/
@@ -84,7 +84,7 @@ if [ ! -f /etc/lemonldap-ng/lemonldap-ng.ini ]; then
     cp -R /assets/lemonldap/lemonldap-ng.ini /etc/lemonldap-ng/lemonldap-ng.ini
     chown -R ${NGINX_USER}:${NGINX_GROUP} /etc/lemonldap-ng/
 fi
-  
+
 ### Modify Virtual Hosts for Nginx
 sed -i -e "s/<PORTAL_HOSTNAME>/$PORTAL_HOSTNAME/g" /etc/nginx/conf.d/*.conf
 sed -i -e "s/<API_HOSTNAME>/$API_HOSTNAME/g" /etc/nginx/conf.d/*.conf
@@ -139,7 +139,7 @@ else
     done
 fi
 
-if [ "$SETUP_TYPE" = "AUTO" ]; then    
+if [ "$SETUP_TYPE" = "AUTO" ]; then
    ### Generate Config Template
      echo '; Custom Generated LemonLDAP overrides! Do not edit, instead set ENV Vars' >/etc/lemonldap-ng/lemonldap-ng.ini
      echo '; If you want to use your own lemonldap-ng.ini file set SETUP_TYPE=MANUAL when starting container.' >>/etc/lemonldap-ng/lemonldap-ng.ini
@@ -223,7 +223,7 @@ if [ "$SETUP_TYPE" = "AUTO" ]; then
           echo "globalStorage = Apache::Session::File" >>/etc/lemonldap-ng/lemonldap-ng.ini
           echo "globalStorageOptions = { 'Directory' => '/var/lib/lemonldap-ng/sessions/', 'LockDirectory' => '/var/lib/lemonldap-ng/sessions/lock/', }" >>/etc/lemonldap-ng/lemonldap-ng.ini
         fi
-        
+
         echo 'staticPrefix = '$PORTAL_STATIC_PREFIX >>/etc/lemonldap-ng/lemonldap-ng.ini;
         echo 'templateDir = '$PORTAL_TEMPLATE_DIR >>/etc/lemonldap-ng/lemonldap-ng.ini;
         echo 'languages = '$PORTAL_LANGUAGE >>/etc/lemonldap-ng/lemonldap-ng.ini;
@@ -284,7 +284,7 @@ if [ "$MODE" = "MASTER" ]; then
   if [ -d /assets/custom ] ; then
      print_warn "Custom Files Found, inserting into image overtop of sourcecode.."
      cp -R /assets/custom/* /usr/share/lemonldap-ng
-     chown -R ${NGINX_USER}:${NGINX_GROUP}:llng /usr/share/lemonldap-ng
+     chown -R ${NGINX_USER}:${NGINX_GROUP} /usr/share/lemonldap-ng
   fi
 fi
 

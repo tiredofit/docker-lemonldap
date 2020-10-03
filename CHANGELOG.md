@@ -1,3 +1,9 @@
+## 1.9.3 2020-10-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix permissiosn when applying custom-script
+
+
 ## 1.9.2 2020-09-12 <dave at tiredofit dot ca>
 
    ### Changed
