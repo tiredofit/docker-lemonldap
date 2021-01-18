@@ -1,3 +1,10 @@
+## 1.9.4 2021-01-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.10.0
+      - Alpine 3.13 base
+
+
 ## 1.9.3 2020-10-03 <dave at tiredofit dot ca>
 
    ### Changed

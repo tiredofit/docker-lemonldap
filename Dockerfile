@@ -1,7 +1,7 @@
-FROM tiredofit/nginx:alpine-3.12
+FROM tiredofit/nginx:alpine-3.13
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV LEMONLDAP_VERSION=2.0.9 \
+ENV LEMONLDAP_VERSION=2.10.0 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=v2.6.1.2 \
     LIBU2F_VERSION=master \
