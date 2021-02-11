@@ -1,7 +1,7 @@
 FROM tiredofit/nginx:alpine-3.13
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV LEMONLDAP_VERSION=2.10.0 \
+ENV LEMONLDAP_VERSION=2.0.11 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=v2.6.1.2 \
     LIBU2F_VERSION=master \
@@ -48,19 +48,19 @@ RUN set -x && \
             gmp-dev \
             gtk-doc \
             help2man \
-            imagemagick6-dev \
+            imagemagick-dev \
             json-c-dev \
             openssl-dev \
             libtool \
             krb5-dev \
             make \
+            mongo-c-driver-dev \
             nodejs \
             nodejs-npm \
             musl-dev \
             perl-dev \
             py-pip \
             py-six \
-            py-yuicompressor \
             redis \
             wget \
             xmlsec-dev \
@@ -70,10 +70,11 @@ RUN set -x && \
             fail2ban \
             gd \
             ghostscript-fonts \
-            imagemagick6 \
-            imagemagick6-libs \
+            imagemagick \
+            imagemagick-libs \
             krb5-libs \
             mariadb-client \
+            mongo-c-driver \
             openssl \
             perl \
             perl-apache-session \
@@ -168,7 +169,7 @@ RUN set -x && \
           Image::Magick \
           LWP::UserAgent \
           Mouse \
-#          MongoDB \
+          MongoDB \
           Net::Facebook::Oauth2 \
           Net::LDAP \
           Net::OAuth \
@@ -239,7 +240,7 @@ RUN set -x && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
     git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
-#    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
+    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
     \
     cd /usr/src/Apache-Session-NoSQL && \
     perl Makefile.PL && \
@@ -259,11 +260,11 @@ RUN set -x && \
     ./Build test && \
     ./Build install && \
     cd .. && \
-#    cd /usr/src/apache-session-mongodb && \
-#    perl Makefile.PL && \
-#    make && \
-#    make test && \
-#    make install && \
+    cd /usr/src/apache-session-mongodb && \
+    perl Makefile.PL && \
+    make && \
+    make test && \
+    make install && \
     \
 # Shuffle some Files around
     mkdir -p /assets/lemonldap /assets/conf && \

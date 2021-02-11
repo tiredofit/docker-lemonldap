@@ -1,3 +1,10 @@
+## 1.9.5 2021-02-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.0.11
+      - Re-Add MongoDB support
+
+
 ## 1.9.4 2021-01-17 <dave at tiredofit dot ca>
 
    ### Added
