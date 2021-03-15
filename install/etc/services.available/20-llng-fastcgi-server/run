@@ -23,4 +23,4 @@ fi
 liftoff
 
 print_info "Starting LemonLDAP FastCGI Server ${LEMONLDAP_VERSION}"
-exec s6-setuidgid llng /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground
+sudo -u llng /usr/sbin/llng-fastcgi-server $SOCKET -n $HANDLER_PROCESSES -foreground

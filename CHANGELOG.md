@@ -1,3 +1,10 @@
+## 1.9.6 2021-03-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Switch to imagemagick perl package instead of compiling
+      - Update startup scripts
+
+
 ## 1.9.5 2021-02-11 <dave at tiredofit dot ca>
 
    ### Added

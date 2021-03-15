@@ -72,6 +72,7 @@ RUN set -x && \
             ghostscript-fonts \
             imagemagick \
             imagemagick-libs \
+            imagemagick-perlmagick \
             krb5-libs \
             mariadb-client \
             mongo-c-driver \
@@ -166,7 +167,6 @@ RUN set -x && \
           GSSAPI \
           HTTP::Headers \
           HTTP::Request \
-          Image::Magick \
           LWP::UserAgent \
           Mouse \
           MongoDB \
@@ -280,8 +280,6 @@ RUN set -x && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     apk del .lemonldap-build-deps && \
-#    apk del mongodb && \
-#    deluser mongodb && \
     deluser nginx && \
     deluser redis && \
     rm -rf /tmp/* /var/cache/apk/*
