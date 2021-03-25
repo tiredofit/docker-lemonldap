@@ -1,3 +1,9 @@
+## 1.9.7 2021-03-25 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Documentation not building for Manager
+
+
 ## 1.9.6 2021-03-15 <dave at tiredofit dot ca>
 
    ### Changed

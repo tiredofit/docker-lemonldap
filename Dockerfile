@@ -61,7 +61,9 @@ RUN set -x && \
             perl-dev \
             py-pip \
             py-six \
+            py3-sphinx \
             redis \
+            sphinx \
             wget \
             xmlsec-dev \
             && \
@@ -125,63 +127,66 @@ RUN set -x && \
             rsyslog \
             xmlsec \
             && \
-            \
-### Compile libu2f-server for 2FA Support
-       mkdir -p /usr/src/libu2f && \
-       git clone https://github.com/Yubico/libu2f-server /usr/src/libu2f && \
-       cd /usr/src/libu2f && \
-       git checkout ${LIBU2F_VERSION} && \
-       ./autogen.sh && \
-       ./configure \
-            --build=$CBUILD \
-            --host=$CHOST \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --mandir=/usr/share/man \
-            --localstatedir=/var \
-            --enable-tests && \
-       make -j$(nproc) && \
-       make install && \
-      \
+    \
+    ### Install Sphinx dependencies for Document Building for Manager
+    pip install sphinx_bootstrap_theme && \
+    \
+    ### Compile libu2f-server for 2FA Support
+    mkdir -p /usr/src/libu2f && \
+    git clone https://github.com/Yubico/libu2f-server /usr/src/libu2f && \
+    cd /usr/src/libu2f && \
+    git checkout ${LIBU2F_VERSION} && \
+    ./autogen.sh && \
+    ./configure \
+        --build=$CBUILD \
+        --host=$CHOST \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --mandir=/usr/share/man \
+        --localstatedir=/var \
+        --enable-tests && \
+    make -j$(nproc) && \
+    make install && \
+    \
 ### Install Perl Modules Manually not available in Repository
-      ln -s /usr/bin/perl /usr/local/bin/perl && \
-      curl -L http://cpanmin.us -o /usr/bin/cpanm && \
-      chmod +x /usr/bin/cpanm && \
-      cpanm -n \
-          Auth::Yubikey_WebClient \
-          Authen::Radius \
-          Authen::Captcha \
-          CGI::Compile \
-          Convert::PEM \
-          Convert::Base32 \
-          Cookie::Baker \
-          Cookie::Baker::XS \
-          Crypt::OpenSSL::X509 \
-          Crypt::U2F::Server::Simple \
-          Crypt::URandom \
-          DateTime::Format::RFC3339 \
-          Digest::HMAC_SHA1 \
-          Digest::SHA \
-          Email::Sender \
-          GD::SecurityImage \
-          GSSAPI \
-          HTTP::Headers \
-          HTTP::Request \
-          LWP::UserAgent \
-          Mouse \
-          MongoDB \
-          Net::Facebook::Oauth2 \
-          Net::LDAP \
-          Net::OAuth \
-          Net::OpenID::Common \
-          Net::SMTP \
-          Regexp::Assemble \
-          Redis \
-          Sentry::Raven \
-          String::Random \
-          Text::Unidecode \
-          URI::Escape \
-          Web::ID \
+    ln -s /usr/bin/perl /usr/local/bin/perl && \
+    curl -L http://cpanmin.us -o /usr/bin/cpanm && \
+    chmod +x /usr/bin/cpanm && \
+    cpanm -n \
+        Auth::Yubikey_WebClient \
+        Authen::Radius \
+        Authen::Captcha \
+        CGI::Compile \
+        Convert::PEM \
+        Convert::Base32 \
+        Cookie::Baker \
+        Cookie::Baker::XS \
+        Crypt::OpenSSL::X509 \
+        Crypt::U2F::Server::Simple \
+        Crypt::URandom \
+        DateTime::Format::RFC3339 \
+        Digest::HMAC_SHA1 \
+        Digest::SHA \
+        Email::Sender \
+        GD::SecurityImage \
+        GSSAPI \
+        HTTP::Headers \
+        HTTP::Request \
+        LWP::UserAgent \
+        Mouse \
+        MongoDB \
+        Net::Facebook::Oauth2 \
+        Net::LDAP \
+        Net::OAuth \
+        Net::OpenID::Common \
+        Net::SMTP \
+        Regexp::Assemble \
+        Redis \
+        Sentry::Raven \
+        String::Random \
+        Text::Unidecode \
+        URI::Escape \
+        Web::ID \
     && \
 ### Install various GO, NodeJS Packages for Optimization and adjust temporary symlinks
     cd /usr/src && \
@@ -210,10 +215,10 @@ RUN set -x && \
     cd /usr/src/authcas && \
     perl Makefile.PL && \
     make -j$(nproc) && \
-    make install && \
+    make install
     \
 ### Checkout and Install LemonLDAP
-    mkdir -p /usr/src/lemonldap-ng && \
+RUN mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
     if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
