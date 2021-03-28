@@ -185,6 +185,7 @@ RUN set -x && \
         Sentry::Raven \
         String::Random \
         Text::Unidecode \
+        Time::Fake \
         URI::Escape \
         Web::ID \
     && \
@@ -215,14 +216,15 @@ RUN set -x && \
     cd /usr/src/authcas && \
     perl Makefile.PL && \
     make -j$(nproc) && \
-    make install
+    make install && \
     \
 ### Checkout and Install LemonLDAP
-RUN mkdir -p /usr/src/lemonldap-ng && \
+    mkdir -p /usr/src/lemonldap-ng && \
     git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
     cd /usr/src/lemonldap-ng && \
     if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
     make dist && \
+    make documentation && \
     make PREFIX=/usr \
          LMPREFIX=/usr/share/lemonldap-ng \
          SBINDIR=/usr/sbin \

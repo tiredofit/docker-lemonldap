@@ -1,3 +1,9 @@
+## 1.9.8 2021-03-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - More Documentation Fixes
+
+
 ## 1.9.7 2021-03-25 <dave at tiredofit dot ca>
 
    ### Changed
