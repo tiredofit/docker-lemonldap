@@ -1,3 +1,9 @@
+## 1.9.9 2021-04-13 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix Zabbix Agent looping
+
+
 ## 1.9.8 2021-03-27 <dave at tiredofit dot ca>
 
    ### Changed

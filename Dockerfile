@@ -125,6 +125,7 @@ RUN set -x && \
             perl-xml-libxslt \
             perl-xml-sax \
             rsyslog \
+            s6 \
             xmlsec \
             && \
     \
