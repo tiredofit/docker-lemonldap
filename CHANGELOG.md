@@ -4,12 +4,15 @@
       - MultiArch builds (amd64, armv6, armv7, aarch64)
       - MODE environment variable expanded to allow for disparate Handlers, Portals, and Managers.
       - LaSSO 2.6.1.3
+
    ### Changed
       - Overhauled Image rewriting all intialization scripts for more flexibility
 
    ### Removed
       - Log4Perl Logging Option. - LOG_TYPE=FILE is the same as LOG_TYPE=SYSLOG
       - Configuration options that weren't entirely necessary to be put in the Auto Generated lemonldap-ng.ini
+
+
 ## 1.9.9 2021-04-13 <dave at tiredofit dot ca>
 
    ### Changed
