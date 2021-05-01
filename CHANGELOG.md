@@ -1,3 +1,9 @@
+## 2.0.1 2021-05-01 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for MODE=HANDLER when CONFIG_TYPE=REST
+
+
 ## 2.0.0 2021-04-13 <dave at tiredofit dot ca>
 
    ### Added

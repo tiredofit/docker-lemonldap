@@ -127,8 +127,9 @@ configure_handler() {
         cp -R /assets/llng/nginx/handler.conf.template /etc/nginx/conf.d/handler.conf
         sed -i -e "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/conf.d/handler.conf
 
-    ##????
-    ##sed -i -e "s/lmremote_user/remote_user/g" /etc/nginx/nginx.conf
+        if [ "${CONFIG_TYPE}" = "REST" ] ; then
+            sed -i -e "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
+        fi
 
         handler_allowed=$(echo ${HANDLER_ALLOWED_IPS} | tr "," "\n")
         for allowed_host in $handler_allowed; do
