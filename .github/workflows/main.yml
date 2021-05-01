@@ -35,15 +35,7 @@ jobs:
                   BRANCHTAG="${DOCKER_IMAGE}:develop"
                 ;;
               * )
-                  if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${BRANCHTAG}" = "${{ secrets.LATEST }}" ]; then
-                      BRANCHTAG="${DOCKER_IMAGE}:${BRANCH},${DOCKER_IMAGE}:${BRANCH}-latest,${DOCKER_IMAGE}:latest"
-                    else
-                      BRANCHTAG="${DOCKER_IMAGE}:${BRANCH},${DOCKER_IMAGE}:${BRANCH}-latest"
-                    fi
-                  else
-                    BRANCHTAG="${DOCKER_IMAGE}:${BRANCH},${DOCKER_IMAGE}:${BRANCH}-latest"
-                  fi
+                  BRANCHTAG="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:2.0-latest,${DOCKER_IMAGE}:2.0-alpine-latest"
                 ;;
             esac
           fi
