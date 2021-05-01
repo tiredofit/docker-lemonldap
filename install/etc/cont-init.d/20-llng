@@ -1,0 +1,35 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service
+PROCESS_NAME="lemonldap-ng"
+
+
+mkdir -p /etc/lemonldap-ng
+mkdir -p /var/lib/lemonldap-ng/{ps,s}essions
+mkdir -p /var/lib/lemonldap-ng/conf
+mkdir -p /www/logs/lemonldap
+
+setup_container_mode
+bootstrap_configuration
+config_configuration
+config_logging
+configure_api
+configure_handler
+configure_manager
+configure_portal
+configure_test
+write_config
+configure_webserver
+configure_socket
+
+chown -R ${NGINX_USER}:${NGINX_GROUP} /etc/lemonldap-ng /var/lib/lemonldap-ng /www/logs/lemonldap
+
+### Theme Support
+if [ -d /assets/custom ] ; then
+    print_warn "Custom Files Found, inserting into image overtop of sourcecode.."
+    cp -R /assets/custom/* /usr/share/lemonldap-ng
+    chown -R ${NGINX_USER}:${NGINX_GROUP} /usr/share/lemonldap-ng
+fi
+
+liftoff

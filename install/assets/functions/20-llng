@@ -1,0 +1,363 @@
+#!/usr/bin/with-contenv bash
+
+bootstrap_configuration() {
+  if [ ! "$(ls -A /var/lib/lemonldap-ng/conf/)" ]; then
+    cp -R /assets/llng/conf/lmConf-1.json /var/lib/lemonldap-ng/conf/
+    print_debug "Bootstrapping Initial Configuration"
+
+    ### Modify File Configuration
+    sed -i -e "s|auth.example.com|${PORTAL_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s|manager.example.com|${MANAGER_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s|reload.example.com|${HANDLER_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s|test1.example.com|${TEST_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s|example.com|${DOMAIN_NAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+  fi
+}
+
+
+config_configuration() {
+    case "$CONFIG_TYPE" in
+        "FILE" | "file" )
+          config_configuration=$(cat<<EOF
+type = File
+dirName = /var/lib/lemonldap-ng/conf
+localStorage=Cache::FileCache
+localStorageOptions={'namespace' => '${CACHE_TYPE_FILE_NAMESPACE}','default_expires_in' => '${CACHE_TYPE_FILE_EXPIRY}', 'directory_umask' => '${CACHE_TYPE_FILE_DIR_MASK}', 'cache_root' => '${CACHE_TYPE_FILE_PATH}', 'cache_depth' => '${CACHE_TYPE_FILE_DEPTH}', }
+EOF
+                        )
+            echo "0 */12 * * * /usr/share/lemonldap-ng/bin/purgeCentralCache > /dev/null 2>&1" >> /assets/cron/crontab.txt
+            echo "5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys > /dev/null 2>&1" >> /assets/cron/crontab.txt
+        ;;
+        "REST" | "rest" )
+          config_configuration=$(cat<<EOF
+type = REST
+baseUrl = ${REST_HOST}
+User = ${REST_USER}
+Password = ${REST_PASS}
+EOF
+                        )
+            echo "1 * * * * /usr/share/lemonldap-ng/bin/purgeLocalCache  > /dev/null 2>&1" >> /assets/cron/crontab.txt
+        ;;
+    esac
+}
+
+configure_portal() {
+    if var_true "${ENABLE_PORTAL}" ; then
+        print_debug "Configuring Portal"
+        cp -R /assets/llng/nginx/portal.conf.template /etc/nginx/conf.d/portal.conf
+        sed -i -e "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/conf.d/portal.conf
+
+    ### Impersonation Theme Setup
+        if var_true "${ENABLE_IMPERSONATION}" ; then
+            sanity_var IMPERSONATE_HOSTNAME "Impersonation Hostname"
+            sanity_var IMPERSONATE_THEME "Impersonation Theme"
+
+            cat <<EOF > /etc/nginx/conf.d/impersonate.conf
+server {
+    listen 80;
+    server_name ${IMPERSONATE_HOSTNAME};
+    return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
+}
+EOF
+        fi
+
+        ### REST Remote Access
+        if var_true "${PORTAL_ENABLE_REST}" ; then
+            sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/conf.d/portal.conf
+            allowed_portal=$(echo $PORTAL_RESTSOAP_ALLOWED_IPS | tr "," "\n")
+            for allowed_host in $allowed_portal; do
+                sed -i "/allow 127.0.0.1/a\ \ \  allow $allowed_host;" /etc/nginx/conf.d/portal.conf
+            done
+        fi
+
+        config_portal=$(cat<<EOF
+[portal]
+languages = ${PORTAL_LANGUAGE}
+staticPrefix = ${PORTAL_STATIC_PREFIX}
+templateDir = ${PORTAL_TEMPLATE_DIR}
+globalStorage = Apache::Session::File
+globalStorageOptions = { 'Directory' => '/var/lib/lemonldap-ng/sessions/', 'LockDirectory' => '/var/lib/lemonldap-ng/sessions/lock/', }
+EOF
+                        )
+
+        if [ -n "${PORTAL_LOG_TYPE}" ] ; then
+            config_portal=$(cat<<EOF
+${config_portal}
+logger = $(logtype $PORTAL_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if [ -n "${PORTAL_USER_LOG_TYPE}" ] ; then
+            config_portal=$(cat<<EOF
+${config_portal}
+userLogger = $(logtype $PORTAL_USER_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if [ -n "${PORTAL_LOG_LEVEL}" ] ; then
+            config_portal=$(cat<<EOF
+${config_portal}
+logLevel = ${PORTAL_LOG_LEVEL}
+EOF
+                            )
+        fi
+    fi
+}
+
+configure_api() {
+    if var_true "${ENABLE_API}" ; then
+        print_debug "Configuring Manager API"
+        cp -R /assets/llng/nginx/api.conf.template /etc/nginx/conf.d/api.conf
+        sed -i -e "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/conf.d/api.conf
+
+        api_allowed=$(echo ${MANAGER_API_ALLOWED_IPS} | tr "," "\n")
+        for allowed_host in ${api_allowed}; do
+            print_debug "API - Allowing ${allowed_host} to access"
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/api.conf
+        done
+    fi
+}
+
+
+configure_handler() {
+    if var_true "${ENABLE_HANDLER}" ; then
+        print_debug "Configuring Handler"
+        cp -R /assets/llng/nginx/handler.conf.template /etc/nginx/conf.d/handler.conf
+        sed -i -e "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/conf.d/handler.conf
+
+    ##????
+    ##sed -i -e "s/lmremote_user/remote_user/g" /etc/nginx/nginx.conf
+
+        handler_allowed=$(echo ${HANDLER_ALLOWED_IPS} | tr "," "\n")
+        for allowed_host in $handler_allowed; do
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/handler.conf
+        done
+
+        ### Add Entry to hosts
+        echo "127.0.0.1 ${HANDLER_HOSTNAME}" >> /etc/hosts
+
+        config_handler=$(cat<<EOF
+[handler]
+EOF
+                        )
+
+        if [ -n "${HANDLER_LOG_TYPE}" ] ; then
+            config_handler=$(cat<<EOF
+${config_handler}
+logger = $(logtype $HANDLER_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if [ -n "${HANDLER_USER_LOG_TYPE}" ] ; then
+            config_handler=$(cat<<EOF
+${config_handler}
+userLogger = $(logtype $HANDLER_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if var_true "${HANDLER_REDIRECT_ON_ERROR}" ;  then
+            config_handler=$(cat<<EOF
+${config_handler}
+useRedirectOnError = 1
+EOF
+                            )
+        fi
+
+        if var_true "${HANDLER_STATUS}" ;  then
+            config_handler=$(cat<<EOF
+${config_handler}
+status = 1
+EOF
+                            )
+        fi
+    else
+        service_stop 20-llng
+    fi
+}
+
+config_logging() {
+    print_debug "Configuring Logging"
+    config_logging=$(cat<<EOF
+logger = $(logtype ${LOG_TYPE})
+userLogger = $(logtype ${LOG_TYPE})
+logLevel = ${LOG_LEVEL}
+EOF
+                )
+}
+
+configure_manager() {
+    if var_true "${ENABLE_MANAGER}" ; then
+        print_debug "Configuring Manager"
+        cp -R /assets/llng/nginx/manager.conf.template /etc/nginx/conf.d/manager.conf
+        sed -i -e "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/conf.d/manager.conf
+
+        config_manager=$(cat<<EOF
+[manager]
+protection = ${MANAGER_PROTECTION}
+languages = ${MANAGER_LANGUAGE}
+enabledModules = ${MANAGER_ENABLED_MODULES}
+staticPrefix = ${MANAGER_STATIC_PREFIX}
+templateDir = ${MANAGER_TEMPLATE_DIR}
+EOF
+                )
+
+        if [ -n "${MANAGER_LOG_TYPE}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+logger = $(logtype $MANAGER_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if [ -n "${MANAGER_USER_LOG_TYPE}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+userLogger = $(logtype $MANAGER_USER_LOG_TYPE)
+EOF
+                            )
+        fi
+
+        if [ -n "${MANAGER_LOG_LEVEL}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+logLevel = ${MANAGER_LOG_LEVEL}
+EOF
+                            )
+        fi
+    fi
+}
+
+configure_socket() {
+    print_debug "Configuring Socket"
+    if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
+        sed -i -e "s|<HANDLER_SOCKET>|127.0.0.1:${HANDLER_SOCKET_TCP_PORT}|g" /etc/nginx/conf.d/*.conf
+        sed -i -e "/fastcgi_param LLTYPE/ a \ \ \ \ fastcgi_param REMOTE_PORT $HANDLER_SOCKET_TCP_PORT;" /etc/nginx/conf.d/*.conf
+        print_notice "Enabling Handler TCP expose functionality. Socket listens at port ${HANDLER_SOCKET_TCP_PORT}"
+    else
+        sed -i -e "s|<HANDLER_SOCKET>~unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|g" /etc/nginx/conf.d/*.conf
+    fi
+}
+
+configure_test() {
+    if var_true "${ENABLE_TEST}" ; then
+        print_debug "Configuring Test Sites"
+        cp -R /assets/llng/nginx/test.conf.template /etc/nginx/conf.d/test.conf
+        sed -i -e "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/conf.d/test.conf
+    fi
+}
+
+configure_webserver() {
+    sed -i "\#application/zip#a\ \ \ \ application/x-font-ttf ttf;" /etc/nginx/mime.types
+    sed -i "\#application/zip#a\ \ \ \ font/opentype ott;" /etc/nginx/mime.types
+}
+
+setup_container_mode() {
+    if [ "${MODE}" = "MASTER" ] || [ "${MODE}" = "master" ] || [ "${MODE}" = "MAIN" ] || [ "${MODE}" = "main" ] || [ "${MODE}" = "AIO" ] || [ "${MODE}" = "aio" ]; then
+        print_debug "Container Mode: Master/AIO"
+        print_debug "Creating MODE environment generated variables"
+        ENABLE_API=TRUE
+        ENABLE_HANDLER=TRUE
+        ENABLE_MANAGER=TRUE
+        ENABLE_PORTAL=TRUE
+        ENABLE_TEST=TRUE
+    else
+        modes=$(echo "$MODE" | tr "," "\n")
+        for mode in $modes; do
+            case "${mode}" in
+                "API" | "api" )
+                    print_debug "Enabling Container Mode for: API"
+                    ENABLE_API=TRUE
+                ;;
+                "HANDLER" | "handler" )
+                    print_debug "Enabling Container Mode for: Handler"
+                    ENABLE_HANDLER=TRUE
+                ;;
+                "MANAGER" | "manager" )
+                    print_debug "Enabling Container Mode for: Manager"
+                    ENABLE_MANAGER=TRUE
+                ;;
+                "PORTAL" | "portal" )
+                    print_debug "Enabling Container Mode for: Portal"
+                    ENABLE_PORTAL=TRUE
+                ;;
+                "TEST" | "test" )
+                    print_debug "Enabling Container Mode for: Test Sites"
+                    ENABLE_TEST=TRUE
+                ;;
+                *)
+                    print_error "Unknown 'MODE' environment variable - exitting.."
+                    exit 1
+                ;;
+            esac
+        done
+    fi
+}
+
+write_config() {
+    if [ "${SETUP_TYPE}" = "AUTO" ] ; then
+        cat <<EOF > "/etc/lemonldap-ng/lemonldap-ng.ini"
+; Custom Generated LemonLDAP:NG Config Overrides - Do not edit, instead set ENV Vars
+; If you do want to edit this file and add your own custom, set the environment variable 'SETUP_TYPE=MANUAL' for next restart of container.
+; Last Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+[all]
+${config_logging}
+
+[configuration]
+${config_configuration}
+
+${config_portal}
+
+${config_handler}
+
+${config_manager}
+
+EOF
+    else
+        print_warn "Manual Mode activated, you must make all changes to /etc/lemonldap-ng/lemonldap-ng.ini manually!"
+    fi
+}
+
+### Logging Translation
+logtype() {
+    case "$1" in
+            "CONSOLE" | "console")
+                echo "Lemonldap::NG::Common::Logger::Std"
+            ;;
+            "FILE" | "file" | "SYSLOG" | "syslog" )
+                echo "Lemonldap::NG::Common::Logger::Syslog"
+            ;;
+           *)
+                echo "Lemonldap::NG::Common::Logger::Std"
+            ;;
+        esac
+}
+
+translate_logLevel() {
+    case "$1" in
+        "debug")
+            echo "DEBUG"
+        ;;
+        "error")
+            echo "ERROR"
+        ;;
+        "info")
+            echo "INFO"
+        ;;
+        "notice")
+            echo "ERROR"
+        ;;
+        "warn")
+            echo "WARN"
+        ;;
+        *)
+            echo "INFO"
+        ;;
+    esac
+}
+
+

@@ -3,14 +3,14 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ENV LEMONLDAP_VERSION=2.0.11 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=v2.6.1.2 \
+    LASSO_VERSION=v2.6.1.3 \
     LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
-    HANDLER_HOSTNAME=handler.sso.example.com \
-    PORTAL_HOSTNAME=sso.example.com \
     API_HOSTNAME=api.manager.sso.example.com \
+    HANDLER_HOSTNAME=handler.sso.example.com \
     MANAGER_HOSTNAME=manager.sso.example.com \
+    PORTAL_HOSTNAME=sso.example.com \
     TEST_HOSTNAME=test.sso.example.com \
     NGINX_APPLICATION_CONFIGURATION=FALSE \
     NGINX_AUTHENTICATION_TYPE=NONE \
@@ -106,7 +106,6 @@ RUN set -x && \
             perl-io-string \
             perl-json \
             perl-ldap \
-            perl-log-log4perl \
             perl-lwp-protocol-https \
             perl-mime-lite \
             perl-mime-tools \
@@ -124,6 +123,7 @@ RUN set -x && \
             perl-xml-libxml-simple \
             perl-xml-libxslt \
             perl-xml-sax \
+            postgresql-client \
             rsyslog \
             s6 \
             xmlsec \
@@ -206,7 +206,12 @@ RUN set -x && \
     git clone git://git.entrouvert.org/lasso.git && \
     cd /usr/src/lasso && \
     git checkout ${LASSO_VERSION} && \
-    ./autogen.sh --prefix=/usr --disable-java --disable-python --disable-php5 --disable-tests && \
+    ./autogen.sh \
+                --prefix=/usr \
+                --disable-java \
+                --disable-php5 \
+                --disable-python \
+                --disable-tests && \
     make -j$(nproc) && \
     make check && \
     make install && \
@@ -274,19 +279,25 @@ RUN set -x && \
     make test && \
     make install && \
     \
-# Shuffle some Files around
-    mkdir -p /assets/lemonldap /assets/conf && \
-    cp -R /var/lib/lemonldap-ng/conf/* /assets/conf/ && \
-    cp -R /etc/lemonldap-ng/lemonldap-ng.ini /assets/lemonldap && \
+    mkdir -p /var/run/llng-fastcgi-server && \
+    chown -R llng /var/run/llng-fastcgi-server && \
+    \
+    # Shuffle some Files around
+    mkdir -p /assets/llng/conf && \
+    mv /var/lib/lemonldap-ng/conf/* /assets/llng/conf/ && \
+    mv /etc/lemonldap-ng/lemonldap-ng.ini /assets/llng/conf/ && \
+    mkdir -p /var/run/llng-fastcgi-server && \
+    chown -R llng /var/run/llng-fastcgi-server && \
     ln -s /usr/share/lemonldap-ng/doc /usr/share/lemonldap-ng/manager/doc && \
     ln -s /usr/share/lemonldap-ng/portal /usr/share/lemonldap-ng/portal/htdocs && \
-    rm -rf /etc/nginx/conf.d && \
+    rm -rf /etc/nginx/conf.d/* && \
     \
 # Cleanup
     rm -rf /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/* && \
     rm -rf /root/.cpanm /root/.cache /root/.npm /root/.config /root/.bash_history /root/go && \
     rm -rf /usr/src/* && \
     rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
+    rm -rf /etc/fail2ban/jail.d/* && \
     apk del .lemonldap-build-deps && \
     deluser nginx && \
     deluser redis && \

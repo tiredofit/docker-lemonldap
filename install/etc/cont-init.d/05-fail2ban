@@ -4,9 +4,14 @@ source /assets/functions/00-container
 prepare_service
 PROCESS_NAME="fail2ban"
 
-rm -rf /etc/fail2ban/jail.d/*
-mkdir -p /www/logs/http/
-touch /www/logs/http/error-handler.log
+
+if var_false "${ENABLE_FAIL2BAN}" || [ "$MODE" = "HANDLER" ];  then
+  print_warn "Disabling Fail2ban"
+  service_stop "$(basename $0)"
+else
+  rm -rf /etc/fail2ban/jail.d/*
+  mkdir -p /www/logs/http/
+  touch /www/logs/http/error-handler.log
 cat <<EOF > /etc/fail2ban/jail.conf
 
 [lemonldap-ng]
@@ -18,11 +23,6 @@ action   = iptables-multiport[name=lemonldap, port="http,https"]
 logpath  = ${NGINX_LOG_ERROR_LOCATION}/error*.log
 maxretry = 3
 EOF
-
-### Check to see if Enabled/Disabled
-  if var_false $ENABLE_FAIL2BAN || [ "$MODE" = "HANDLER" ];  then
-    print_warn "Disabling Fail2ban"
-    service_stop $(basename $0)
-  fi
+fi
 
 liftoff

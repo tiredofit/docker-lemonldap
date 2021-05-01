@@ -1,3 +1,0 @@
-1 * * * * /usr/share/lemonldap-ng/bin/purgeLocalCache >/dev/null 2>&1
-10 1 * * * /usr/share/lemonldap-ng/bin/purgeCentralCache >/dev/null 2>&1
-5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys >/dev/null 2>&1

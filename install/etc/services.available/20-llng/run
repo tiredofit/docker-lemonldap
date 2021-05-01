@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service defaults
+PROCESS_NAME="lemonldap-ng-handler"
+
+check_container_initialized
+check_service_initialized init
+
+### Check to see if Enabled/Disabled
+if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
+    SOCKET="-l 0.0.0.0:"${HANDLER_SOCKET_TCP_PORT}
+else
+    SOCKET="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
+fi
+liftoff
+
+print_info "Starting (${HANDLER_PROCESSES}) LemonLDAP FastCGI Server ${LEMONLDAP_VERSION} Handlers"
+silent sudo -u llng /usr/sbin/llng-fastcgi-server \
+                                        ${SOCKET} \
+                                        -n ${HANDLER_PROCESSES} \
+                                        -foreground

@@ -10,7 +10,7 @@ This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) an el
 
 * This Container uses a [customized Alpine Linux base](https://hub.docker.com/r/tiredofit/alpine) which includes [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities, [zabbix-agent](https://zabbix.org) for individual container monitoring, Cron also installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management. It also supports sending to external SMTP servers..
 
-* Sane Defaults to have a working solution by just running the image
+* Sane defaults to have a working solution by just running the image
 * Automatically generates configuration files on startup, or option to use your own
 * Option to just use image as a Handler for external servers
 * Handler Option to use file base socket or listen on TCP
@@ -20,7 +20,7 @@ This will build a container for [LemonLDAP::NG](https://lemonldap-ng.org/) an el
 * Choice of Logging (Console, File, Syslog)
 * Used in Production for an educational institution serving over 10000 users.
 
-*This is an incredibly complex piece of software that will tries to get you up and running with sane defaults, you will need to switch eventually over to manually configuring the configuration file when depending on your usage case*
+*This is an incredibly complex piece of software that tries to get you up and running with sane defaults, you will need to switch eventually over to manually configuring the configuration file when depending on your usage case*
 
 [Changelog](CHANGELOG.md)
 
@@ -55,7 +55,7 @@ You must have access to create records on your DNS server to be able to setup th
 
 ## Installation
 
-Automated builds of the image are available on [Docker Hub](https://hub.docker.com/tiredofit/lemonldap) and is the
+Automated builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/lemonldap) and is the
 recommended method of installation.
 
 
@@ -67,11 +67,6 @@ The following image tags are available:
 
 * `latest` - LemonLDAP 2.0.x Branch w/ Alpine Linux
 * `2.0-latest` - LemonLDAP 2.0.x (stable) Branch w/ Alpine Linux
-* `2.0-alpine-latest` - LemonLDAP 2.0.x (stable) Branch w/Alpine Linux
-* `2.0-debian-latest` - LemonLDAP 2.0.x (stable) Branch w/Debian Stretch
-* `1.9-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/ Alpine Linux
-* `1.9-alpine-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/Alpine Linux
-* `1.9-debian-latest` - LemonLDAP 1.9.x (Oldstable) Branch w/Alpine Linux
 
 ### Quick Start
 
@@ -108,7 +103,7 @@ Along with the Environment Variables from the [Base image](https://hub.docker.co
 
 There are a huge amount of configuration variables and it is recommended that you get comfortable for a few hours with the [LemonLDAP::NG Documentation](https://lemonldap-ng.org/documentation/2.0/start)
 
-You will eventually based on your usage case switch over to `SETUP_TYPE=manual` and edit your own `lemonldap-ng.ini`. While I've tried to make this as easy to use as possible, once in production you'll find much better success with large implementations with this approach.
+You will eventually based on your usage case switch over to `SETUP_TYPE=MANUAL` and edit your own `lemonldap-ng.ini`. While I've tried to make this as easy to use as possible, once in production you'll find much better success with large implementations with this approach.
 
 By Default this image is ready to run out of the box, without having to alter any of the settings with the exception of the `_HOSTNAME` vars. You can also change the majority of these settings from within the Manager. There are instances where these variables would want to be set if you are running multiple handlers or need to enforce a Global Setting for one specific installation.
 
@@ -116,16 +111,17 @@ By Default this image is ready to run out of the box, without having to alter an
 | ------------------ | ---------------------------------------------------------------------------------------------- | --------- |
 | `SETUP_TYPE`       | `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. | `AUTO`    |
 | `MODE`             | Type of Install - `HANDLER` for handler duties only, `MASTER` for Portal, Manager, Handler     | `MASTER`  |
+|                    | Or any combo of `API`, `HANDLER`, `MANAGER`, `PORTAL`, `TEST`                                  |           |
 | `CONFIG_TYPE`      | Configuration type (`FILE`, `REST`) -                                                          | `FILE`    |
-| `DOMAIN_NAME`      | Your domain name e.g. `example.org`                                                            |
-| `API_HOSTNAME`     | FQDN for Manager API e.g. `api.manager.sso.example.org`                                        |
-| `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org`                                                |
-| `PORTAL_HOSTNAME`  | FQDN for public portal/main URL e.g. `sso.example.org`                                         |
-| `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org`                               |
-| `TEST_HOSTNAME`    | FQDN for test URL to prove that LemonLDAP works e.g. `test.sso.example.org`                    |
-| `LOG_TYPE`         | How to Log - Options `CONSOLE, FILE, SYSLOG` -                                                 | `CONSOLE` |
+| `DOMAIN_NAME`      | Your domain name e.g. `example.org`                                                            |           |
+| `API_HOSTNAME`     | FQDN for Manager API e.g. `api.manager.sso.example.org`                                        |           |
+| `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org`                                                |           |
+| `PORTAL_HOSTNAME`  | FQDN for public portal/main URL e.g. `sso.example.org`                                         |           |
+| `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org`                               |           |
+| `TEST_HOSTNAME`    | FQDN for test URL to prove that LemonLDAP works e.g. `test.sso.example.org`                    |           |
+| `LOG_TYPE`         | How to Log - Options `CONSOLE` or `FILE`                                                       | `CONSOLE` |
 | `LOG_LEVEL`        | LogLevel - Options `warn, notice, info, error, debug`                                          | `info`    |
-| `USER_LOG_TYPE`    | How to Log User actions - Options `CONSOLE, FILE, SYSLOG` -                                    | `CONSOLE` |
+| `USER_LOG_TYPE`    | How to Log User actions - Options `CONSOLE, FILE, SYSLOG`                                      | `CONSOLE` |
 
 #### REST Settings
 
@@ -141,17 +137,15 @@ Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 | Parameter                 | Description                                                                          | Default                                    |
 | ------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
 | `PORTAL_CACHE_TYPE`       | Only Cache Type available for now -                                                  | `FILE`                                     |
-| `PORTAL_LOCAL_CONF`       | See LemonLDAP Documentation                                                          | `FALSE`                                    |
-| `PORTAL_SKIN`             | See LemonLDAP Documentation                                                          | `bootstrap`                                |
 | `PORTAL_TEMPLATE_DIR`     |                                                                                      | `/usr/share/lemonldap-ng/portal/templates` |
-| `PORTAL_LOG_TYPE`         | Override Portal Log - Options `CONSOLE, FILE, SYSLOG` -                              | `CONSOLE`                                  |
+| `PORTAL_LOG_TYPE`         | Override Portal Log - Options `CONSOLE` or `FILE`                                    | `CONSOLE`                                  |
 | `PORTAL_LOG_LEVEL`        | Override Portal LogLevel - Options `warn, notice, info, error, debug`                | `info`                                     |
-| `PORTAL_USER_LOG_TYPE`    | Override Portal Log User actions - Options `CONSOLE, FILE, SYSLOG` -                 | `CONSOLE`                                  |
+| `PORTAL_USER_LOG_TYPE`    | Override Portal Log User actions - Options `CONSOLE` or `FILE`                       | `CONSOLE`                                  |
 | `PORTAL_ENABLE_REST`      | Allow REST access to the Portal -                                                    | `FALSE`                                    |
 | `PORTAL_REST_ALLOWED_IPs` | If above options enabled, provide comma seperated list of IP/Network to allow access | `0.0.0.0/0`                                |
 | `ENABLE_IMPERSONATION`    | If you wish to allow impersonation using a seperate theme set to `TRUE`              | `FALSE`                                    |
-| `IMPERSONATE_HOSTNAME`    | Hostname to use to load the custom impersonation theme                               |
-| `IMPERSONATE_THEME`       | Theme to use to load the impersonation theme                                         |
+| `IMPERSONATE_HOSTNAME`    | Hostname to use to load the custom impersonation theme                               |                                            |
+| `IMPERSONATE_THEME`       | Theme to use to load the impersonation theme                                         |                                            |
 
 * With impersonation, if you enable it, it will add a new field to your login screen, which may not be what you want if this is a production system. You will need to create two custom themes (one as a replica of bootstrap, and one for impersonation). In the custom theme, make modifications to `login.tpl` to stop it from loading impersonation.tpl, yet in your impersonation theme, leave it in there. Then, when one of your admin/support team visits the custom `IMPERSONATE_HOSTNAME` you have defined it will load the full theme with allows to impersonate, where as the default theme will not show this.*
 
@@ -179,7 +173,7 @@ Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 | `HANDLER_LOG_TYPE`                  | Override Handler Log - Options `CONSOLE, FILE, SYSLOG`                                                                                                 | `CONSOLE`               |
 | `HANDLER_LOG_LEVEL`                 | Override Handler LogLevel - Options `warn, notice, info, error, debug`                                                                                 | `info`                  |
 | `HANDLER_PROCESSES`                 | Amount of LLNG Handler processes to spawn                                                                                                              | `7`                     |
-| `HANDLER_USER_LOG_TYPE`             | Override Handler Log User actions - Options `CONSOLE, FILE, SYSLOG`                                                                                    | `CONSOLE`               |
+| `HANDLER_USER_LOG_TYPE`             | Override Handler Log User actions - Options `CONSOLE` or `FILE`                                                                                        | `CONSOLE`               |
 
 ### Manager Options
 | Parameter                 | Description                                                                                                                                      | Default                                     |
@@ -192,19 +186,19 @@ Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 | `MANAGER_ENABLE_API`      | Enable Manager API -                                                                                                                             | `FALSE`                                     |
 | `MANAGER_ALLOWED_IPS`     | If you need to access access to API other than localhost add a comma seperated list or hosts or networks here e.g. `172.16.0.0/12,192.168.0.253` |
 | `MANAGER_ENABLED_MODULES` |                                                                                                                                                  | `"conf, sessions, notifications"`           |
-| `MANAGER_LOG_TYPE`        | Override Manager Log - Options `CONSOLE, FILE, SYSLOG` -                                                                                         | `CONSOLE`                                   |
+| `MANAGER_LOG_TYPE`        | Override Manager Log - Options `CONSOLE` or `FILE`                                                                                               | `CONSOLE`                                   |
 | `MANAGER_LOG_LEVEL`       | Override Manager LogLevel - Options `warn, notice, info, error, debug`                                                                           | `info`                                      |
-| `MANAGER_USER_LOG_TYPE`   | Override Manager Log User actions - Options `CONSOLE, FILE, SYSLOG` -                                                                            | `CONSOLE`                                   |
+| `MANAGER_USER_LOG_TYPE`   | Override Manager Log User actions - Options `CONSOLE` or `FILE`                                                                                  | `CONSOLE`                                   |
 
 
 ### Networking
 
 The following ports are exposed.
 
-| Port   | Description       |
-| ------ | ----------------- |
-| `80`   | HTTP              |
-| `2884` | LemonLDAP Handler |
+| Port   | Description  |
+| ------ | ------------ |
+| `80`   | HTTP         |
+| `2884` | LLNG Handler |
 
 ## Maintenance
 ### Shell Access
