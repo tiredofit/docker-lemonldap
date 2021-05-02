@@ -78,16 +78,10 @@ docker pull tiredofit/lemonldap:(imagetag)
 
 The following image tags are available along with their taged release based on what's written in the [Changelog](CHANGELOG.md):
 
-| Container OS | Tag       |
-| ------------ | --------- |
-| Alpine       | `:latest` |
-```
-
-The following image tags are available:
-
-* `latest` - LemonLDAP 2.0.x Branch w/ Alpine Linux
-* `2.0-latest` - LemonLDAP 2.0.x (stable) Branch w/ Alpine Linux
-
+| Version |Container OS | Tag       |
+| --- | ------------ | --------- |
+| latest | Alpine       | `:latest` |
+| 2.0.x | Alpine     | `2.0-latest` |
 
 
 ## Configuration
