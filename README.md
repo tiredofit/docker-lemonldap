@@ -78,10 +78,10 @@ docker pull tiredofit/lemonldap:(imagetag)
 
 The following image tags are available along with their taged release based on what's written in the [Changelog](CHANGELOG.md):
 
-| Version |Container OS | Tag       |
-| --- | ------------ | --------- |
-| latest | Alpine       | `:latest` |
-| 2.0.x | Alpine     | `2.0-latest` |
+| Version | Container OS | Tag          |
+| ------- | ------------ | ------------ |
+| latest  | Alpine       | `:latest`    |
+| 2.0.x   | Alpine       | `2.0-latest` |
 
 
 ## Configuration
