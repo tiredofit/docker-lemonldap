@@ -1,3 +1,9 @@
+## 2.0.2 2021-05-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for not outputting log information when LOG_TYPE=CONSOLE
+
+
 ## 2.0.1 2021-05-01 <dave at tiredofit dot ca>
 
    ### Changed

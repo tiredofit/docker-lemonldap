@@ -13,10 +13,15 @@ if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
 else
     SOCKET="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
 fi
+
+if [ "${LOG_TYPE}" != "CONSOLE" ] ; then
+    silent_arg=silent
+fi
+
 liftoff
 
 print_info "Starting (${HANDLER_PROCESSES}) LemonLDAP FastCGI Server ${LEMONLDAP_VERSION} Handlers"
-silent sudo -u llng /usr/sbin/llng-fastcgi-server \
+${silent_arg} sudo -u llng /usr/sbin/llng-fastcgi-server \
                                         ${SOCKET} \
                                         -n ${HANDLER_PROCESSES} \
                                         -foreground

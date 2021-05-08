@@ -64,7 +64,7 @@ EOF
         ### REST Remote Access
         if var_true "${PORTAL_ENABLE_REST}" ; then
             sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/conf.d/portal.conf
-            allowed_portal=$(echo $PORTAL_RESTSOAP_ALLOWED_IPS | tr "," "\n")
+            allowed_portal=$(echo "$PORTAL_RESTSOAP_ALLOWED_IPS" | tr "," "\n")
             for allowed_host in $allowed_portal; do
                 sed -i "/allow 127.0.0.1/a\ \ \  allow $allowed_host;" /etc/nginx/conf.d/portal.conf
             done
@@ -83,7 +83,7 @@ EOF
         if [ -n "${PORTAL_LOG_TYPE}" ] ; then
             config_portal=$(cat<<EOF
 ${config_portal}
-logger = $(logtype $PORTAL_LOG_TYPE)
+logger = $(logtype "$PORTAL_LOG_TYPE")
 EOF
                             )
         fi
@@ -91,7 +91,7 @@ EOF
         if [ -n "${PORTAL_USER_LOG_TYPE}" ] ; then
             config_portal=$(cat<<EOF
 ${config_portal}
-userLogger = $(logtype $PORTAL_USER_LOG_TYPE)
+userLogger = $(logtype "$PORTAL_USER_LOG_TYPE")
 EOF
                             )
         fi
@@ -112,7 +112,7 @@ configure_api() {
         cp -R /assets/llng/nginx/api.conf.template /etc/nginx/conf.d/api.conf
         sed -i -e "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/conf.d/api.conf
 
-        api_allowed=$(echo ${MANAGER_API_ALLOWED_IPS} | tr "," "\n")
+        api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
         for allowed_host in ${api_allowed}; do
             print_debug "API - Allowing ${allowed_host} to access"
             sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/api.conf
@@ -131,7 +131,7 @@ configure_handler() {
             sed -i -e "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
         fi
 
-        handler_allowed=$(echo ${HANDLER_ALLOWED_IPS} | tr "," "\n")
+        handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n")
         for allowed_host in $handler_allowed; do
             sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/handler.conf
         done
@@ -147,7 +147,7 @@ EOF
         if [ -n "${HANDLER_LOG_TYPE}" ] ; then
             config_handler=$(cat<<EOF
 ${config_handler}
-logger = $(logtype $HANDLER_LOG_TYPE)
+logger = $(logtype "$HANDLER_LOG_TYPE")
 EOF
                             )
         fi
@@ -155,7 +155,7 @@ EOF
         if [ -n "${HANDLER_USER_LOG_TYPE}" ] ; then
             config_handler=$(cat<<EOF
 ${config_handler}
-userLogger = $(logtype $HANDLER_LOG_TYPE)
+userLogger = $(logtype "$HANDLER_LOG_TYPE")
 EOF
                             )
         fi
@@ -183,8 +183,8 @@ EOF
 config_logging() {
     print_debug "Configuring Logging"
     config_logging=$(cat<<EOF
-logger = $(logtype ${LOG_TYPE})
-userLogger = $(logtype ${LOG_TYPE})
+logger = $(logtype "${LOG_TYPE}")
+userLogger = $(logtype "${LOG_TYPE}")
 logLevel = ${LOG_LEVEL}
 EOF
                 )
@@ -209,7 +209,7 @@ EOF
         if [ -n "${MANAGER_LOG_TYPE}" ] ; then
             config_manager=$(cat<<EOF
 ${config_manager}
-logger = $(logtype $MANAGER_LOG_TYPE)
+logger = $(logtype "$MANAGER_LOG_TYPE")
 EOF
                             )
         fi
@@ -217,7 +217,7 @@ EOF
         if [ -n "${MANAGER_USER_LOG_TYPE}" ] ; then
             config_manager=$(cat<<EOF
 ${config_manager}
-userLogger = $(logtype $MANAGER_USER_LOG_TYPE)
+userLogger = $(logtype "$MANAGER_USER_LOG_TYPE")
 EOF
                             )
         fi
