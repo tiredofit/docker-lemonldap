@@ -1,3 +1,9 @@
+## 2.0.3 2021-05-13 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Local Session cache not creating lock directory
+
+
 ## 2.0.2 2021-05-08 <dave at tiredofit dot ca>
 
    ### Changed
