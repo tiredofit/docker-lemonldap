@@ -3,7 +3,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ENV LEMONLDAP_VERSION=2.0.11 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=v2.6.1.3 \
+    LASSO_VERSION=v2.7.0 \
     LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
@@ -296,7 +296,7 @@ RUN set -x && \
     rm -rf /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/* && \
     rm -rf /root/.cpanm /root/.cache /root/.npm /root/.config /root/.bash_history /root/go && \
     rm -rf /usr/src/* && \
-    rm -rf /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
+    rm -rf /usr/bin/yuicompressor /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
     rm -rf /etc/fail2ban/jail.d/* && \
     apk del .lemonldap-build-deps && \
     deluser nginx && \

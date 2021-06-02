@@ -1,3 +1,10 @@
+## 2.0.5 2021-06-02 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update LaSSO to 2.7.0 2021-28091
+      - Cleanup filesystem
+
+
 ## 2.0.3 2021-05-13 <dave at tiredofit dot ca>
 
    ### Changed
