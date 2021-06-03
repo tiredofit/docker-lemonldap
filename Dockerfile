@@ -91,6 +91,7 @@ RUN set -x && \
             perl-crypt-x509 \
             perl-dbd-mysql \
             perl-dbd-sqlite \
+            perl-dbd-pg \
             perl-dbi \
             perl-digest-md5 \
             perl-digest-sha1 \

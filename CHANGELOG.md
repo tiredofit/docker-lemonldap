@@ -1,3 +1,9 @@
+## 2.0.6 2021-06-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add perl-dbd-pg package
+
+
 ## 2.0.5 2021-06-02 <dave at tiredofit dot ca>
 
    ### Added
