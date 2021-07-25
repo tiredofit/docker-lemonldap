@@ -1,7 +1,7 @@
-FROM tiredofit/nginx:alpine-3.13
-LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
+FROM tiredofit/nginx:alpine-3.14
+LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ENV LEMONLDAP_VERSION=2.0.11 \
+ENV LEMONLDAP_VERSION=2.0.12 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=v2.7.0 \
     LIBU2F_VERSION=master \
@@ -56,7 +56,7 @@ RUN set -x && \
             make \
             mongo-c-driver-dev \
             nodejs \
-            nodejs-npm \
+            npm \
             musl-dev \
             perl-dev \
             py-pip \

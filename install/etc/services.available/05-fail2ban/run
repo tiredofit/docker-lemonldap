@@ -7,5 +7,5 @@ check_container_initialized
 check_service_initialized init
 liftoff
 
-print_info "Starting fail2ban"
+print_start "Starting fail2ban"
 silent exec /usr/bin/fail2ban-client -f start
