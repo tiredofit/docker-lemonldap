@@ -279,6 +279,9 @@ RUN set -x && \
     make && \
     make test && \
     make install && \
+    ## Patch for 2.0.13 https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2595
+    sed -i "/\$expr ||= '';/d" /usr/local/share/perl5/site_perl/Lemonldap/NG/Handler/Main/Reload.pm && \
+    ##
     \
     mkdir -p /var/run/llng-fastcgi-server && \
     chown -R llng /var/run/llng-fastcgi-server && \
