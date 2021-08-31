@@ -14,7 +14,7 @@ services:
     - LETSENCRYPT_HOST=handler.sso.example.com
     - LETSENCRYPT_EMAIL=email@example.com
 
-    - ZABBIX_HOSTNAME=lemonldap-handler-app
+    - CONTAINER_NAME=lemonldap-handler-app
 
     - MODE=HANDLER
     

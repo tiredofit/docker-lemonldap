@@ -2,9 +2,8 @@ server {
   listen 80;
   server_name <TEST_HOSTNAME>;
   root /usr/share/lemonldap-ng/test/;
-  access_log /www/logs/http/access-test.log lm_app;
+  access_log /www/logs/http/access-test.log <ACCESS_LOG_FORMAT>;
   error_log /www/logs/http/error-test.log;
-
 
 
   # Internal authentication request

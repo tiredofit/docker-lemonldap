@@ -1,3 +1,9 @@
+## 2.0.10 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update nginx configuration to support logshipping
+
+
 ## 2.0.9 2021-08-27 <dave at tiredofit dot ca>
 
    ### Changed

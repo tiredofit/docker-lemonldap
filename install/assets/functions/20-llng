@@ -46,6 +46,7 @@ configure_portal() {
         print_debug "Configuring Portal"
         cp -R /assets/llng/nginx/portal.conf.template /etc/nginx/conf.d/portal.conf
         sed -i -e "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/conf.d/portal.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/portal.conf
 
     ### Impersonation Theme Setup
         if var_true "${ENABLE_IMPERSONATION}" ; then
@@ -111,6 +112,7 @@ configure_api() {
         print_debug "Configuring Manager API"
         cp -R /assets/llng/nginx/api.conf.template /etc/nginx/conf.d/api.conf
         sed -i -e "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/conf.d/api.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/api.conf
 
         api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
         for allowed_host in ${api_allowed}; do
@@ -126,7 +128,7 @@ configure_handler() {
         print_debug "Configuring Handler"
         cp -R /assets/llng/nginx/handler.conf.template /etc/nginx/conf.d/handler.conf
         sed -i -e "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/conf.d/handler.conf
-
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/handler.conf
         if [ "${CONFIG_TYPE}" = "REST" ] ; then
             sed -i -e "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
         fi
@@ -195,7 +197,7 @@ configure_manager() {
         print_debug "Configuring Manager"
         cp -R /assets/llng/nginx/manager.conf.template /etc/nginx/conf.d/manager.conf
         sed -i -e "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/conf.d/manager.conf
-
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/manager.conf
         config_manager=$(cat<<EOF
 [manager]
 protection = ${MANAGER_PROTECTION}
