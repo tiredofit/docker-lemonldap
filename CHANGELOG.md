@@ -1,3 +1,9 @@
+## 2.0.11 2021-09-01 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Pin Apache-Session-MongoDB to 0.21
+
+
 ## 2.0.10 2021-08-30 <dave at tiredofit dot ca>
 
    ### Added

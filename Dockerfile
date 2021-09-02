@@ -276,6 +276,7 @@ RUN set -x && \
     ./Build install && \
     cd .. && \
     cd /usr/src/apache-session-mongodb && \
+    git checkout v0.21 && \
     perl Makefile.PL && \
     make && \
     make test && \
