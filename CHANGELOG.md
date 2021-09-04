@@ -1,3 +1,12 @@
+## 2.0.12 2021-09-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add customizable location for log path, log file and log user file
+
+   ### Changed
+      - Change the way logrotation is configured to support future log parsing capabilities
+
+
 ## 2.0.11 2021-09-01 <dave at tiredofit dot ca>
 
    ### Changed

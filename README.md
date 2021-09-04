@@ -128,21 +128,24 @@ You will eventually based on your usage case switch over to `SETUP_TYPE=MANUAL` 
 
 By Default this image is ready to run out of the box, without having to alter any of the settings with the exception of the `_HOSTNAME` vars. You can also change the majority of these settings from within the Manager. There are instances where these variables would want to be set if you are running multiple handlers or need to enforce a Global Setting for one specific installation.
 
-| Parameter          | Description                                                                                    | Default   |
-| ------------------ | ---------------------------------------------------------------------------------------------- | --------- |
-| `SETUP_TYPE`       | `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. | `AUTO`    |
-| `MODE`             | Type of Install - `HANDLER` for handler duties only, `MASTER` for Portal, Manager, Handler     | `MASTER`  |
-|                    | Or any combo of `API`, `HANDLER`, `MANAGER`, `PORTAL`, `TEST`                                  |           |
-| `CONFIG_TYPE`      | Configuration type (`FILE`, `REST`) -                                                          | `FILE`    |
-| `DOMAIN_NAME`      | Your domain name e.g. `example.org`                                                            |           |
-| `API_HOSTNAME`     | FQDN for Manager API e.g. `api.manager.sso.example.org`                                        |           |
-| `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org`                                                |           |
-| `PORTAL_HOSTNAME`  | FQDN for public portal/main URL e.g. `sso.example.org`                                         |           |
-| `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org`                               |           |
-| `TEST_HOSTNAME`    | FQDN for test URL to prove that LemonLDAP works e.g. `test.sso.example.org`                    |           |
-| `LOG_TYPE`         | How to Log - Options `CONSOLE` or `FILE`                                                       | `CONSOLE` |
-| `LOG_LEVEL`        | LogLevel - Options `warn, notice, info, error, debug`                                          | `info`    |
-| `USER_LOG_TYPE`    | How to Log User actions - Options `CONSOLE, FILE, SYSLOG`                                      | `CONSOLE` |
+| Parameter          | Description                                                                                    | Default               |
+| ------------------ | ---------------------------------------------------------------------------------------------- | --------------------- |
+| `SETUP_TYPE`       | `AUTO` to auto generate lemonldap-ng.ini on bootup, otherwise let admin control configuration. | `AUTO`                |
+| `MODE`             | Type of Install - `HANDLER` for handler duties only, `MASTER` for Portal, Manager, Handler     | `MASTER`              |
+|                    | Or any combo of `API`, `HANDLER`, `MANAGER`, `PORTAL`, `TEST`                                  |                       |
+| `CONFIG_TYPE`      | Configuration type (`FILE`, `REST`) -                                                          | `FILE`                |
+| `DOMAIN_NAME`      | Your domain name e.g. `example.org`                                                            |                       |
+| `API_HOSTNAME`     | FQDN for Manager API e.g. `api.manager.sso.example.org`                                        |                       |
+| `MANAGER_HOSTNAME` | FQDN for Manager e.g. `manager.sso.example.org`                                                |                       |
+| `PORTAL_HOSTNAME`  | FQDN for public portal/main URL e.g. `sso.example.org`                                         |                       |
+| `HANDLER_HOSTNAME` | FQDN for Configuration reload URL e.g. `handler.sso.example.org`                               |                       |
+| `TEST_HOSTNAME`    | FQDN for test URL to prove that LemonLDAP works e.g. `test.sso.example.org`                    |                       |
+| `LOG_FILE`         | LL:NG main log file                                                                            | `lemonldap.log`       |
+| `LOG_FILE_USER`    | LL:NG User log file                                                                            | `lemonldap-user.log`  |
+| `LOG_PATH`         | Log Path                                                                                       | `/www/logs/lemonldap` |
+| `LOG_TYPE`         | How to Log - Options `CONSOLE` or `FILE`                                                       | `CONSOLE`             |
+| `LOG_LEVEL`        | LogLevel - Options `warn, notice, info, error, debug`                                          | `info`                |
+| `USER_LOG_TYPE`    | How to Log User actions - Options `CONSOLE, FILE, SYSLOG`                                      | `CONSOLE`             |
 
 #### REST Settings
 

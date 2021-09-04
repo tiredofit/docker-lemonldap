@@ -4,7 +4,6 @@ source /assets/functions/00-container
 prepare_service
 PROCESS_NAME="fail2ban"
 
-
 if var_false "${ENABLE_FAIL2BAN}" || [ "$MODE" = "HANDLER" ];  then
   print_warn "Disabling Fail2ban"
   service_stop "$(basename $0)"
