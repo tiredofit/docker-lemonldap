@@ -20,6 +20,7 @@ ENV LEMONLDAP_VERSION=2.0.13 \
     NGINX_GROUP=llng \
     NGINX_LOG_ACCESS_LOCATION=/www/logs/http \
     NGINX_LOG_ACCESS_FILE=access.log \
+    NGINX_LOG_BLOCKED_LOCATION=/www/logs/http \
     NGINX_LOG_ERROR_FILE=error.log \
     NGINX_LOG_ERROR_LOCATION=/www/logs/http \
     PATH=/usr/share/lemonldap-ng/bin:${PATH}

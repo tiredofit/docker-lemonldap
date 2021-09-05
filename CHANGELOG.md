@@ -1,3 +1,9 @@
+## 2.0.13 2021-09-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add blocked logs configuration environment variable
+
+
 ## 2.0.12 2021-09-04 <dave at tiredofit dot ca>
 
    ### Added
