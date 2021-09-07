@@ -1,4 +1,4 @@
-FROM tiredofit/nginx:alpine-3.14
+FROM docker.io/tiredofit/nginx:alpine-3.14
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ENV LEMONLDAP_VERSION=2.0.13 \
@@ -14,7 +14,7 @@ ENV LEMONLDAP_VERSION=2.0.13 \
     TEST_HOSTNAME=test.sso.example.com \
     NGINX_APPLICATION_CONFIGURATION=FALSE \
     NGINX_AUTHENTICATION_TYPE=NONE \
-    NGINX_LOG_ACCESS_FORMAT=llng_default \
+    NGINX_LOG_ACCESS_FORMAT=llng_standard \
     NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
     NGINX_USER=llng \
     NGINX_GROUP=llng \
