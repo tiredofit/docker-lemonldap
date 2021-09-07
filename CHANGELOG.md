@@ -1,3 +1,9 @@
+## 2.0.15 2021-09-06 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add access format to test vhost
+
+
 ## 2.0.14 2021-09-06 <dave at tiredofit dot ca>
 
    ### Changed

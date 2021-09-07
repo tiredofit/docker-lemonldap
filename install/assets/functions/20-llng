@@ -250,6 +250,7 @@ configure_test() {
         print_debug "Configuring Test Sites"
         cp -R /assets/llng/nginx/test.conf.template /etc/nginx/conf.d/test.conf
         sed -i -e "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/conf.d/test.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/test.conf
     fi
 }
 
