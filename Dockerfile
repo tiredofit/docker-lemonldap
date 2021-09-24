@@ -69,7 +69,7 @@ RUN set -x && \
             wget \
             xmlsec-dev \
             && \
-	    \
+    \
     apk add --no-cache --virtual .lemonldap-run-deps \
             fail2ban \
             gd \

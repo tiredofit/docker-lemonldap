@@ -1,3 +1,9 @@
+## 2.0.16 2021-09-24 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add custom fluent-bit parsing logic for log shipping
+
+
 ## 2.0.15 2021-09-06 <dave at tiredofit dot ca>
 
    ### Changed
