@@ -1,3 +1,9 @@
+## 2.0.17 2021-12-07 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Zabbix auto register for templates function
+
+
 ## 2.0.16 2021-09-24 <dave at tiredofit dot ca>
 
    ### Added

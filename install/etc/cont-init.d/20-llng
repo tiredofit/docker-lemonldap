@@ -26,6 +26,15 @@ configure_socket
 
 chown -R ${NGINX_USER}:${NGINX_GROUP} /etc/lemonldap-ng /var/lib/lemonldap-ng /www/logs/lemonldap
 
+if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
+    source /assets/defaults/03-monitoring
+    cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit_llng.conf
+# Zabbix LemonLDAP Configuration - Automatically Generated
+# Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-lemonldap
+# Autoregister=llng
+EOF
+fi
+
 ### Theme Support
 if [ -d /assets/custom ] ; then
     print_warn "Custom Files Found, inserting into image overtop of sourcecode.."
