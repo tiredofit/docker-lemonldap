@@ -7,6 +7,7 @@ PROCESS_NAME="fail2ban"
 if var_false "${ENABLE_FAIL2BAN}" || [ "$MODE" = "HANDLER" ];  then
   print_warn "Disabling Fail2ban"
   service_stop "$(basename $0)"
+  rm -rf /etc/zabbix/zabbix_agentd.conf.d/fail2ban.conf
 else
   rm -rf /etc/fail2ban/jail.d/*
   mkdir -p /www/logs/http/

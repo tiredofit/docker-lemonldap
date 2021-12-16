@@ -1,3 +1,9 @@
+## 2.0.18 2021-12-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Fail2ban Zabbix Template
+
+
 ## 2.0.17 2021-12-07 <dave at tiredofit dot ca>
 
    ### Added
