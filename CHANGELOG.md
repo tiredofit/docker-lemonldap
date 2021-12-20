@@ -1,3 +1,9 @@
+## 2.0.19 2021-12-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update to Alpine 3.15 base
+
+
 ## 2.0.18 2021-12-16 <dave at tiredofit dot ca>
 
    ### Added
