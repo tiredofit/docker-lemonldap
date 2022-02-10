@@ -1,0 +1,143 @@
+{
+    "zabbix_export": {
+        "version": "5.4",
+        "date": "2021-12-22T14:46:38Z",
+        "groups": [
+            {
+                "uuid": "a571c0d144b14fd4a87a9d9b2aa9fcd6",
+                "name": "Templates/Applications"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "48d19098672f4e7aa7dab1942260d87d",
+                "template": "Fail2Ban",
+                "name": "Fail2Ban",
+                "groups": [
+                    {
+                        "name": "Templates/Applications"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "f47a5d9d3e4949989ef6b6514e04a035",
+                        "name": "Fail2Ban: Version",
+                        "type": "ZABBIX_ACTIVE",
+                        "key": "fail2ban.version",
+                        "delay": "60m",
+                        "history": "7d",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Fail2Ban"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "7bc5287a76c045f79bd0921261943f38",
+                                "expression": "last(/Fail2Ban/fail2ban.version,#1)<>last(/Fail2Ban/fail2ban.version,#2) \nand length(last(/Fail2Ban/fail2ban.version))>0",
+                                "name": "Fail2Ban: Version has changed (new version: { ITEM.VALUE })",
+                                "priority": "INFO"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "de416c540fd0435db1822e38c036f0d7",
+                        "name": "Fail2Ban: Processes",
+                        "type": "ZABBIX_ACTIVE",
+                        "key": "proc.num[fail2ban-server]",
+                        "history": "7d",
+                        "description": "Tests if the server is alive",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "Fail2Ban"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "ffa07343b51d4bf58c2b8c324c6a7a62",
+                                "expression": "sum(/Fail2Ban/proc.num[fail2ban-server],#3)=0",
+                                "name": "Fail2ban: Process is not running",
+                                "priority": "AVERAGE"
+                            }
+                        ]
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "ccbd8ba7a96d47b8953af017e3b0f803",
+                        "name": "Fail2ban: Jail Discovery",
+                        "type": "ZABBIX_ACTIVE",
+                        "key": "fail2ban.discovery",
+                        "description": "Discovery of jails from fail2ban daemon.",
+                        "item_prototypes": [
+                            {
+                                "uuid": "8cc0b05211fc4278b2feb46727a4ca97",
+                                "name": "Fail2Ban: $1 banned IPs",
+                                "type": "ZABBIX_ACTIVE",
+                                "key": "fail2ban.status.[{#JAIL}]",
+                                "delay": "60",
+                                "history": "7d",
+                                "units": "count",
+                                "tags": [
+                                    {
+                                        "tag": "Application",
+                                        "value": "Fail2Ban"
+                                    }
+                                ]
+                            }
+                        ],
+                        "graph_prototypes": [
+                            {
+                                "uuid": "b151e34af81548b1b92cf0a6b36cdee7",
+                                "name": "Fail2Ban: Count of banned IPs on jail {#JAIL}",
+                                "graph_items": [
+                                    {
+                                        "sortorder": "1",
+                                        "color": "00C800",
+                                        "item": {
+                                            "host": "Fail2Ban",
+                                            "key": "fail2ban.status.[{#JAIL}]"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "tags": [
+                    {
+                        "tag": "Service",
+                        "value": "Baremetal"
+                    },
+                    {
+                        "tag": "Service",
+                        "value": "Log Analysis"
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "249132609d114d21bf84a38a3c559bfd",
+                        "name": "Service state",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "Down"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "Up"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

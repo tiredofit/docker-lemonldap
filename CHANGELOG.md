@@ -1,3 +1,9 @@
+## 2.0.20 2022-02-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Update to support upstream base image features
+
+
 ## 2.0.19 2021-12-20 <dave at tiredofit dot ca>
 
    ### Added

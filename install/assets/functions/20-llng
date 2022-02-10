@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 bootstrap_configuration() {
   if [ ! "$(ls -A /var/lib/lemonldap-ng/conf/)" ]; then

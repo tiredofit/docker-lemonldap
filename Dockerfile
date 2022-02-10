@@ -23,7 +23,9 @@ ENV LEMONLDAP_VERSION=2.0.13 \
     NGINX_LOG_BLOCKED_LOCATION=/www/logs/http \
     NGINX_LOG_ERROR_FILE=error.log \
     NGINX_LOG_ERROR_LOCATION=/www/logs/http \
-    PATH=/usr/share/lemonldap-ng/bin:${PATH}
+    PATH=/usr/share/lemonldap-ng/bin:${PATH} \
+    IMAGE_NAME="tiredofit/lemonldap" \
+    IMAGE_REPO_URL="https://github.com/tiredofit/docker-lemonldap/"
 
 RUN set -x && \
 # Create User
