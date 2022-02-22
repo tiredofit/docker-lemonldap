@@ -1,7 +1,7 @@
 FROM docker.io/tiredofit/nginx:alpine-3.15
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ENV LEMONLDAP_VERSION=2.0.13 \
+ENV LEMONLDAP_VERSION=2.0.14 \
     AUTHCAS_VERSION=1.7 \
     LASSO_VERSION=v2.7.0 \
     LIBU2F_VERSION=master \
