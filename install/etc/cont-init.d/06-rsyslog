@@ -5,7 +5,7 @@ prepare_service
 PROCESS_NAME="rsyslog"
 
 ### Check to see if Enabled/Disabled
-  if [ "$LOG_TYPE" = "CONSOLE" ] ;  then
+  if [ "${LOG_TYPE,,}" = "console" ] ;  then
     print_warn "Disabling Syslog"
     service_stop $(basename "$0")
   else

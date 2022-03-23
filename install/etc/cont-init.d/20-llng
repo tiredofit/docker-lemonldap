@@ -25,15 +25,15 @@ write_config
 configure_webserver
 configure_socket
 
-chown -R ${NGINX_USER}:${NGINX_GROUP} /etc/lemonldap-ng /var/lib/lemonldap-ng /www/logs/lemonldap
+chown -R "${NGINX_USER}":"${NGINX_GROUP}" /etc/lemonldap-ng /var/lib/lemonldap-ng /www/logs/lemonldap
 
 create_zabbix llng
 
 ### Theme Support
-if [ -d /assets/custom ] ; then
+if [ -d "/assets/custom" ] ; then
     print_warn "Custom Files Found, inserting into image overtop of sourcecode.."
     cp -R /assets/custom/* /usr/share/lemonldap-ng
-    chown -R ${NGINX_USER}:${NGINX_GROUP} /usr/share/lemonldap-ng
+    chown -R "${NGINX_USER}":"${NGINX_GROUP}" /usr/share/lemonldap-ng
 fi
 
 liftoff

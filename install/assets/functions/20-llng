@@ -16,8 +16,8 @@ bootstrap_configuration() {
 
 
 config_configuration() {
-    case "$CONFIG_TYPE" in
-        "FILE" | "file" )
+    case "${CONFIG_TYPE,,}" in
+        "file" )
           config_configuration=$(cat<<EOF
 type = File
 dirName = /var/lib/lemonldap-ng/conf
@@ -28,7 +28,7 @@ EOF
             echo "0 */12 * * * /usr/share/lemonldap-ng/bin/purgeCentralCache > /dev/null 2>&1" >> /assets/cron/crontab.txt
             echo "5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys > /dev/null 2>&1" >> /assets/cron/crontab.txt
         ;;
-        "REST" | "rest" )
+        "rest" )
           config_configuration=$(cat<<EOF
 type = REST
 baseUrl = ${REST_HOST}
@@ -260,7 +260,7 @@ configure_webserver() {
 }
 
 setup_container_mode() {
-    if [ "${MODE}" = "MASTER" ] || [ "${MODE}" = "master" ] || [ "${MODE}" = "MAIN" ] || [ "${MODE}" = "main" ] || [ "${MODE}" = "AIO" ] || [ "${MODE}" = "aio" ]; then
+    if [ "${MODE,,}" = "master" ] || [ "${MODE,,}" = "main" ] || [ "${MODE,,}" = "aio" ]; then
         print_debug "Container Mode: Master/AIO"
         print_debug "Creating MODE environment generated variables"
         ENABLE_API=TRUE
@@ -271,24 +271,24 @@ setup_container_mode() {
     else
         modes=$(echo "$MODE" | tr "," "\n")
         for mode in $modes; do
-            case "${mode}" in
-                "API" | "api" )
+            case "${mode,,}" in
+                "api" )
                     print_debug "Enabling Container Mode for: API"
                     ENABLE_API=TRUE
                 ;;
-                "HANDLER" | "handler" )
+                "handler" )
                     print_debug "Enabling Container Mode for: Handler"
                     ENABLE_HANDLER=TRUE
                 ;;
-                "MANAGER" | "manager" )
+                "manager" )
                     print_debug "Enabling Container Mode for: Manager"
                     ENABLE_MANAGER=TRUE
                 ;;
-                "PORTAL" | "portal" )
+                "portal" )
                     print_debug "Enabling Container Mode for: Portal"
                     ENABLE_PORTAL=TRUE
                 ;;
-                "TEST" | "test" )
+                "test" )
                     print_debug "Enabling Container Mode for: Test Sites"
                     ENABLE_TEST=TRUE
                 ;;
@@ -302,7 +302,7 @@ setup_container_mode() {
 }
 
 write_config() {
-    if [ "${SETUP_TYPE}" = "AUTO" ] ; then
+    if [ "${SETUP_TYPE,,}" = "auto" ] ; then
         cat <<EOF > "/etc/lemonldap-ng/lemonldap-ng.ini"
 ; Custom Generated LemonLDAP:NG Config Overrides - Do not edit, instead set ENV Vars
 ; If you do want to edit this file and add your own custom, set the environment variable 'SETUP_TYPE=MANUAL' for next restart of container.
@@ -328,11 +328,11 @@ EOF
 
 ### Logging Translation
 logtype() {
-    case "$1" in
-            "CONSOLE" | "console")
+    case "${1,,}" in
+            "console")
                 echo "Lemonldap::NG::Common::Logger::Std"
             ;;
-            "FILE" | "file" | "SYSLOG" | "syslog" )
+            "file" | "syslog" )
                 echo "Lemonldap::NG::Common::Logger::Syslog"
             ;;
            *)
@@ -342,7 +342,7 @@ logtype() {
 }
 
 translate_logLevel() {
-    case "$1" in
+    case "${1,,}" in
         "debug")
             echo "DEBUG"
         ;;
@@ -363,5 +363,3 @@ translate_logLevel() {
         ;;
     esac
 }
-
-
