@@ -1,3 +1,9 @@
+## 2.0.23 2022-04-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - LaSSO 2.8.0
+
+
 ## 2.0.22 2022-03-22 <dave at tiredofit dot ca>
 
    ### Changed
