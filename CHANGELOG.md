@@ -1,3 +1,9 @@
+## 2.0.25 2022-06-24 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update to support tiredofit/nginx:6.0.0 syntax
+
+
 ## 2.0.24 2022-05-24 <dave at tiredofit dot ca>
 
    ### Added

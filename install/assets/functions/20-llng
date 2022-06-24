@@ -25,8 +25,8 @@ localStorage=Cache::FileCache
 localStorageOptions={'namespace' => '${CACHE_TYPE_FILE_NAMESPACE}','default_expires_in' => '${CACHE_TYPE_FILE_EXPIRY}', 'directory_umask' => '${CACHE_TYPE_FILE_DIR_MASK}', 'cache_root' => '${CACHE_TYPE_FILE_PATH}', 'cache_depth' => '${CACHE_TYPE_FILE_DEPTH}', }
 EOF
                         )
-            echo "0 */12 * * * /usr/share/lemonldap-ng/bin/purgeCentralCache > /dev/null 2>&1" >> /assets/cron/crontab.txt
-            echo "5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys > /dev/null 2>&1" >> /assets/cron/crontab.txt
+            echo "0 */12 * * * /usr/share/lemonldap-ng/bin/purgeCentralCache > /dev/null 2>&1" >> /assets/cron/lemonldap-purgecentralcache
+            echo "5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys > /dev/null 2>&1" >> /assets/cron/lemonldap-rotateoidckeys
         ;;
         "rest" )
           config_configuration=$(cat<<EOF
@@ -36,7 +36,7 @@ User = ${REST_USER}
 Password = ${REST_PASS}
 EOF
                         )
-            echo "1 * * * * /usr/share/lemonldap-ng/bin/purgeLocalCache  > /dev/null 2>&1" >> /assets/cron/crontab.txt
+            echo "1 * * * * /usr/share/lemonldap-ng/bin/purgeLocalCache  > /dev/null 2>&1" >> /assets/cron/lemonldap-purgelocalcache
         ;;
     esac
 }
@@ -44,30 +44,32 @@ EOF
 configure_portal() {
     if var_true "${ENABLE_PORTAL}" ; then
         print_debug "Configuring Portal"
-        cp -R /assets/llng/nginx/portal.conf.template /etc/nginx/conf.d/portal.conf
-        sed -i -e "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/conf.d/portal.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/portal.conf
+        nginx_site_enable portal
+
+        sed -i "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/sites.avaialble/portal.conf
+        sed -i "s|<ACCESS_LOG_FORMAT>|${NGINX_LOG_ACCESS_FORMAT,,}|g" /etc/nginx/sites.available/portal.conf
 
     ### Impersonation Theme Setup
         if var_true "${ENABLE_IMPERSONATION}" ; then
             sanity_var IMPERSONATE_HOSTNAME "Impersonation Hostname"
             sanity_var IMPERSONATE_THEME "Impersonation Theme"
 
-            cat <<EOF > /etc/nginx/conf.d/impersonate.conf
+            cat <<EOF > /etc/nginx/sites.available/impersonate.conf
 server {
     listen 80;
     server_name ${IMPERSONATE_HOSTNAME};
     return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
 }
 EOF
+        nginx_site_enable impoersonate
         fi
 
         ### REST Remote Access
         if var_true "${PORTAL_ENABLE_REST}" ; then
-            sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/conf.d/portal.conf
+            sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/sites.available/portal.conf
             allowed_portal=$(echo "$PORTAL_RESTSOAP_ALLOWED_IPS" | tr "," "\n")
             for allowed_host in $allowed_portal; do
-                sed -i "/allow 127.0.0.1/a\ \ \  allow $allowed_host;" /etc/nginx/conf.d/portal.conf
+                sed -i "/allow 127.0.0.1/a\ \ \  allow $allowed_host;" /etc/nginx/sites.available/portal.conf
             done
         fi
 
@@ -110,14 +112,14 @@ EOF
 configure_api() {
     if var_true "${ENABLE_API}" ; then
         print_debug "Configuring Manager API"
-        cp -R /assets/llng/nginx/api.conf.template /etc/nginx/conf.d/api.conf
-        sed -i -e "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/conf.d/api.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/api.conf
+        nginx_site_enable api
+        sed -i -e "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/sites.available/api.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/api.conf
 
         api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
         for allowed_host in ${api_allowed}; do
             print_debug "API - Allowing ${allowed_host} to access"
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/api.conf
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/api.conf
         done
     fi
 }
@@ -126,16 +128,16 @@ configure_api() {
 configure_handler() {
     if var_true "${ENABLE_HANDLER}" ; then
         print_debug "Configuring Handler"
-        cp -R /assets/llng/nginx/handler.conf.template /etc/nginx/conf.d/handler.conf
-        sed -i -e "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/conf.d/handler.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/handler.conf
+        nginx_site_enable handler
+        sed -i -e "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/sites.available/handler.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/handler.conf
         if [ "${CONFIG_TYPE}" = "REST" ] ; then
             sed -i -e "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
         fi
 
         handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n")
         for allowed_host in $handler_allowed; do
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/conf.d/handler.conf
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/handler.conf
         done
 
         ### Add Entry to hosts
@@ -195,9 +197,9 @@ EOF
 configure_manager() {
     if var_true "${ENABLE_MANAGER}" ; then
         print_debug "Configuring Manager"
-        cp -R /assets/llng/nginx/manager.conf.template /etc/nginx/conf.d/manager.conf
-        sed -i -e "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/conf.d/manager.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/manager.conf
+        nginx_site_enable manager
+        sed -i -e "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/sites.available/manager.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/manager.conf
         config_manager=$(cat<<EOF
 [manager]
 protection = ${MANAGER_PROTECTION}
@@ -237,20 +239,21 @@ EOF
 configure_socket() {
     print_debug "Configuring Socket"
     if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
-        sed -i -e "s|<HANDLER_SOCKET>|127.0.0.1:${HANDLER_SOCKET_TCP_PORT}|g" /etc/nginx/conf.d/*.conf
-        sed -i -e "/fastcgi_param LLTYPE/ a \ \ \ \ fastcgi_param REMOTE_PORT $HANDLER_SOCKET_TCP_PORT;" /etc/nginx/conf.d/*.conf
+        sed -i -e "s|<HANDLER_SOCKET>|127.0.0.1:${HANDLER_SOCKET_TCP_PORT}|g" /etc/nginx/sites.available/*.conf
+        sed -i -e "/fastcgi_param LLTYPE/ a \ \ \ \ fastcgi_param REMOTE_PORT $HANDLER_SOCKET_TCP_PORT;" /etc/nginx/sites.available/*.conf
         print_notice "Enabling Handler TCP expose functionality. Socket listens at port ${HANDLER_SOCKET_TCP_PORT}"
     else
-        sed -i -e "s|<HANDLER_SOCKET>~unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|g" /etc/nginx/conf.d/*.conf
+        sed -i -e "s|<HANDLER_SOCKET>~unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|g" /etc/nginx/sites.available/*.conf
     fi
 }
 
 configure_test() {
     if var_true "${ENABLE_TEST}" ; then
         print_debug "Configuring Test Sites"
-        cp -R /assets/llng/nginx/test.conf.template /etc/nginx/conf.d/test.conf
-        sed -i -e "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/conf.d/test.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/conf.d/test.conf
+        nginx_site_enable test
+        cp -R /assets/llng/nginx/test.conf.template /etc/nginx/sites.available/test.conf
+        sed -i -e "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/sites.available/test.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/test.conf
     fi
 }
 
