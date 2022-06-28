@@ -1,3 +1,9 @@
+## 2.0.27 2022-06-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for "test" site
+
+
 ## 2.0.26 2022-06-28 <dave at tiredofit dot ca>
 
    ### Changed

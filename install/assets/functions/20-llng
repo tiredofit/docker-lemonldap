@@ -251,7 +251,6 @@ configure_test() {
     if var_true "${ENABLE_TEST}" ; then
         print_debug "Configuring Test Sites"
         nginx_site_enable test
-        cp -R /assets/llng/nginx/test.conf.template /etc/nginx/sites.available/test.conf
         sed -i -e "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/sites.available/test.conf
         sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/test.conf
     fi
