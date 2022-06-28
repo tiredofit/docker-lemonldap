@@ -46,7 +46,7 @@ configure_portal() {
         print_debug "Configuring Portal"
         nginx_site_enable portal
 
-        sed -i "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/sites.avaialble/portal.conf
+        sed -i "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/sites.available/portal.conf
         sed -i "s|<ACCESS_LOG_FORMAT>|${NGINX_LOG_ACCESS_FORMAT,,}|g" /etc/nginx/sites.available/portal.conf
 
     ### Impersonation Theme Setup

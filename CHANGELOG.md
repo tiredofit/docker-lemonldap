@@ -1,3 +1,9 @@
+## 2.0.26 2022-06-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Bugfix for 2.0.25 with misspelled folder name
+
+
 ## 2.0.25 2022-06-24 <dave at tiredofit dot ca>
 
    ### Added
