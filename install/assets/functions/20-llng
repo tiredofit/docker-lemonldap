@@ -14,7 +14,6 @@ bootstrap_configuration() {
   fi
 }
 
-
 config_configuration() {
     case "${CONFIG_TYPE,,}" in
         "file" )
@@ -39,6 +38,22 @@ EOF
             echo "1 * * * * /usr/share/lemonldap-ng/bin/purgeLocalCache  > /dev/null 2>&1" >> /assets/cron/lemonldap-purgelocalcache
         ;;
     esac
+}
+
+configure_fail2ban_llng() {
+    source /assets/default/07-firewall
+    mkdir -p /www/logs/http/
+    touch /www/logs/http/error-handler.log
+    cat <<EOF > "${FAIL2BAN_CONFIG_PATH}/jail.d/llng.conf
+[llng]
+enabled  = true
+backend  = auto
+port     = http,https
+filter   = lemonldap
+action   = iptables-multiport[name=llng, port="http,https"]
+logpath  = ${NGINX_LOG_ERROR_LOCATION}/error*.log
+maxretry = 3
+EOF
 }
 
 configure_portal() {

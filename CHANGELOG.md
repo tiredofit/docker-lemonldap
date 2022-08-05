@@ -1,3 +1,9 @@
+## 2.0.28 2022-08-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change the way fail2ban is being used - Rely on base image included features and refactor configuration
+
+
 ## 2.0.27 2022-06-28 <dave at tiredofit dot ca>
 
    ### Changed

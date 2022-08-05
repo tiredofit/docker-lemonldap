@@ -16,6 +16,7 @@ setup_container_mode
 bootstrap_configuration
 config_configuration
 config_logging
+if var_true "${CONTAINER_ENABLE_FIREWALL}" && var_true "${CONTAINER_ENABLE_FAIL2BAN}" ; then configure_fail2ban_llng ; fi
 configure_api
 configure_handler
 configure_manager
