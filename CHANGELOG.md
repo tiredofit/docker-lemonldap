@@ -1,3 +1,9 @@
+## 2.0.29 2022-08-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Close open quote
+
+
 ## 2.0.28 2022-08-05 <dave at tiredofit dot ca>
 
    ### Changed

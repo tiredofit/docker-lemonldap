@@ -44,7 +44,7 @@ configure_fail2ban_llng() {
     source /assets/default/07-firewall
     mkdir -p /www/logs/http/
     touch /www/logs/http/error-handler.log
-    cat <<EOF > "${FAIL2BAN_CONFIG_PATH}/jail.d/llng.conf
+    cat <<EOF > "${FAIL2BAN_CONFIG_PATH}"/jail.d/llng.conf
 [llng]
 enabled  = true
 backend  = auto
