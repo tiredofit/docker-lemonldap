@@ -1,3 +1,10 @@
+## 2.0.30 2022-08-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Bring in nginx defaults
+      - Switch to custom_files function
+
+
 ## 2.0.29 2022-08-08 <dave at tiredofit dot ca>
 
    ### Changed
