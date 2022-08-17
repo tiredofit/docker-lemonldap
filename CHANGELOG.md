@@ -1,3 +1,10 @@
+## 2.0.31 2022-08-17 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for impersonation site enabled nginx configuration
+      - Switch to exec statements for launching processes
+
+
 ## 2.0.30 2022-08-11 <dave at tiredofit dot ca>
 
    ### Changed

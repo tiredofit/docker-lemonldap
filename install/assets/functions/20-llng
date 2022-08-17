@@ -76,7 +76,7 @@ server {
     return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
 }
 EOF
-        nginx_site_enable impoersonate
+        nginx_site_enable impersonate
         fi
 
         ### REST Remote Access

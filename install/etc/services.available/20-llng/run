@@ -21,7 +21,7 @@ fi
 liftoff
 
 print_start "Starting (${HANDLER_PROCESSES}) LemonLDAP FastCGI Server ${LEMONLDAP_VERSION} Handlers"
-${silent_arg} sudo -u llng /usr/sbin/llng-fastcgi-server \
+${silent_arg} exec sudo -u llng /usr/sbin/llng-fastcgi-server \
                                         ${SOCKET} \
                                         -n ${HANDLER_PROCESSES} \
                                         -foreground
