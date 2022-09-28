@@ -1,3 +1,9 @@
+## 2.0.36 2022-09-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix calling broken functions
+
+
 ## 2.0.35 2022-09-28 <dave at tiredofit dot ca>
 
    ### Added
