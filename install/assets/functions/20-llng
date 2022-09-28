@@ -14,7 +14,7 @@ bootstrap_configuration() {
   fi
 }
 
-config_configuration() {
+configure_configuration() {
     case "${CONFIG_TYPE,,}" in
         "file" )
           config_configuration=$(cat<<EOF
@@ -56,6 +56,141 @@ maxretry = 3
 EOF
 }
 
+configure_api() {
+    if var_true "${ENABLE_API}" ; then
+        print_debug "Configuring Manager API"
+        nginx_site_enable api
+        sed -i "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/sites.available/api.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/api.conf
+        create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/access-api.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/error-api.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
+
+        api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
+        for allowed_host in ${api_allowed}; do
+            print_debug "API - Allowing ${allowed_host} to access"
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/api.conf
+        done
+    fi
+}
+
+
+configure_handler() {
+    if var_true "${ENABLE_HANDLER}" ; then
+        print_debug "Configuring Handler"
+        nginx_site_enable handler
+        sed -i "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/sites.available/handler.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/handler.conf
+        create_logrotate nginx_lemonldap-handler_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-handler.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-handler_error "${NGINX_LOG_ACCESS_LOCATION}"/error-handler.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
+
+        if [ "${CONFIG_TYPE,,}" = "rest" ] ; then
+            sed -i "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
+        fi
+
+        handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n")
+        for allowed_host in $handler_allowed; do
+            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/handler.conf
+        done
+
+        ### Add Entry to hosts
+        echo "127.0.0.1 ${HANDLER_HOSTNAME}" >> /etc/hosts
+
+        config_handler=$(cat<<EOF
+[handler]
+EOF
+                        )
+
+        if [ -n "${HANDLER_LOG_TYPE}" ] ; then
+            config_handler=$(cat<<EOF
+${config_handler}
+logger = $(logtype "$HANDLER_LOG_TYPE")
+EOF
+                            )
+        fi
+
+        if [ -n "${HANDLER_USER_LOG_TYPE}" ] ; then
+            config_handler=$(cat<<EOF
+${config_handler}
+userLogger = $(logtype "$HANDLER_LOG_TYPE")
+EOF
+                            )
+        fi
+
+        if var_true "${HANDLER_REDIRECT_ON_ERROR}" ;  then
+            config_handler=$(cat<<EOF
+${config_handler}
+useRedirectOnError = 1
+EOF
+                            )
+        fi
+
+        if var_true "${HANDLER_STATUS}" ;  then
+            config_handler=$(cat<<EOF
+${config_handler}
+status = 1
+EOF
+                            )
+        fi
+    else
+        service_stop 20-llng
+    fi
+}
+
+configure_logging() {
+    print_debug "Configuring Logging"
+    config_logging=$(cat<<EOF
+logger = $(logtype "${LOG_TYPE}")
+userLogger = $(logtype "${LOG_TYPE}")
+logLevel = ${LOG_LEVEL}
+EOF
+                )
+}
+
+configure_manager() {
+    if var_true "${ENABLE_MANAGER}" ; then
+        print_debug "Configuring Manager"
+        nginx_site_enable manager
+        sed -i "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/sites.available/manager.conf
+        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/manager.conf
+        create_logrotate nginx_lemonldap-manager_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-manager.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-manager_error "${NGINX_LOG_ACCESS_LOCATION}"/error-manager.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
+
+        config_manager=$(cat<<EOF
+[manager]
+protection = ${MANAGER_PROTECTION}
+languages = ${MANAGER_LANGUAGE}
+enabledModules = ${MANAGER_ENABLED_MODULES}
+staticPrefix = ${MANAGER_STATIC_PREFIX}
+templateDir = ${MANAGER_TEMPLATE_DIR}
+EOF
+                )
+
+        if [ -n "${MANAGER_LOG_TYPE}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+logger = $(logtype "$MANAGER_LOG_TYPE")
+EOF
+                            )
+        fi
+
+        if [ -n "${MANAGER_USER_LOG_TYPE}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+userLogger = $(logtype "$MANAGER_USER_LOG_TYPE")
+EOF
+                            )
+        fi
+
+        if [ -n "${MANAGER_LOG_LEVEL}" ] ; then
+            config_manager=$(cat<<EOF
+${config_manager}
+logLevel = ${MANAGER_LOG_LEVEL}
+EOF
+                            )
+        fi
+    fi
+}
+
 configure_portal() {
     if var_true "${ENABLE_PORTAL}" ; then
         print_debug "Configuring Portal"
@@ -63,6 +198,8 @@ configure_portal() {
 
         sed -i "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/sites.available/portal.conf
         sed -i "s|<ACCESS_LOG_FORMAT>|${NGINX_LOG_ACCESS_FORMAT,,}|g" /etc/nginx/sites.available/portal.conf
+        create_logrotate nginx_lemonldap-portal_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-portal.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-portal_error "${NGINX_LOG_ACCESS_LOCATION}"/error-portal.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
     ### Impersonation Theme Setup
         if var_true "${ENABLE_IMPERSONATION}" ; then
@@ -124,133 +261,6 @@ EOF
     fi
 }
 
-configure_api() {
-    if var_true "${ENABLE_API}" ; then
-        print_debug "Configuring Manager API"
-        nginx_site_enable api
-        sed -i "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/sites.available/api.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/api.conf
-
-        api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
-        for allowed_host in ${api_allowed}; do
-            print_debug "API - Allowing ${allowed_host} to access"
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/api.conf
-        done
-    fi
-}
-
-
-configure_handler() {
-    if var_true "${ENABLE_HANDLER}" ; then
-        print_debug "Configuring Handler"
-        nginx_site_enable handler
-        sed -i "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/sites.available/handler.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/handler.conf
-        if [ "${CONFIG_TYPE}" = "REST" ] ; then
-            sed -i "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
-        fi
-
-        handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n")
-        for allowed_host in $handler_allowed; do
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/handler.conf
-        done
-
-        ### Add Entry to hosts
-        echo "127.0.0.1 ${HANDLER_HOSTNAME}" >> /etc/hosts
-
-        config_handler=$(cat<<EOF
-[handler]
-EOF
-                        )
-
-        if [ -n "${HANDLER_LOG_TYPE}" ] ; then
-            config_handler=$(cat<<EOF
-${config_handler}
-logger = $(logtype "$HANDLER_LOG_TYPE")
-EOF
-                            )
-        fi
-
-        if [ -n "${HANDLER_USER_LOG_TYPE}" ] ; then
-            config_handler=$(cat<<EOF
-${config_handler}
-userLogger = $(logtype "$HANDLER_LOG_TYPE")
-EOF
-                            )
-        fi
-
-        if var_true "${HANDLER_REDIRECT_ON_ERROR}" ;  then
-            config_handler=$(cat<<EOF
-${config_handler}
-useRedirectOnError = 1
-EOF
-                            )
-        fi
-
-        if var_true "${HANDLER_STATUS}" ;  then
-            config_handler=$(cat<<EOF
-${config_handler}
-status = 1
-EOF
-                            )
-        fi
-    else
-        service_stop 20-llng
-    fi
-}
-
-config_logging() {
-    print_debug "Configuring Logging"
-    config_logging=$(cat<<EOF
-logger = $(logtype "${LOG_TYPE}")
-userLogger = $(logtype "${LOG_TYPE}")
-logLevel = ${LOG_LEVEL}
-EOF
-                )
-}
-
-configure_manager() {
-    if var_true "${ENABLE_MANAGER}" ; then
-        print_debug "Configuring Manager"
-        nginx_site_enable manager
-        sed -i "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/sites.available/manager.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/manager.conf
-        config_manager=$(cat<<EOF
-[manager]
-protection = ${MANAGER_PROTECTION}
-languages = ${MANAGER_LANGUAGE}
-enabledModules = ${MANAGER_ENABLED_MODULES}
-staticPrefix = ${MANAGER_STATIC_PREFIX}
-templateDir = ${MANAGER_TEMPLATE_DIR}
-EOF
-                )
-
-        if [ -n "${MANAGER_LOG_TYPE}" ] ; then
-            config_manager=$(cat<<EOF
-${config_manager}
-logger = $(logtype "$MANAGER_LOG_TYPE")
-EOF
-                            )
-        fi
-
-        if [ -n "${MANAGER_USER_LOG_TYPE}" ] ; then
-            config_manager=$(cat<<EOF
-${config_manager}
-userLogger = $(logtype "$MANAGER_USER_LOG_TYPE")
-EOF
-                            )
-        fi
-
-        if [ -n "${MANAGER_LOG_LEVEL}" ] ; then
-            config_manager=$(cat<<EOF
-${config_manager}
-logLevel = ${MANAGER_LOG_LEVEL}
-EOF
-                            )
-        fi
-    fi
-}
-
 configure_socket() {
     print_debug "Configuring Socket"
     if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
@@ -268,6 +278,8 @@ configure_test() {
         nginx_site_enable test
         sed -i "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/sites.available/test.conf
         sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/test.conf
+        create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/access-test.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/error-test.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
     fi
 }
 
@@ -286,7 +298,7 @@ setup_container_mode() {
         ENABLE_PORTAL=TRUE
         ENABLE_TEST=TRUE
     else
-        modes=$(echo "$MODE" | tr "," "\n")
+        modes=$(echo "${MODE}" | tr "," "\n")
         for mode in $modes; do
             case "${mode,,}" in
                 "api" )

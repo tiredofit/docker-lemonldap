@@ -1,3 +1,17 @@
+## 2.0.34 2022-09-28 <dave at tiredofit dot ca>
+
+All users of this image are recommended to upgrade to resolve space issues with faulty log rotation.
+
+   ### Added
+      - LemonLDAP:NG 2.0.15.1
+      - LASSO 2.8.0
+
+   ### Changed
+      - Fix Logrotation for individual nginx configurations
+      - Cleanup variables as per shellcheck
+      - Move around functions
+
+
 ## 2.0.33 2022-09-14 <dave at tiredofit dot ca>
 
    ### Added
