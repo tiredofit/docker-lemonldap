@@ -1,3 +1,12 @@
+## 2.0.35 2022-09-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce seperate logs for impersonation along with logrotation
+
+   ### Changed
+      - Fix error on startup with directory permissions
+
+
 ## 2.0.34 2022-09-28 <dave at tiredofit dot ca>
 
 All users of this image are recommended to upgrade to resolve space issues with faulty log rotation.

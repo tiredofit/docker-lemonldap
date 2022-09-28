@@ -1,6 +1,5 @@
 #!/command/with-contenv bash
 
-### Sanity Check Defaults
 CACHE_TYPE=${CACHE_TYPE:-"FILE"}
 CACHE_TYPE_FILE_DEPTH=${CACHE_TYPE_FILE_DEPTH:-0}
 CACHE_TYPE_FILE_DIR_MASK=${CACHE_TYPE_FILE_DIR_MASK:-007}

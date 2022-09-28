@@ -210,10 +210,14 @@ configure_portal() {
 server {
     listen 80;
     server_name ${IMPERSONATE_HOSTNAME};
+    access_log /www/logs/http/access-impersonate.log ${NGINX_LOG_ACCESS_FORMAT,,};
+    error_log /www/logs/http/error-impersonate.log;
     return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
 }
 EOF
         nginx_site_enable impersonate
+        create_logrotate nginx_lemonldap-impersonate_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-impersonate.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
+        create_logrotate nginx_lemonldap-impersonate_error "${NGINX_LOG_ACCESS_LOCATION}"/error-impersonate.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
         fi
 
         ### REST Remote Access
