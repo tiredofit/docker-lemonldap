@@ -28,7 +28,8 @@ ENV LEMONLDAP_VERSION=2.0.15.1 \
     IMAGE_NAME="tiredofit/lemonldap" \
     IMAGE_REPO_URL="https://github.com/tiredofit/docker-lemonldap/"
 
-RUN set -x && \
+RUN source /assets/functions/00-container && \
+    set -x && \
 # Create User
     addgroup -g 2884 llng && \
     adduser -S -D -G llng -u 2884 -h /var/lib/lemonldap-ng/ llng && \
@@ -138,10 +139,7 @@ RUN set -x && \
     pip install sphinx_bootstrap_theme && \
     \
     ### Compile libu2f-server for 2FA Support
-    mkdir -p /usr/src/libu2f && \
-    git clone https://github.com/Yubico/libu2f-server /usr/src/libu2f && \
-    cd /usr/src/libu2f && \
-    git checkout ${LIBU2F_VERSION} && \
+    clone_git_repo https://github.com/Yubico/libu2f-server ${LIBU2F_VERSION} && \
     ./autogen.sh && \
     ./configure \
         --build=$CBUILD \
@@ -207,10 +205,7 @@ RUN set -x && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    mkdir -p /usr/src/lasso && \
-    git clone git://git.entrouvert.org/lasso.git && \
-    cd /usr/src/lasso && \
-    git checkout ${LASSO_VERSION} && \
+    clone_git_repo git://git.entrouvert.org/lasso.git ${LASSO_VERSION} && \
     ./autogen.sh \
                 --prefix=/usr \
                 --disable-java \
@@ -230,10 +225,8 @@ RUN set -x && \
     make install && \
     \
 ### Checkout and Install LemonLDAP
-    mkdir -p /usr/src/lemonldap-ng && \
-    git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng /usr/src/lemonldap-ng && \
-    cd /usr/src/lemonldap-ng && \
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then git checkout v$LEMONLDAP_VERSION; fi && \
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMON_LDAP_VERSION ; fi && \ 
+    clone_git_repo https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng $LEMONLDAP_VERSION && \
     make dist && \
     make documentation && \
     make PREFIX=/usr \
@@ -254,39 +247,29 @@ RUN set -x && \
          install && \
     \
 ### Compile Various Apache::Session Modules
-    cd /usr/src/ && \
-    git clone https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
-    git clone https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
-    git clone https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
-    git clone https://github.com/LemonLDAPNG/apache-session-mongodb && \
+    clone_git_repo https://github.com/LemonLDAPNG/Apache-Session-NoSQL && \
+    perl Makefile.PL && \
+    make -j$(nproc) && \
+    make test && \
+    make install && \
     \
-    cd /usr/src/Apache-Session-NoSQL && \
+    clone_git_repo https://github.com/LemonLDAPNG/Apache-Session-LDAP && \
     perl Makefile.PL && \
     make -j$(nproc) && \
     make test && \
     make install && \
-    cd .. && \
-    cd /usr/src/Apache-Session-LDAP && \
-    perl Makefile.PL && \
-    make -j$(nproc) && \
-    make test && \
-    make install && \
-    cd .. && \
-    cd /usr/src/Apache-Session-Browseable && \
+    \
+    clone_git_repo https://github.com/LemonLDAPNG/Apache-Session-Browseable && \
     perl Build.PL && \
     ./Build && \
     ./Build test && \
     ./Build install && \
-    cd .. && \
-    cd /usr/src/apache-session-mongodb && \
-    git checkout v0.21 && \
+    \
+    clone_git_repo https://github.com/LemonLDAPNG/apache-session-mongodb v0.21 && \
     perl Makefile.PL && \
     make && \
     make test && \
     make install && \
-    ## Patch for 2.0.13 https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2595
-    sed -i "/\$expr ||= '';/d" /usr/local/share/perl5/site_perl/Lemonldap/NG/Handler/Main/Reload.pm && \
-    ##
     \
     mkdir -p /var/run/llng-fastcgi-server && \
     chown -R llng /var/run/llng-fastcgi-server && \
@@ -313,7 +296,7 @@ RUN set -x && \
     rm -rf /tmp/* /var/cache/apk/*
 
 ### Networking Setup
-EXPOSE 80 2884
+EXPOSE 2884
 
 ### Add Files and Assets
 ADD install /

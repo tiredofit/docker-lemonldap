@@ -1,3 +1,9 @@
+## 2.0.37 2022-10-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change the way git repos are cloned in Dockerfile
+
+
 ## 2.0.36 2022-09-28 <dave at tiredofit dot ca>
 
    ### Changed
