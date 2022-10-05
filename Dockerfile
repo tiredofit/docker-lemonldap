@@ -14,6 +14,7 @@ ENV LEMONLDAP_VERSION=2.0.15.1 \
     TEST_HOSTNAME=test.sso.example.com \
     NGINX_APPLICATION_CONFIGURATION=FALSE \
     NGINX_AUTHENTICATION_TYPE=NONE \
+    NGINX_LISTEN_PORT=80 \
     NGINX_LOG_ACCESS_FORMAT=llng_standard \
     NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
     NGINX_USER=llng \
@@ -205,7 +206,7 @@ RUN source /assets/functions/00-container && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    clone_git_repo git://git.entrouvert.org/lasso.git ${LASSO_VERSION} && \
+    clone_git_repo git://git.entrouvert.org/lasso ${LASSO_VERSION} && \
     ./autogen.sh \
                 --prefix=/usr \
                 --disable-java \
@@ -225,7 +226,7 @@ RUN source /assets/functions/00-container && \
     make install && \
     \
 ### Checkout and Install LemonLDAP
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMON_LDAP_VERSION ; fi && \ 
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMON_LDAP_VERSION ; fi && \
     clone_git_repo https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng $LEMONLDAP_VERSION && \
     make dist && \
     make documentation && \

@@ -60,7 +60,10 @@ configure_api() {
     if var_true "${ENABLE_API}" ; then
         print_debug "Configuring Manager API"
         nginx_site_enable api
-        sed -i "s|<API_HOSTNAME>|${API_HOSTNAME}|g" /etc/nginx/sites.available/api.conf
+        update_template /etc/nginx/sites.available/api.conf \
+                                                            API_HOSTNAME \
+                                                            NGINX_LISTEN_PORT \
+                                                            NGINX_LOG_ACCESS_FORMAT
         sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/api.conf
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/access-api.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/error-api.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
@@ -78,8 +81,10 @@ configure_handler() {
     if var_true "${ENABLE_HANDLER}" ; then
         print_debug "Configuring Handler"
         nginx_site_enable handler
-        sed -i "s|<HANDLER_HOSTNAME>|${HANDLER_HOSTNAME}|g" /etc/nginx/sites.available/handler.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/handler.conf
+        update_template /etc/nginx/sites.available/handler.conf \
+                                                            HANDLER_HOSTNAME \
+                                                            NGINX_LISTEN_PORT \
+                                                            NGINX_LOG_ACCESS_FORMAT
         create_logrotate nginx_lemonldap-handler_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-handler.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-handler_error "${NGINX_LOG_ACCESS_LOCATION}"/error-handler.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -150,8 +155,10 @@ configure_manager() {
     if var_true "${ENABLE_MANAGER}" ; then
         print_debug "Configuring Manager"
         nginx_site_enable manager
-        sed -i "s|<MANAGER_HOSTNAME>|${MANAGER_HOSTNAME}|g" /etc/nginx/sites.available/manager.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/manager.conf
+        update_template /etc/nginx/sites.available/handler.conf \
+                                                            MANAGER_HOSTNAME \
+                                                            NGINX_LISTEN_PORT \
+                                                            NGINX_LOG_ACCESS_FORMAT
         create_logrotate nginx_lemonldap-manager_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-manager.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_error "${NGINX_LOG_ACCESS_LOCATION}"/error-manager.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -195,9 +202,10 @@ configure_portal() {
     if var_true "${ENABLE_PORTAL}" ; then
         print_debug "Configuring Portal"
         nginx_site_enable portal
-
-        sed -i "s|<PORTAL_HOSTNAME>|${PORTAL_HOSTNAME}|g" /etc/nginx/sites.available/portal.conf
-        sed -i "s|<ACCESS_LOG_FORMAT>|${NGINX_LOG_ACCESS_FORMAT,,}|g" /etc/nginx/sites.available/portal.conf
+        update_template /etc/nginx/sites.available/portal.conf \
+                                                            NGINX_LISTEN_PORT \
+                                                            NGINX_LOG_ACCESS_FORMAT \
+                                                            PORTAL_HOSTNAME
         create_logrotate nginx_lemonldap-portal_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-portal.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-portal_error "${NGINX_LOG_ACCESS_LOCATION}"/error-portal.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -208,7 +216,7 @@ configure_portal() {
 
             cat <<EOF > /etc/nginx/sites.available/impersonate.conf
 server {
-    listen 80;
+    listen ${NGINX_LISTEN_PORT};
     server_name ${IMPERSONATE_HOSTNAME};
     access_log /www/logs/http/access-impersonate.log ${NGINX_LOG_ACCESS_FORMAT,,};
     error_log /www/logs/http/error-impersonate.log;
@@ -268,20 +276,23 @@ EOF
 configure_socket() {
     print_debug "Configuring Socket"
     if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
-        sed -i "s|<HANDLER_SOCKET>|127.0.0.1:${HANDLER_SOCKET_TCP_PORT}|g" /etc/nginx/sites.available/*.conf
+        HANDLER_SOCKET=${HANDLER_SOCKET:-"127.0.0.1:${HANDLER_SOCKET_TCP_PORT}"}
         sed -i "/fastcgi_param LLTYPE/ a \ \ \ \ fastcgi_param REMOTE_PORT $HANDLER_SOCKET_TCP_PORT;" /etc/nginx/sites.available/*.conf
         print_notice "Enabling Handler TCP expose functionality. Socket listens at port ${HANDLER_SOCKET_TCP_PORT}"
     else
-        sed -i "s|<HANDLER_SOCKET>~unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|g" /etc/nginx/sites.available/*.conf
+        HANDLER_SOCKET=${HANDLER_SOCKET:-"unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|g"}
     fi
+    update_template "/etc/nginx/sites.available/*.conf" HANDLER_SOCKET
 }
 
 configure_test() {
     if var_true "${ENABLE_TEST}" ; then
         print_debug "Configuring Test Sites"
         nginx_site_enable test
-        sed -i "s|<TEST_HOSTNAME>|${TEST_HOSTNAME}|g" /etc/nginx/sites.available/test.conf
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/test.conf
+        update_template /etc/nginx/sites.available/test.conf \
+                                                            TEST_HOSTNAME \
+                                                            NGINX_LISTEN_PORT \
+                                                            NGINX_LOG_ACCESS_FORMAT
         create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/access-test.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/error-test.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
     fi

@@ -1,3 +1,9 @@
+## 2.0.38 2022-10-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Convert legacy nginx configuration
+
+
 ## 2.0.37 2022-10-04 <dave at tiredofit dot ca>
 
    ### Changed
