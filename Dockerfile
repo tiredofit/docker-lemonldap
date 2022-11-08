@@ -3,7 +3,7 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ENV LEMONLDAP_VERSION=2.0.15.1 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=v2.8.0 \
+    LASSO_VERSION=2.8.0 \
     LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
@@ -161,6 +161,7 @@ RUN source /assets/functions/00-container && \
         Auth::Yubikey_WebClient \
         Authen::Radius \
         Authen::Captcha \
+        Authen::WebAuthn \
         CGI::Compile \
         Convert::PEM \
         Convert::Base32 \
@@ -206,13 +207,10 @@ RUN source /assets/functions/00-container && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    clone_git_repo git://git.entrouvert.org/lasso ${LASSO_VERSION} && \
-    ./autogen.sh \
-                --prefix=/usr \
-                --disable-java \
-                --disable-php5 \
-                --disable-python \
-                --disable-tests && \
+    mkdir -p /usr/src/lasso && \
+    curl -sSL https://dev.entrouvert.org/releases/lasso/lasso-${LASSO_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/lasso && \
+    cd /usr/src/lasso && \
+    ./configure && \
     make -j$(nproc) && \
     make check && \
     make install && \
@@ -226,7 +224,7 @@ RUN source /assets/functions/00-container && \
     make install && \
     \
 ### Checkout and Install LemonLDAP
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMON_LDAP_VERSION ; fi && \
+    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMONLDAP_VERSION ; fi && \
     clone_git_repo https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng $LEMONLDAP_VERSION && \
     make dist && \
     make documentation && \
@@ -300,4 +298,4 @@ RUN source /assets/functions/00-container && \
 EXPOSE 2884
 
 ### Add Files and Assets
-ADD install /
+COPY install /

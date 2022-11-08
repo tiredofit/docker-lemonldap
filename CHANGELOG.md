@@ -1,3 +1,13 @@
+## 2.0.39 2022-11-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add perl Authen::WebAuthn
+
+   ### Changed
+      - Fix Lasso building looking for a version
+      - Fix LemonLDAP tagging and cloning
+
+
 ## 2.0.38 2022-10-05 <dave at tiredofit dot ca>
 
    ### Changed
