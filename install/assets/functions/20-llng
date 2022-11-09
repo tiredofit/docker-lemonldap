@@ -64,7 +64,6 @@ configure_api() {
                                                             API_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
                                                             NGINX_LOG_ACCESS_FORMAT
-        sed -i "s#<ACCESS_LOG_FORMAT>#${NGINX_LOG_ACCESS_FORMAT,,}#g" /etc/nginx/sites.available/api.conf
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/access-api.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/error-api.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -155,7 +154,7 @@ configure_manager() {
     if var_true "${ENABLE_MANAGER}" ; then
         print_debug "Configuring Manager"
         nginx_site_enable manager
-        update_template /etc/nginx/sites.available/handler.conf \
+        update_template /etc/nginx/sites.available/manager.conf \
                                                             MANAGER_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
                                                             NGINX_LOG_ACCESS_FORMAT

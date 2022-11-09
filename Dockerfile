@@ -3,7 +3,7 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ENV LEMONLDAP_VERSION=2.0.15.1 \
     AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=2.8.0 \
+    LASSO_VERSION=v2.8.0 \
     LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
@@ -207,10 +207,14 @@ RUN source /assets/functions/00-container && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    mkdir -p /usr/src/lasso && \
-    curl -sSL https://dev.entrouvert.org/releases/lasso/lasso-${LASSO_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/lasso && \
+    git clone git://git.entrouvert.org/lasso.git && \
     cd /usr/src/lasso && \
-    ./configure && \
+    git checkout "${LASSO_VERSION}" && \
+    ./autogen.sh \
+                 --prefix=/usr \
+                 --disable-python \
+                 --disable-tests \
+                 && \
     make -j$(nproc) && \
     make check && \
     make install && \

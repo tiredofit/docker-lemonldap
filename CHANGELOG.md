@@ -1,3 +1,9 @@
+## 2.0.40 2022-11-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix some issues with 2.0.39 involving Lasso and Nginx
+
+
 ## 2.0.39 2022-11-08 <dave at tiredofit dot ca>
 
    ### Added
