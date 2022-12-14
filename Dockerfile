@@ -1,9 +1,16 @@
-FROM docker.io/tiredofit/nginx:alpine-3.17
+ARG DISTRO="alpine"
+ARG DISTRO_VARIANT="3.17"
+
+FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ENV LEMONLDAP_VERSION=2.0.15.1 \
-    AUTHCAS_VERSION=1.7 \
-    LASSO_VERSION=v2.8.0 \
+ARG LEMONLDAP_VERSION
+ARG AUTHCAS_VERSION
+ARG LASSO_VERSION
+
+ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.0.15.1"} \
+    AUTHCAS_VERSION=${AUTHCAS_VERSION:-"1.7"} \
+    LASSO_VERSION=${LASSO_VERSION:-"v2.8.0"} \
     LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
@@ -31,110 +38,109 @@ ENV LEMONLDAP_VERSION=2.0.15.1 \
 
 RUN source /assets/functions/00-container && \
     set -x && \
-# Create User
     addgroup -g 2884 llng && \
     adduser -S -D -G llng -u 2884 -h /var/lib/lemonldap-ng/ llng && \
     \
 # Build Dependencies
-    apk update && \
-    apk upgrade && \
-    apk add --no-cache --virtual .lemonldap-build-deps \
-            autoconf \
-            automake \
-            build-base \
-            check-dev \
-            coreutils \
-            expat-dev \
-            g++ \
-            gcc \
-            go \
-            git \
-            gd-dev \
-            gengetopt-dev \
-            glib-dev \
-            gmp-dev \
-            gtk-doc \
-            help2man \
-            imagemagick-dev \
-            json-c-dev \
-            openssl-dev \
-            libtool \
-            krb5-dev \
-            make \
-            mongo-c-driver-dev \
-            nodejs \
-            npm \
-            musl-dev \
-            perl-dev \
-            py-pip \
-            py-six \
-            py3-sphinx \
-            redis \
-            sphinx \
-            wget \
-            xmlsec-dev \
-            && \
+    package update && \
+    package upgrade && \
+    package install .lemonldap-build-deps \
+                    autoconf \
+                    automake \
+                    build-base \
+                    check-dev \
+                    coreutils \
+                    expat-dev \
+                    g++ \
+                    gcc \
+                    go \
+                    git \
+                    gd-dev \
+                    gengetopt-dev \
+                    glib-dev \
+                    gmp-dev \
+                    gtk-doc \
+                    help2man \
+                    imagemagick-dev \
+                    json-c-dev \
+                    openssl-dev \
+                    libtool \
+                    krb5-dev \
+                    make \
+                    mongo-c-driver-dev \
+                    nodejs \
+                    npm \
+                    musl-dev \
+                    perl-dev \
+                    py-pip \
+                    py-six \
+                    py3-sphinx \
+                    redis \
+                    sphinx \
+                    wget \
+                    xmlsec-dev \
+                    && \
     \
-    apk add --no-cache --virtual .lemonldap-run-deps \
-            gd \
-            ghostscript-fonts \
-            imagemagick \
-            imagemagick-libs \
-            imagemagick-perlmagick \
-            krb5-libs \
-            mariadb-client \
-            mongo-c-driver \
-            openssl \
-            perl \
-            perl-apache-session \
-            perl-authen-sasl \
-            perl-cache-cache \
-            perl-clone \
-            perl-config-inifiles \
-            perl-crypt-openssl-bignum \
-            perl-crypt-openssl-rsa \
-            perl-crypt-rijndael \
-            perl-crypt-x509 \
-            perl-dbd-mysql \
-            perl-dbd-sqlite \
-            perl-dbd-pg \
-            perl-dbi \
-            perl-digest-md5 \
-            perl-digest-sha1 \
-            perl-cgi-emulate-psgi \
-            perl-fcgi \
-            perl-fcgi-procmanager \
-            perl-glib \
-            perl-http-headers-fast \
-            perl-http-entity-parser \
-            perl-html-template \
-            perl-io \
-            perl-io-socket-ssl \
-            perl-io-string \
-            perl-json \
-            perl-ldap \
-            perl-lwp-protocol-https \
-            perl-mime-lite \
-            perl-mime-tools \
-            perl-net-cidr \
-            perl-net-cidr-lite \
-            perl-net-ssleay \
-            perl-plack \
-            perl-regexp-common \
-            perl-test-mockobject \
-            perl-test-pod \
-            perl-unicode-string \
-            perl-uri \
-            perl-utils \
-            perl-xml-libxml \
-            perl-xml-libxml-simple \
-            perl-xml-libxslt \
-            perl-xml-sax \
-            postgresql-client \
-            rsyslog \
-            s6 \
-            xmlsec \
-            && \
+    package install .lemonldap-run-deps \
+                    gd \
+                    ghostscript-fonts \
+                    imagemagick \
+                    imagemagick-libs \
+                    imagemagick-perlmagick \
+                    krb5-libs \
+                    mariadb-client \
+                    mongo-c-driver \
+                    openssl \
+                    perl \
+                    perl-apache-session \
+                    perl-authen-sasl \
+                    perl-cache-cache \
+                    perl-clone \
+                    perl-config-inifiles \
+                    perl-crypt-openssl-bignum \
+                    perl-crypt-openssl-rsa \
+                    perl-crypt-rijndael \
+                    perl-crypt-x509 \
+                    perl-dbd-mysql \
+                    perl-dbd-sqlite \
+                    perl-dbd-pg \
+                    perl-dbi \
+                    perl-digest-md5 \
+                    perl-digest-sha1 \
+                    perl-cgi-emulate-psgi \
+                    perl-fcgi \
+                    perl-fcgi-procmanager \
+                    perl-glib \
+                    perl-http-headers-fast \
+                    perl-http-entity-parser \
+                    perl-html-template \
+                    perl-io \
+                    perl-io-socket-ssl \
+                    perl-io-string \
+                    perl-json \
+                    perl-ldap \
+                    perl-lwp-protocol-https \
+                    perl-mime-lite \
+                    perl-mime-tools \
+                    perl-net-cidr \
+                    perl-net-cidr-lite \
+                    perl-net-ssleay \
+                    perl-plack \
+                    perl-regexp-common \
+                    perl-test-mockobject \
+                    perl-test-pod \
+                    perl-unicode-string \
+                    perl-uri \
+                    perl-utils \
+                    perl-xml-libxml \
+                    perl-xml-libxml-simple \
+                    perl-xml-libxslt \
+                    perl-xml-sax \
+                    postgresql-client \
+                    rsyslog \
+                    s6 \
+                    xmlsec \
+                    && \
     \
     ### Install Sphinx dependencies for Document Building for Manager
     pip install sphinx_bootstrap_theme && \
@@ -228,7 +234,7 @@ RUN source /assets/functions/00-container && \
     make install && \
     \
 ### Checkout and Install LemonLDAP
-    if [ "$LEMONLDAP_VERSION" != "master" ] ; then LEMONLDAP_VERSION=v$LEMONLDAP_VERSION ; fi && \
+    if [ "${LEMONLDAP_VERSION}" != "master" ] ; then LEMONLDAP_VERSION=v$LEMONLDAP_VERSION ; fi && \
     clone_git_repo https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng $LEMONLDAP_VERSION && \
     make dist && \
     make documentation && \
@@ -285,21 +291,28 @@ RUN source /assets/functions/00-container && \
     chown -R llng /var/run/llng-fastcgi-server && \
     ln -s /usr/share/lemonldap-ng/doc /usr/share/lemonldap-ng/manager/doc && \
     ln -s /usr/share/lemonldap-ng/portal /usr/share/lemonldap-ng/portal/htdocs && \
-    rm -rf /etc/nginx/conf.d/* && \
-    \
 # Cleanup
-    rm -rf /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/* && \
-    rm -rf /root/.cpanm /root/.cache /root/.npm /root/.config /root/.bash_history /root/go && \
-    rm -rf /usr/src/* && \
-    rm -rf /usr/bin/yuicompressor /usr/bin/yui-compressor /usr/bin/coffee /usr/bin/minify && \
-    rm -rf /etc/fail2ban/jail.d/* && \
-    apk del .lemonldap-build-deps && \
+    rm -rf \
+            /etc/lemonldap-ng/* \
+            /root/.bash_history \
+            /root/.cache \
+            /root/.config \
+            /root/.cpanm \
+            /root/.npm \
+            /root/go && \
+            /usr/bin/coffee \
+            /usr/bin/minify && \
+            /usr/bin/yui-compressor \
+            /usr/bin/yuicompressor \
+            /usr/src/* \
+            /var/lib/lemonldap-ng/conf/* \
+            /etc/fail2ban/jail.d/* \
+            /tmp/* \
+            && \
+    package remove .lemonldap-build-deps && \
+    package cleanup && \
     deluser nginx && \
-    deluser redis && \
-    rm -rf /tmp/* /var/cache/apk/*
+    deluser redis
 
-### Networking Setup
 EXPOSE 2884
-
-### Add Files and Assets
 COPY install /
