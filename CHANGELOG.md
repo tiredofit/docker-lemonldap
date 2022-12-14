@@ -1,3 +1,9 @@
+## 2.0.42 2022-12-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Modernize Dockerfile
+
+
 ## 2.0.41 2022-11-23 <dave at tiredofit dot ca>
 
    ### Added

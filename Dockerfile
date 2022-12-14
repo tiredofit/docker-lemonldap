@@ -299,9 +299,9 @@ RUN source /assets/functions/00-container && \
             /root/.config \
             /root/.cpanm \
             /root/.npm \
-            /root/go && \
+            /root/go \
             /usr/bin/coffee \
-            /usr/bin/minify && \
+            /usr/bin/minify \
             /usr/bin/yui-compressor \
             /usr/bin/yuicompressor \
             /usr/src/* \
