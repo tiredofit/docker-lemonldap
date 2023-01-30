@@ -1,7 +1,7 @@
 # github.com/tiredofit/docker-lemonldap
 
 [![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-lemonldap?style=flat-square)](https://github.com/tiredofit/docker-lemonldap/releases/latest)
-[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-lemonldap/build?style=flat-square)](https://github.com/tiredofit/docker-lemonldap/actions?query=workflow%3Abuild)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/tiredofit/docker-lemonldap.git/main.yml?branch=main&style=flat-square)](https://github.com/tiredofit/docker-lemonldap.git/actions)
 [![Docker Stars](https://img.shields.io/docker/stars/tiredofit/lemonldap.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/lemonldap/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/lemonldap.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/lemonldap/)
 [![Become a sponsor](https://img.shields.io/badge/sponsor-tiredofit-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/tiredofit)
