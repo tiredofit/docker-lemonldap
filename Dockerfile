@@ -213,7 +213,7 @@ RUN source /assets/functions/00-container && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    git clone git://git.entrouvert.org/lasso.git && \
+    git clone git://git.entrouvert.org/entrouvert/lasso.git && \
     cd /usr/src/lasso && \
     git checkout "${LASSO_VERSION}" && \
     ./autogen.sh \

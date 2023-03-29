@@ -1,3 +1,9 @@
+## 2.0.45 2023-03-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Support new source URL for LaSSO
+
+
 ## 2.0.44 2023-03-28 <dave at tiredofit dot ca>
 
    ### Added
