@@ -8,7 +8,7 @@ ARG LEMONLDAP_VERSION
 ARG AUTHCAS_VERSION
 ARG LASSO_VERSION
 
-ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.0.16.1"} \
+ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.16.1"} \
     AUTHCAS_VERSION=${AUTHCAS_VERSION:-"1.7"} \
     LASSO_VERSION=${LASSO_VERSION:-"v2.8.0"} \
     LIBU2F_VERSION=master \
@@ -213,7 +213,7 @@ RUN source /assets/functions/00-container && \
     ln -s /usr/bin/yuicompressor /usr/bin/yui-compressor && \
     \
 ### Install Lasso
-    git clone git://git.entrouvert.org/entrouvert/lasso.git && \
+    clone_git_repo https://git.entrouvert.org/entrouvert/lasso "${LASSO_VERSION}" /usr/src/lasso && \
     cd /usr/src/lasso && \
     git checkout "${LASSO_VERSION}" && \
     ./autogen.sh \
@@ -227,7 +227,7 @@ RUN source /assets/functions/00-container && \
     \
 ### Install AuthCAS
     mkdir -p /usr/src/authcas && \
-    curl https://sourcesup.renater.fr/frs/download.php/file/5125/AuthCAS-${AUTHCAS_VERSION}tar.gz | tar xvfz - --strip 1 -C /usr/src/authcas && \
+    curl https://sourcesup.renater.fr/frs/download.php/file/5125/AuthCAS-${AUTHCAS_VERSION}.tar.gz | tar xvfz - --strip 1 -C /usr/src/authcas && \
     cd /usr/src/authcas && \
     perl Makefile.PL && \
     make -j$(nproc) && \

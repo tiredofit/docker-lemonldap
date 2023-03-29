@@ -1,3 +1,9 @@
+## 2.0.46 2023-03-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change AuthCAS URL
+
+
 ## 2.0.45 2023-03-29 <dave at tiredofit dot ca>
 
    ### Changed
