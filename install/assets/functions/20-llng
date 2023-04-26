@@ -28,7 +28,12 @@ EOF
             echo "5 5 * * 6 llng /usr/share/lemonldap-ng/bin/rotateOidcKeys > /dev/null 2>&1" >> /assets/cron/lemonldap-rotateoidckeys
         ;;
         "rest" )
-          config_configuration=$(cat<<EOF
+            transform_file_var \
+                                    REST_HOST \
+                                    REST_USER \
+                                    REST_PASS
+
+            config_configuration=$(cat<<EOF
 type = REST
 baseUrl = ${REST_HOST}
 User = ${REST_USER}

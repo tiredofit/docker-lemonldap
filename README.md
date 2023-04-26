@@ -76,11 +76,11 @@ Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tired
 docker pull docker.io/tiredofdit/lemonldap:(imagetag)
 ```
 
-Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-lemonldap/pkgs/container/docker-lemonldap) 
- 
+Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-lemonldap/pkgs/container/docker-lemonldap)
+
 ```
 docker pull ghcr.io/tiredofit/docker-lemonldap:(imagetag)
-``` 
+```
 
 The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
 
@@ -157,11 +157,11 @@ By Default this image is ready to run out of the box, without having to alter an
 
 Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 
-| Parameter   | Description                                                                      | Default |
-| ----------- | -------------------------------------------------------------------------------- | ------- |
-| `REST_HOST` | Hostname of Master REST Server e.g. `https://sso.example.com/index.psgi/config/` |         |
-| `REST_USER` | Username to fetch Configuration Information                                      |         |
-| `REST_PASS` | Password to fetch Configuration Information                                      |         |
+| Parameter   | Description                                                                      | Default | `_FILE` |
+| ----------- | -------------------------------------------------------------------------------- | ------- | ------- |
+| `REST_HOST` | Hostname of Master REST Server e.g. `https://sso.example.com/index.psgi/config/` |         | x       |
+| `REST_USER` | Username to fetch Configuration Information                                      |         | x       |
+| `REST_PASS` | Password to fetch Configuration Information                                      |         | x       |
 
 #### Portal Settings
 | Parameter                 | Description                                                                          | Default                                    |
