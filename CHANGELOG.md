@@ -1,3 +1,9 @@
+## 2.0.50 2023-05-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.16.2
+
+
 ## 2.0.49 2023-05-10 <dave at tiredofit dot ca>
 
    ### Added
