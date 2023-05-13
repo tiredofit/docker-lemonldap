@@ -1,3 +1,9 @@
+## 2.0.51 2023-05-12 <dave at tiredofit dot ca>
+
+   ### Reverted
+      - Revert to Alpine 3.17
+
+
 ## 2.0.50 2023-05-12 <dave at tiredofit dot ca>
 
    ### Added
