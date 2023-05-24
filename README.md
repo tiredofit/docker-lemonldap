@@ -73,7 +73,7 @@ Clone this repository and build the image with `docker build -t (imagename) .`
 Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/lemonldap)
 
 ```bash
-docker pull docker.io/tiredofdit/lemonldap:(imagetag)
+docker pull docker.io/tiredofit/lemonldap:(imagetag)
 ```
 
 Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-lemonldap/pkgs/container/docker-lemonldap)
