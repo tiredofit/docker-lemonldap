@@ -1,8 +1,6 @@
-version: '2'
-
 services:
   lemonldap-handler-app:
-    image: tiredofit/lemonldap:2.0-alpine-latest
+    image: tiredofit/lemonldap:latest
     container_name: lemonldap-handler-app
     volumes:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng
@@ -17,13 +15,13 @@ services:
     - CONTAINER_NAME=lemonldap-handler-app
 
     - MODE=HANDLER
-    
+
     - DOMAIN_NAME=example.com
     - HANDLER_HOSTNAME=handler.sso.example.com
     - HANDLER_ALLOWED_IPS=172.16.1.0/24,192.168.0.1,10.0.0.0/12
-     
+
     - CONFIG_TYPE=REST
-    - REST_HOST=https://sso.example.com/index.psgi/config 
+    - REST_HOST=https://sso.example.com/index.psgi/config
     - REST_USER=dwho
     - REST_PASS=dwho
 

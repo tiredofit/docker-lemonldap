@@ -1,3 +1,9 @@
+## 2.0.52 2023-05-31 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add 2ndFA as default for manager modules available
+
+
 ## 2.0.51 2023-05-12 <dave at tiredofit dot ca>
 
    ### Reverted
