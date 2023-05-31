@@ -94,8 +94,8 @@ The following image tags are available along with their tagged release based on 
 
 ### Quick Start
 
-* The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/). See the examples folder for a working [docker-compose.yml](examples/docker-compose.yml) that can be modified for development or production use.
-* If you'd like to just use it in Handler mode, you will find another sample docker-compose.yml file that should get you started.
+* The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/). See the examples folder for a working [compose.yml](examples/compose.yml) that can be modified for development or production use.
+* If you'd like to just use it in Handler mode, you will find another sample [handler-compose.yml](examples/handler-compose.yml) file that should get you started.
 * Add records for your main, and manager names into DNS (ie `handler.sso.example.com`. `api.manager.sso.example.com`, `manager.sso.example.com`, `sso.example.com`, `test.sso.example.com`)
 * Set various [environment variables](#environment-variables) to understand the capabilities of this image. A Sample `docker-compose.yml` is provided that will work right out of the box for most people without any fancy optimizations.
 * Map [persistent storage](#data-volumes) for access to configuration and data files for backup.
