@@ -1,3 +1,18 @@
+## 2.0.54 2023-06-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add ability to use PORTAL_REST_AUTH_FILE to authenticate against REST endpoints for PORTAL
+      - Introduce PORTAL_REST_USERXX and PORTAL_REST_PASSXX environment variables for dynamic configuration of above PORTAL_REST_AUTH_FILE
+      - Optimized many sed statements and cleaned up code
+      - Created failsafe for folders not being created with the proper username or password causing login errors
+
+
+## 2.0.53 2023-06-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rework nginx configuration as per upstream samples
+
+
 ## 2.0.52 2023-05-31 <dave at tiredofit dot ca>
 
    ### Added

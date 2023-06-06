@@ -4,16 +4,16 @@ source /assets/functions/00-container
 prepare_service
 PROCESS_NAME="rsyslog"
 
-### Check to see if Enabled/Disabled
-  if [ "${LOG_TYPE,,}" = "console" ] ;  then
+if [ "${LOG_TYPE,,}" = "console" ] ;  then
     print_warn "Disabling Syslog"
     service_stop "$(basename $0)"
-  else
+else
     create_logrotate lemonldap "${LOG_PATH}"/"${LOG_FILE}" lemonldap "${NGINX_USER}" "${NGINX_GROUP}"
     create_logrotate lemonldap_user "${LOG_PATH}"/"${LOG_FILE_USER}" lemonldap "${NGINX_USER}" "${NGINX_GROUP}"
-    sed -i "s|<LOG_PATH>|${LOG_PATH}|g" /etc/rsyslog.conf
-    sed -i "s|<LOG_FILE>|${LOG_FILE}|g" /etc/rsyslog.conf
-    sed -i "s|<LOG_FILE_USER>|${LOG_FILE_USER}|g" /etc/rsyslog.conf
-  fi
+    update_template /etc/rsyslog.conf \
+                                    LOG_PATH \
+                                    LOG_FILE \
+                                    LOG_FILE_USER
+fi
 
 liftoff

@@ -6,10 +6,10 @@ source /assets/defaults/10-nginx
 prepare_service
 PROCESS_NAME="lemonldap-ng"
 
-
 mkdir -p /etc/lemonldap-ng \
+         /var/lib/lemonldap-ng/cache \
          /var/lib/lemonldap-ng/sessions/lock \
-         /var/lib/lemonldap-ng/psessions \
+         /var/lib/lemonldap-ng/psessions/lock \
          /var/lib/lemonldap-ng/conf \
          /www/logs/lemonldap
 
@@ -28,10 +28,9 @@ configure_webserver
 configure_socket
 
 chown -R "${NGINX_USER}":"${NGINX_GROUP}" /etc/lemonldap-ng \
-                                          /var/lib/lemonldap-ng/sessions/lock \
-                                          /var/lib/lemonldap-ng/psessions \
-                                          /var/lib/lemonldap-ng/conf \
-                                          /www/logs/lemonldap
+                                          /var/lib/lemonldap-ng \
+                                          "${LOG_PATH}"
+
 create_zabbix llng
 custom_files "${CONTAINER_CUSTOM_PATH}" /usr/share/lemonldap-ng "${NGINX_USER}" "${NGINX_GROUP}"
 

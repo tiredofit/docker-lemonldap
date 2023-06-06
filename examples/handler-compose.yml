@@ -6,12 +6,7 @@ services:
     - ./data/etc/lemonldap-ng:/etc/lemonldap-ng
     - ./logs:/www/logs
     environment:
-    - VIRTUAL_HOST=handler.sso.example.com
-    - VIRTUAL_NETWORK=nginx-proxy
-    - VIRTUAL_PORT=80
-    - LETSENCRYPT_HOST=handler.sso.example.com
-    - LETSENCRYPT_EMAIL=email@example.com
-
+    - TIMEZONE=America/Vancouver
     - CONTAINER_NAME=lemonldap-handler-app
 
     - MODE=HANDLER
@@ -24,13 +19,14 @@ services:
     - REST_HOST=https://sso.example.com/index.psgi/config
     - REST_USER=dwho
     - REST_PASS=dwho
-
     networks:
-      - proxy-tier
+      - proxy
+      - services
     restart: always
 
-
 networks:
-  proxy-tier:
-    external:
-      name: nginx-proxy
+  proxy:
+    external: true
+  services:
+    external: true
+

@@ -6,18 +6,20 @@ bootstrap_configuration() {
     print_debug "Bootstrapping Initial Configuration"
 
     ### Modify File Configuration
-    sed -i "s|auth.example.com|${PORTAL_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
-    sed -i "s|manager.example.com|${MANAGER_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
-    sed -i "s|reload.example.com|${HANDLER_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
-    sed -i "s|test1.example.com|${TEST_HOSTNAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
-    sed -i "s|example.com|${DOMAIN_NAME}|g" /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i \
+                -e "s|auth.example.com|${PORTAL_HOSTNAME}|g" \
+                -e "s|manager.example.com|${MANAGER_HOSTNAME}|g" \
+                -e "s|reload.example.com|${HANDLER_HOSTNAME}|g" \
+                -e "s|test1.example.com|${TEST_HOSTNAME}|g" \
+                -e "s|example.com|${DOMAIN_NAME}|g" \
+            /var/lib/lemonldap-ng/conf/lmConf-1.json
   fi
 }
 
 configure_configuration() {
     case "${CONFIG_TYPE,,}" in
         "file" )
-          config_configuration=$(cat<<EOF
+            config_configuration=$(cat<<EOF
 type = File
 dirName = /var/lib/lemonldap-ng/conf
 localStorage=Cache::FileCache
@@ -47,8 +49,8 @@ EOF
 
 configure_fail2ban_llng() {
     source /assets/default/07-firewall
-    mkdir -p /www/logs/http/
-    touch /www/logs/http/error-handler.log
+    mkdir -p "${NGINX_LOG_ERROR_LOCATION}"
+    touch "${NGINX_LOG_ERROR_LOCATION}"/error-handler.log
     cat <<EOF > "${FAIL2BAN_CONFIG_PATH}"/jail.d/llng.conf
 [llng]
 enabled  = true
@@ -68,14 +70,16 @@ configure_api() {
         update_template /etc/nginx/sites.available/api.conf \
                                                             API_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
-                                                            NGINX_LOG_ACCESS_FORMAT
+                                                            NGINX_LOG_ACCESS_FORMAT \
+                                                            NGINX_LOG_ACCESS_LOCATION \
+                                                            NGINX_LOG_ERROR_LOCATION
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/access-api.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_api "${NGINX_LOG_ACCESS_LOCATION}"/error-api.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
-        api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n")
+        api_allowed=$(echo "${MANAGER_API_ALLOWED_IPS}" | tr "," "\n" | uniq)
         for allowed_host in ${api_allowed}; do
             print_debug "API - Allowing ${allowed_host} to access"
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/api.conf
+            sed -i "/allow 127.0.0.1/a\ \ \    allow ${allowed_host};" /etc/nginx/sites.available/api.conf
         done
     fi
 }
@@ -88,7 +92,10 @@ configure_handler() {
         update_template /etc/nginx/sites.available/handler.conf \
                                                             HANDLER_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
-                                                            NGINX_LOG_ACCESS_FORMAT
+                                                            NGINX_LOG_ACCESS_FORMAT \
+                                                            NGINX_LOG_ACCESS_LOCATION \
+                                                            NGINX_LOG_ERROR_LOCATION
+
         create_logrotate nginx_lemonldap-handler_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-handler.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-handler_error "${NGINX_LOG_ACCESS_LOCATION}"/error-handler.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -96,14 +103,13 @@ configure_handler() {
             sed -i "s|lmremote_user|remote_user|g" /etc/nginx/nginx.conf
         fi
 
-        handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n")
+        handler_allowed=$(echo "${HANDLER_ALLOWED_IPS}" | tr "," "\n" | uniq)
         for allowed_host in $handler_allowed; do
-            sed -i "/allow 127.0.0.1/a\ \ \  allow ${allowed_host};" /etc/nginx/sites.available/handler.conf
+            sed -i "/allow 127.0.0.1/a\ \ \    allow ${allowed_host};" /etc/nginx/sites.available/handler.conf
         done
 
         ### Add Entry to hosts
         echo "127.0.0.1 ${HANDLER_HOSTNAME}" >> /etc/hosts
-
         config_handler=$(cat<<EOF
 [handler]
 EOF
@@ -162,7 +168,10 @@ configure_manager() {
         update_template /etc/nginx/sites.available/manager.conf \
                                                             MANAGER_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
-                                                            NGINX_LOG_ACCESS_FORMAT
+                                                            NGINX_LOG_ACCESS_FORMAT \
+                                                            NGINX_LOG_ACCESS_LOCATION \
+                                                            NGINX_LOG_ERROR_LOCATION
+
         create_logrotate nginx_lemonldap-manager_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-manager.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_error "${NGINX_LOG_ACCESS_LOCATION}"/error-manager.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -209,7 +218,10 @@ configure_portal() {
         update_template /etc/nginx/sites.available/portal.conf \
                                                             NGINX_LISTEN_PORT \
                                                             NGINX_LOG_ACCESS_FORMAT \
-                                                            PORTAL_HOSTNAME
+                                                            PORTAL_HOSTNAME \
+                                                            NGINX_LOG_ACCESS_LOCATION \
+                                                            NGINX_LOG_ERROR_LOCATION
+
         create_logrotate nginx_lemonldap-portal_accesss "${NGINX_LOG_ACCESS_LOCATION}"/access-portal.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-portal_error "${NGINX_LOG_ACCESS_LOCATION}"/error-portal.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
 
@@ -222,8 +234,8 @@ configure_portal() {
 server {
     listen ${NGINX_LISTEN_PORT};
     server_name ${IMPERSONATE_HOSTNAME};
-    access_log /www/logs/http/access-impersonate.log ${NGINX_LOG_ACCESS_FORMAT,,};
-    error_log /www/logs/http/error-impersonate.log;
+    access_log ${NGINX_LOG_ACCESS_LOCATION}/access-impersonate.log ${NGINX_LOG_ACCESS_FORMAT,,};
+    error_log ${NGINX_LOG_ACCESS_LOCATION}/error-impersonate.log;
     return 302 \$scheme://${IMPERSONATE_REDIRECT_HOSTNAME}/?skin=${IMPERSONATE_THEME};
 }
 EOF
@@ -235,10 +247,34 @@ EOF
         ### REST Remote Access
         if var_true "${PORTAL_ENABLE_REST}" ; then
             sed -i "/deny all;/i\ \ \  allow 127.0.0.1;" /etc/nginx/sites.available/portal.conf
-            allowed_portal=$(echo "$PORTAL_RESTSOAP_ALLOWED_IPS" | tr "," "\n")
-            for allowed_host in $allowed_portal; do
-                sed -i "/allow 127.0.0.1/a\ \ \  allow $allowed_host;" /etc/nginx/sites.available/portal.conf
+            allowed_rest_portal=$(echo "${PORTAL_REST_ALLOWED_IPS}" | tr "," "\n" | uniq)
+            for allowed_host in $allowed_rest_portal; do
+                sed -i "/allow 127.0.0.1/a\ \ \    allow ${allowed_host};" /etc/nginx/sites.available/portal.conf
             done
+
+            portal_rest_users=$(printenv | sort | grep -c '^PORTAL_REST_USER.*')
+            for ((i = 01; i <= portal_rest_users; i++)); do
+                transform_file_var \
+                                    PORTAL_REST_USER${i}
+                                    PORTAL_REST_PASS${i}
+                portal_rest_user=PORTAL_REST_USER${i}
+                portal_rest_pass=PORTAL_REST_PASS${i}
+                print_debug "Creating REST User: ${!portal_rest_user}"
+                htpasswd -b -n ${!portal_rest_user:-$PORTAL_REST_USER} ${!portal_rest_pass:-$PORTAL_REST_PASS} >> "${PORTAL_REST_AUTH_FILE}"
+            done
+
+            if [ -f "${PORTAL_REST_AUTH_FILE}" ] ; then
+                _rest_file_timestamp=$(date -r "${PORTAL_REST_AUTH_FILE}" +%Y%m%d%H%M.%S)
+                _rest_file_tmp=$(mktemp)
+                cp -R "${PORTAL_REST_AUTH_FILE}" "${_rest_file_tmp}"
+                awk '!seen[$0]++' "${_rest_file_tmp}" > "${PORTAL_REST_AUTH_FILE}"
+                touch -t "${_rest_file_timestamp}" "${PORTAL_REST_AUTH_FILE}"
+                rm -rf "${_rest_file_tmp}"
+                chown "${NGINX_USER}":"${NGINX_GROUP}" "${PORTAL_REST_AUTH_FILE}"
+                chmod 600 "${PORTAL_REST_AUTH_FILE}"
+                sed -i "/### REST/a\ \       auth_basic_user_file ${PORTAL_REST_AUTH_FILE};" /etc/nginx/sites.available/portal.conf
+                sed -i "/location ~ ^\/index.psgi/a\ \           auth_basic \"Authentication Required\";" /etc/nginx/sites.available/portal.conf
+            fi
         fi
 
         config_portal=$(cat<<EOF
@@ -296,15 +332,20 @@ configure_test() {
         update_template /etc/nginx/sites.available/test.conf \
                                                             TEST_HOSTNAME \
                                                             NGINX_LISTEN_PORT \
-                                                            NGINX_LOG_ACCESS_FORMAT
+                                                            NGINX_LOG_ACCESS_FORMAT \
+                                                            NGINX_LOG_ACCESS_LOCATION \
+                                                            NGINX_LOG_ERROR_LOCATION
+
         create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/access-test.log nginx-"${NGINX_LOG_ACCESS_FORMAT}" "${NGINX_USER}" "${NGINX_GROUP}"
         create_logrotate nginx_lemonldap-manager_test "${NGINX_LOG_ACCESS_LOCATION}"/error-test.log nginx-error-standard,nginx-error-alt-standard "${NGINX_USER}" "${NGINX_GROUP}"
     fi
 }
 
 configure_webserver() {
-    sed -i "\#application/zip#a\ \ \ \ application/x-font-ttf ttf;" /etc/nginx/mime.types
-    sed -i "\#application/zip#a\ \ \ \ font/opentype ott;" /etc/nginx/mime.types
+    sed -i  \
+                -e "\#application/zip#a\ \ \ \ application/x-font-ttf ttf;" \
+                -e "\#application/zip#a\ \ \ \ font/opentype ott;" \
+            /etc/nginx/mime.types
 }
 
 setup_container_mode() {

@@ -9,12 +9,12 @@ check_service_initialized init
 
 ### Check to see if Enabled/Disabled
 if var_true "${HANDLER_SOCKET_TCP_ENABLE}" ; then
-    SOCKET="-l 0.0.0.0:"${HANDLER_SOCKET_TCP_PORT}
+    _socket="-l 0.0.0.0:"${HANDLER_SOCKET_TCP_PORT}
 else
-    SOCKET="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
+    _socket="-s /var/run/llng-fastcgi-server/llng-fastcgi.sock"
 fi
 
-if [ "${LOG_TYPE}" != "CONSOLE" ] ; then
+if [ "${LOG_TYPE,,}" != "console" ] ; then
     silent_arg=silent
 fi
 
@@ -22,6 +22,6 @@ liftoff
 
 print_start "Starting (${HANDLER_PROCESSES}) LemonLDAP FastCGI Server ${LEMONLDAP_VERSION} Handlers"
 ${silent_arg} exec sudo -u llng /usr/sbin/llng-fastcgi-server \
-                                        ${SOCKET} \
+                                        ${_socket} \
                                         -n ${HANDLER_PROCESSES} \
                                         -foreground
