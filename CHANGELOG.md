@@ -1,3 +1,12 @@
+## 2.0.55 2023-06-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add PORTAL_ENABLE_STATUS environment variable and PORTAL_STATUS_ALLOWED_IPs to fix duplicate IPs from appearing when configuraing REST
+
+   ### Changed
+      - Indentation fixes
+
+
 ## 2.0.54 2023-06-06 <dave at tiredofit dot ca>
 
    ### Added
