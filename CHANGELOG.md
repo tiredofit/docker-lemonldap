@@ -1,3 +1,9 @@
+## 2.0.59 2023-11-25 <whlsxl@github>
+
+   ### Added
+      - Update LaSSO to 2.8.2
+
+
 ## 2.0.58 2023-11-14 <dave at tiredofit dot ca>
 
    ### Added
