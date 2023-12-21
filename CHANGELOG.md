@@ -1,3 +1,9 @@
+## 2.0.60 2023-12-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP 2.18.0
+
+
 ## 2.0.59 2023-11-25 <whlsxl@github>
 
    ### Added
