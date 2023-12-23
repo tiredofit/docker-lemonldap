@@ -1,3 +1,9 @@
+## 2.0.61 2023-12-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP 2.18.1
+
+
 ## 2.0.60 2023-12-20 <dave at tiredofit dot ca>
 
    ### Added
