@@ -1,3 +1,9 @@
+## 2.0.62 2024-01-23 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rebuild 2.0.61 with updated tiredofit/nginx base image to add support for NGINX_SERVER_NAMES_HASH_BUCKET_SIZE variable
+
+
 ## 2.0.61 2023-12-22 <dave at tiredofit dot ca>
 
    ### Added
