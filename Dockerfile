@@ -93,6 +93,7 @@ RUN source /assets/functions/00-container && \
                     openssl \
                     perl \
                     perl-crypt-jwt \
+                    perl-html-formattext-withlinks \
                     perl-apache-session \
                     perl-authen-sasl \
                     perl-cache-cache \
