@@ -92,6 +92,7 @@ RUN source /assets/functions/00-container && \
                     mongo-c-driver \
                     openssl \
                     perl \
+                    perl-crypt-jwt \
                     perl-apache-session \
                     perl-authen-sasl \
                     perl-cache-cache \
