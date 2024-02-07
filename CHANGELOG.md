@@ -1,3 +1,10 @@
+## 2.0.64 2024-02-07 <whlsxl@github>
+
+   ### Changed
+      - Install perl-crypt-jwt dependency
+      - Install perl-html-formattext-withlinks dependency
+
+
 ## 2.0.63 2024-02-06 <dave at tiredofit dot ca>
 
    ### Added
