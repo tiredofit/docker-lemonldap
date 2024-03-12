@@ -1,3 +1,9 @@
+## 2.0.66 2024-03-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rerelease of 2.0.65
+
+
 ## 2.0.65 2024-03-12 <dave at tiredofit dot ca>
 
    ### Added
