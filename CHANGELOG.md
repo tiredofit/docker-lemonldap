@@ -1,3 +1,9 @@
+## 2.0.65 2024-03-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce PORTAL_ENABLE_GITLAB_OAUTH environment variable to support mattermost authentication via Gitlab
+
+
 ## 2.0.64 2024-02-07 <whlsxl@github>
 
    ### Changed

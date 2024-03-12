@@ -164,27 +164,28 @@ Depending if `REST` was chosen for `CONFIG_TYPE`, these variables would be used.
 | `REST_PASS` | Password to fetch Configuration Information                                      |         | x       |
 
 #### Portal Settings
-| Parameter                   | Description                                                                                         | Default                                    | `_FILE` |
-| --------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------- |
-| `PORTAL_CACHE_TYPE`         | Only Cache Type available for now -                                                                 | `FILE`                                     |         |
-| `PORTAL_TEMPLATE_DIR`       |                                                                                                     | `/usr/share/lemonldap-ng/portal/templates` |         |
-| `PORTAL_LOG_TYPE`           | Override Portal Log - Options `CONSOLE` or `FILE`                                                   | `CONSOLE`                                  |         |
-| `PORTAL_LOG_LEVEL`          | Override Portal LogLevel - Options `warn, notice, info, error, debug`                               | `info`                                     |         |
-| `PORTAL_USER_LOG_TYPE`      | Override Portal Log User actions - Options `CONSOLE` or `FILE`                                      | `CONSOLE`                                  |         |
-| `PORTAL_ENABLE_REST`        | Allow REST access to the Portal -                                                                   | `FALSE`                                    |         |
-| `PORTAL_REST_ALLOWED_IPS`   | If above options enabled, provide comma seperated list of IP/Network to allow access                | `0.0.0.0/0`                                |
-| `PORTAL_REST_AUTH_FILE`     | Populate this file manually or with environment variables for REST authentication (htpasswd format) | `/etc/lemonldap-ng/portal-rest.htpasswd`   |         |
-| `PORTAL_REST_USER01`        | Username for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_REST_PASS01`        | Password for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_REST_USER02`        | Username for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_REST_PASS02`        | Password for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_REST_USER...`       | Username for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_REST_PASS...`       | Password for REST Authentication                                                                    |                                            | x       |
-| `PORTAL_ENABLE_STATUS`      | Configure nginx to serve status page                                                                | `FALSE`                                    |
-| `PORTAL_STATUS_ALLOWED_IPS` | If above options enabled, provide comma seperated list of IP/Network to allow access                | `0.0.0.0/0`                                |
-| `ENABLE_IMPERSONATION`      | If you wish to allow impersonation using a seperate theme set to `TRUE`                             | `FALSE`                                    |         |
-| `IMPERSONATE_HOSTNAME`      | Hostname to use to load the custom impersonation theme                                              |                                            |         |
-| `IMPERSONATE_THEME`         | Theme to use to load the impersonation theme                                                        |                                            |         |
+| Parameter                    | Description                                                                                         | Default                                    | `_FILE` |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------- |
+| `PORTAL_CACHE_TYPE`          | Only Cache Type available for now -                                                                 | `FILE`                                     |         |
+| `PORTAL_TEMPLATE_DIR`        |                                                                                                     | `/usr/share/lemonldap-ng/portal/templates` |         |
+| `PORTAL_LOG_TYPE`            | Override Portal Log - Options `CONSOLE` or `FILE`                                                   | `CONSOLE`                                  |         |
+| `PORTAL_LOG_LEVEL`           | Override Portal LogLevel - Options `warn, notice, info, error, debug`                               | `info`                                     |         |
+| `PORTAL_USER_LOG_TYPE`       | Override Portal Log User actions - Options `CONSOLE` or `FILE`                                      | `CONSOLE`                                  |         |
+| `PORTAL_ENABLE_GITLAB_OAUTH` | Redirect requests from Gitlab to support OAuth for Mattermost Authentication                        | `FALSE`                                    |         |
+| `PORTAL_ENABLE_REST`         | Allow REST access to the Portal -                                                                   | `FALSE`                                    |         |
+| `PORTAL_REST_ALLOWED_IPS`    | If above options enabled, provide comma seperated list of IP/Network to allow access                | `0.0.0.0/0`                                |         |
+| `PORTAL_REST_AUTH_FILE`      | Populate this file manually or with environment variables for REST authentication (htpasswd format) | `/etc/lemonldap-ng/portal-rest.htpasswd`   |         |
+| `PORTAL_REST_USER01`         | Username for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_REST_PASS01`         | Password for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_REST_USER02`         | Username for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_REST_PASS02`         | Password for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_REST_USER...`        | Username for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_REST_PASS...`        | Password for REST Authentication                                                                    |                                            | x       |
+| `PORTAL_ENABLE_STATUS`       | Configure nginx to serve status page                                                                | `FALSE`                                    |         |
+| `PORTAL_STATUS_ALLOWED_IPS`  | If above options enabled, provide comma seperated list of IP/Network to allow access                | `0.0.0.0/0`                                |         |
+| `ENABLE_IMPERSONATION`       | If you wish to allow impersonation using a seperate theme set to `TRUE`                             | `FALSE`                                    |         |
+| `IMPERSONATE_HOSTNAME`       | Hostname to use to load the custom impersonation theme                                              |                                            |         |
+| `IMPERSONATE_THEME`          | Theme to use to load the impersonation theme                                                        |                                            |         |
 
 - With impersonation, if you enable it, it will add a new field to your login screen, which may not be what you want if this is a production system. You will need to create two custom themes (one as a replica of bootstrap, and one for impersonation). In the custom theme, make modifications to `login.tpl` to stop it from loading impersonation.tpl, yet in your impersonation theme, leave it in there. Then, when one of your admin/support team visits the custom `IMPERSONATE_HOSTNAME` you have defined it will load the full theme with allows to impersonate, where as the default theme will not show this.
 
