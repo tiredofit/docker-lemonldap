@@ -1,3 +1,9 @@
+## 2.0.67 2024-04-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP 2.19.0
+
+
 ## 2.0.66 2024-03-12 <dave at tiredofit dot ca>
 
    ### Changed
