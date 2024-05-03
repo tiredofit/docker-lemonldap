@@ -1,3 +1,9 @@
+## 2.0.68 2024-05-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Data::Password::zxcvbn perl module for entropy checking introduced in LLNG 2.18.0
+
+
 ## 2.0.67 2024-04-30 <dave at tiredofit dot ca>
 
    ### Added

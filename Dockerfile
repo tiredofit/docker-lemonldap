@@ -178,7 +178,8 @@ RUN source /assets/functions/00-container && \
         Crypt::OpenSSL::X509 \
         Crypt::U2F::Server::Simple \
         Crypt::URandom \
-        DateTime::Format::RFC3339 \
+        Data::Password::zxcvbn \
+	DateTime::Format::RFC3339 \
         Digest::HMAC_SHA1 \
         Digest::SHA \
         Email::Sender \
