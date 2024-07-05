@@ -1,3 +1,9 @@
+## 2.0.69 2024-07-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rebuild with tiredofit/alpine:7.10.0 base
+
+
 ## 2.0.68 2024-05-03 <dave at tiredofit dot ca>
 
    ### Added
