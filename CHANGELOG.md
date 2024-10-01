@@ -1,3 +1,10 @@
+## 2.0.72 2024-10-01 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add xmlsec-dev as a runtime dependency for issues with LaSSO initialization
+      - Pin to tiredofit/nginx:alpine-3.17-6.5.2
+
+
 ## 2.0.71 2024-09-02 <dave at tiredofit dot ca>
 
    ### Added

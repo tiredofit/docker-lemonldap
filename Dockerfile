@@ -1,7 +1,7 @@
 ARG DISTRO="alpine"
 ARG DISTRO_VARIANT="3.17"
 
-FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}
+FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}-6.5.2
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG LEMONLDAP_VERSION
@@ -78,7 +78,7 @@ RUN source /assets/functions/00-container && \
                     redis \
                     sphinx \
                     wget \
-                    xmlsec-dev \
+                    #xmlsec-dev \
                     && \
     \
     package install .lemonldap-run-deps \
@@ -142,6 +142,7 @@ RUN source /assets/functions/00-container && \
                     rsyslog \
                     s6 \
                     xmlsec \
+                    xmlsec-dev \
                     && \
     \
     ### Install Sphinx dependencies for Document Building for Manager
