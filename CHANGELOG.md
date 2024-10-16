@@ -1,3 +1,9 @@
+## 2.0.74 2024-10-16 <dave at tiredofit dot ca>
+
+   ### Reverted
+      - Remove any U2F modules and compilation
+
+
 ## 2.0.73 2024-10-08 <dave at tiredofit dot ca>
 
    ### Added

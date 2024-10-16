@@ -11,7 +11,6 @@ ARG LASSO_VERSION
 ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.20.0"} \
     AUTHCAS_VERSION=${AUTHCAS_VERSION:-"1.7"} \
     LASSO_VERSION=${LASSO_VERSION:-"v2.8.2"} \
-    LIBU2F_VERSION=master \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
     API_HOSTNAME=api.manager.sso.example.com \
@@ -148,20 +147,6 @@ RUN source /assets/functions/00-container && \
     ### Install Sphinx dependencies for Document Building for Manager
     pip install sphinx_bootstrap_theme && \
     \
-    ### Compile libu2f-server for 2FA Support
-    clone_git_repo https://github.com/Yubico/libu2f-server ${LIBU2F_VERSION} && \
-    ./autogen.sh && \
-    ./configure \
-        --build=$CBUILD \
-        --host=$CHOST \
-        --prefix=/usr \
-        --sysconfdir=/etc \
-        --mandir=/usr/share/man \
-        --localstatedir=/var \
-        --enable-tests && \
-    make -j$(nproc) && \
-    make install && \
-    \
 ### Install Perl Modules Manually not available in Repository
     ln -s /usr/bin/perl /usr/local/bin/perl && \
     curl -L http://cpanmin.us -o /usr/bin/cpanm && \
@@ -177,7 +162,6 @@ RUN source /assets/functions/00-container && \
         Cookie::Baker \
         Cookie::Baker::XS \
         Crypt::OpenSSL::X509 \
-        Crypt::U2F::Server::Simple \
         Crypt::URandom \
         Data::Password::zxcvbn \
 	DateTime::Format::RFC3339 \
