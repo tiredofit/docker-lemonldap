@@ -1,3 +1,10 @@
+## 2.0.75 2024-11-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.20.1
+      - Pin to tiredofit/nginx:alpine-3.17-6.5.5
+
+
 ## 2.0.74 2024-10-16 <dave at tiredofit dot ca>
 
    ### Reverted
