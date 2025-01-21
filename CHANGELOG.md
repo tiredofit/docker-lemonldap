@@ -1,3 +1,9 @@
+## 2.0.77 2025-01-21 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Drop nginx pin back to 6.5.5
+
+
 ## 2.0.76 2025-01-21 <dave at tiredofit dot ca>
 
    ### Added
