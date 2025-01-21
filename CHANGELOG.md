@@ -1,3 +1,10 @@
+## 2.0.76 2025-01-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - LemonLDAP:NG 2.20.2
+      - Pin to tiredofit/nginx:6.5.10
+
+
 ## 2.0.75 2024-11-08 <dave at tiredofit dot ca>
 
    ### Added
