@@ -1,3 +1,14 @@
+## 2.0.78 2025-03-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Pin to tiredofit/nginx:alpine-3.2.1-6.5.10
+      - Reworked install routines
+      - LaSSO a58a535028882a92b76f3814f70803872ad5727e (Pre 2.9.0)
+
+   ### Reverted
+      - Remove MongoDB support
+
+
 ## 2.0.77 2025-01-21 <dave at tiredofit dot ca>
 
    ### Changed

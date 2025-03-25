@@ -1,7 +1,7 @@
 ARG DISTRO="alpine"
-ARG DISTRO_VARIANT="3.17"
+ARG DISTRO_VARIANT="3.21"
 
-FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}-6.5.5
+FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}-6.5.10
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG LEMONLDAP_VERSION
@@ -10,7 +10,7 @@ ARG LASSO_VERSION
 
 ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.20.2"} \
     AUTHCAS_VERSION=${AUTHCAS_VERSION:-"1.7"} \
-    LASSO_VERSION=${LASSO_VERSION:-"v2.8.2"} \
+    LASSO_VERSION=${LASSO_VERSION:-"a58a535028882a92b76f3814f70803872ad5727e"} \
     MINIFY_VERSION=2.3.6 \
     DOMAIN_NAME=example.com \
     API_HOSTNAME=api.manager.sso.example.com \
@@ -94,13 +94,18 @@ RUN source /assets/functions/00-container && \
                     perl-crypt-jwt \
                     perl-html-formattext-withlinks \
                     perl-apache-session \
+                    perl-authen-radius \
                     perl-authen-sasl \
                     perl-cache-cache \
                     perl-clone \
                     perl-config-inifiles \
+                    perl-convert-pem \
+                    perl-cookie-baker \
                     perl-crypt-openssl-bignum \
                     perl-crypt-openssl-rsa \
+                    perl-crypt-openssl-x509 \
                     perl-crypt-rijndael \
+                    perl-crypt-urandom \
                     perl-crypt-x509 \
                     perl-dbd-mysql \
                     perl-dbd-sqlite \
@@ -112,6 +117,7 @@ RUN source /assets/functions/00-container && \
                     perl-fcgi \
                     perl-fcgi-procmanager \
                     perl-glib \
+                    perl-gssapi \
                     perl-http-headers-fast \
                     perl-http-entity-parser \
                     perl-html-template \
@@ -123,11 +129,13 @@ RUN source /assets/functions/00-container && \
                     perl-lwp-protocol-https \
                     perl-mime-lite \
                     perl-mime-tools \
+                    perl-mouse \
                     perl-net-cidr \
                     perl-net-cidr-lite \
                     perl-net-ssleay \
                     perl-plack \
                     perl-regexp-common \
+                    perl-redis \
                     perl-test-mockobject \
                     perl-test-pod \
                     perl-unicode-string \
@@ -145,50 +153,49 @@ RUN source /assets/functions/00-container && \
                     && \
     \
     ### Install Sphinx dependencies for Document Building for Manager
-    pip install sphinx_bootstrap_theme && \
+    pip install --break-system-packages sphinx_bootstrap_theme && \
     \
 ### Install Perl Modules Manually not available in Repository
     ln -s /usr/bin/perl /usr/local/bin/perl && \
     curl -L http://cpanmin.us -o /usr/bin/cpanm && \
     chmod +x /usr/bin/cpanm && \
     cpanm -n \
-        Auth::Yubikey_WebClient \
-        Authen::Radius \
+        #Auth::Yubikey_WebClient \
+        #Authen::Radius \
         Authen::Captcha \
         Authen::WebAuthn \
         CGI::Compile \
-        Convert::PEM \
         Convert::Base32 \
-        Cookie::Baker \
+        #Cookie::Baker \
         Cookie::Baker::XS \
-        Crypt::OpenSSL::X509 \
+        #Crypt::OpenSSL::X509 \
         Crypt::URandom \
         Data::Password::zxcvbn \
-	DateTime::Format::RFC3339 \
+    	DateTime::Format::RFC3339 \
         Digest::HMAC_SHA1 \
         Digest::SHA \
         Email::Sender \
         GD::SecurityImage \
-        GSSAPI \
+        #GSSAPI \
         HTTP::Headers \
         HTTP::Request \
         LWP::UserAgent \
-        Mouse \
-        MongoDB \
+        #Mouse \
+        #MongoDB \
         Net::Facebook::Oauth2 \
         Net::LDAP \
         Net::OAuth \
         Net::OpenID::Common \
         Net::SMTP \
         Regexp::Assemble \
-        Redis \
+        #Redis \
         Sentry::Raven \
         String::Random \
         Text::Unidecode \
         Time::Fake \
         URI::Escape \
         Web::ID \
-    && \
+        && \
 ### Install various GO, NodeJS Packages for Optimization and adjust temporary symlinks
     cd /usr/src && \
     npm install coffeescript && \
@@ -204,6 +211,8 @@ RUN source /assets/functions/00-container && \
     clone_git_repo https://git.entrouvert.org/entrouvert/lasso "${LASSO_VERSION}" /usr/src/lasso && \
     cd /usr/src/lasso && \
     git checkout "${LASSO_VERSION}" && \
+    echo "2.9.0-dev" > .version && \
+    echo "2.9.0-dev" > .tarball-version && \
     ./autogen.sh \
                  --prefix=/usr \
                  --disable-python \
@@ -262,12 +271,6 @@ RUN source /assets/functions/00-container && \
     ./Build && \
     ./Build test && \
     ./Build install && \
-    \
-    clone_git_repo https://github.com/LemonLDAPNG/apache-session-mongodb v0.21 && \
-    perl Makefile.PL && \
-    make && \
-    make test && \
-    make install && \
     \
     mkdir -p /var/run/llng-fastcgi-server && \
     chown -R llng /var/run/llng-fastcgi-server && \
