@@ -1,3 +1,10 @@
+## 2.0.80 2025-04-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Pin to tiredofit/nginx:6.5.17
+      - Update Nginx configuration to support fixes for Handler
+
+
 ## 2.0.79 2025-04-08 <dave at tiredofit dot ca>
 
    ### Added
