@@ -1,7 +1,7 @@
 ARG DISTRO="alpine"
 ARG DISTRO_VARIANT="3.21"
 
-FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}-6.5.17
+FROM docker.io/tiredofit/nginx:${DISTRO}-${DISTRO_VARIANT}-6.5.18
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG LEMONLDAP_VERSION
