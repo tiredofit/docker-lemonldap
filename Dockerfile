@@ -8,10 +8,10 @@ ARG LEMONLDAP_VERSION
 ARG AUTHCAS_VERSION
 ARG LASSO_VERSION
 
-ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.21.0"} \
+ENV LEMONLDAP_VERSION=${LEMONLDAP_VERSION:-"2.21.1"} \
     AUTHCAS_VERSION=${AUTHCAS_VERSION:-"1.7"} \
     LASSO_VERSION=${LASSO_VERSION:-"a58a535028882a92b76f3814f70803872ad5727e"} \
-    MINIFY_VERSION=2.3.6 \
+    MINIFY_VERSION=2.23.8 \
     DOMAIN_NAME=example.com \
     API_HOSTNAME=api.manager.sso.example.com \
     HANDLER_HOSTNAME=handler.sso.example.com \
@@ -200,7 +200,7 @@ RUN source /assets/functions/00-container && \
     cd /usr/src && \
     npm install coffeescript && \
     mkdir -p /usr/src/minify && \
-    curl -sSL https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_${MINIFY_VERSION}_linux_amd64.tar.gz | tar xvfz - --strip 1 -C /usr/src/minify && \
+    curl -sSL https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_linux_amd64.tar.gz | tar xvfz - --strip 1 -C /usr/src/minify && \
     mv /usr/src/minify /usr/bin/ && \
     chmod +x /usr/bin/minify && \
     npm install -g uglify-js && \
